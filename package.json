@@ -1,0 +1,46 @@
+{
+  "name": "bach-encode",
+  "version": "1.0.0",
+  "description": "A MIDI compression/decompression tool that converts between MIDI files and JSON format with voice separation",
+  "main": "EncodeDecode.js",
+  "scripts": {
+    "start": "node EncodeDecode.js",
+    "test": "jest",
+    "compress": "node EncodeDecode.js compress",
+    "decompress": "node EncodeDecode.js decompress",
+    "lint": "eslint *.js",
+    "format": "prettier --write *.js"
+  },
+  "keywords": [
+    "midi",
+    "compression",
+    "music",
+    "encoding",
+    "bach",
+    "audio",
+    "json"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "midi-parser-js": "^4.0.4",
+    "midi-writer-js": "^2.1.3",
+    "@tonaljs/tonal": "^4.9.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "eslint": "^8.57.0",
+    "prettier": "^3.0.3"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/bach-encode.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/bach-encode/issues"
+  },
+  "homepage": "https://github.com/yourusername/bach-encode#readme"
+}

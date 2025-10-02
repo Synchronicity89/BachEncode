@@ -1,0 +1,46 @@
+{
+  "ppq": 480,
+  "tempo": 120,
+  "voices": [
+    [
+      {
+        "delta": 0,
+        "pitch": "C4",
+        "dur": 480,
+        "vel": 80
+      },
+      {
+        "delta": 0,
+        "pitch": "D4",
+        "dur": 480,
+        "vel": 75
+      },
+      {
+        "delta": 0,
+        "pitch": "E4",
+        "dur": 480,
+        "vel": 82
+      },
+      {
+        "delta": 0,
+        "pitch": "F4",
+        "dur": 960,
+        "vel": 78
+      }
+    ],
+    [
+      {
+        "delta": 0,
+        "pitch": "G3",
+        "dur": 960,
+        "vel": 70
+      },
+      {
+        "delta": 0,
+        "pitch": "C3",
+        "dur": 960,
+        "vel": 72
+      }
+    ]
+  ]
+}
