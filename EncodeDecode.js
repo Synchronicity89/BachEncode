@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 const midiParser = require('midi-parser-js');
 const MidiWriter = require('midi-writer-js');
 const tonal = require('@tonaljs/tonal');
@@ -461,6 +462,13 @@ function compressMidiToJson(inputMidi, outputJson) {
   }
 
   const compressed = { ppq, tempo, key: { tonic: tonic_name, mode: key.mode }, motifs: newMotifs, voices: encodedVoices };
+  
+  // Ensure output directory exists
+  const outputDir = path.dirname(outputJson);
+  if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true });
+  }
+  
   fs.writeFileSync(outputJson, JSON.stringify(compressed, null, 2)); // Pretty print for editability
 }
 
@@ -551,6 +559,13 @@ function decompressJsonToMidi(inputJson, outputMidi) {
   }
 
   const write = new MidiWriter.Writer(track);
+  
+  // Ensure output directory exists
+  const outputDir = path.dirname(outputMidi);
+  if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true });
+  }
+  
   fs.writeFileSync(outputMidi, Buffer.from(write.buildFile()));
   console.log('MIDI file written successfully');
 }
