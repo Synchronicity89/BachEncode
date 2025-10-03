@@ -10464,6 +10464,7 @@ Event 2: {
   "data": 0
 }
   -> type: 255, subtype: undefined, deltaTime: 0, currentTick: 0
+Found key signature: sf=0, mode=major
 Event 3: {
   "deltaTime": 0,
   "type": 255,
@@ -10508,6 +10509,7 @@ Event 1: {
   "data": 0
 }
   -> type: 255, subtype: undefined, deltaTime: 0, currentTick: 0
+Found key signature: sf=0, mode=major
 Event 2: {
   "deltaTime": 0,
   "type": 11,

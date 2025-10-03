@@ -35,6 +35,7 @@ function extractTempoAndPPQAndNotes(midi) {
   console.log('PPQ found:', ppq);
   
   let tempo = 120; // default
+  let key_sig = null;
   const notes = [];
   const activeNotes = new Map();
 
@@ -78,6 +79,22 @@ function extractTempoAndPPQAndNotes(midi) {
         tempo = 60000000 / event.data;
         debugOutput.push('Found tempo: ' + tempo);
         console.log('Found tempo:', tempo);
+      }
+      
+      // Handle key signature meta events (type 255, metaType 89)
+      if (event.type === 255 && event.metaType === 89) {
+        let sf = 0, mi = 0;
+        if (Array.isArray(event.data) && event.data.length >= 2) {
+          sf = event.data[0] > 127 ? event.data[0] - 256 : event.data[0];
+          mi = event.data[1];
+        } else if (typeof event.data === 'number') {
+          // Single byte might encode both sf and mode
+          sf = event.data > 127 ? event.data - 256 : event.data;
+          mi = 0; // Default to major
+        }
+        key_sig = { sf, mode: mi === 1 ? 'minor' : 'major' };
+        debugOutput.push('Found key signature: sf=' + sf + ', mode=' + key_sig.mode);
+        console.log('Found key signature: sf=' + sf + ', mode=' + key_sig.mode);
       }
       
       // Handle MIDI note events - this parser uses type 9 for note on, type 8 for note off
@@ -145,57 +162,35 @@ function extractTempoAndPPQAndNotes(midi) {
   fs.writeFileSync('debug-output.txt', debugOutput.join('\n'));
   console.log(`Extraction complete: ${notes.length} notes found. Debug output written to debug-output.txt`);
 
-  return { ppq, tempo, notes };
+  return { ppq, tempo, notes, key_sig };
 }
 
-function detectKey(notes) {
-  const pcCount = Array(12).fill(0);
-  for (const note of notes) {
-    pcCount[note.pitch % 12] += note.dur; // Weight by duration
-  }
-  const total = pcCount.reduce((a, b) => a + b, 0) || 1;
-  const profile = pcCount.map(c => c / total);
-
-  const majorProfile = [6.35, 2.23, 3.48, 2.33, 4.38, 4.09, 2.52, 5.19, 2.39, 3.66, 2.29, 2.88];
-  const minorProfile = [6.33, 2.68, 3.52, 5.38, 2.60, 3.53, 2.54, 4.75, 3.98, 2.69, 3.34, 3.17];
-
-  function correlate(a, b) {
-    const meanA = a.reduce((s, v) => s + v, 0) / 12;
-    const meanB = b.reduce((s, v) => s + v, 0) / 12;
-    let num = 0, denA = 0, denB = 0;
-    for (let i = 0; i < 12; i++) {
-      const da = a[i] - meanA;
-      const db = b[i] - meanB;
-      num += da * db;
-      denA += da * da;
-      denB += db * db;
+function findBestKey(notes, key_sig) {
+  if (key_sig) {
+    let sf = key_sig.sf;
+    let mode = key_sig.mode;
+    let major_tonic = (sf * 7 % 12 + 12) % 12;
+    let tonic_pc = mode === 'major' ? major_tonic : (major_tonic + 9) % 12;
+    return { tonic_pc, mode };
+  } else {
+    // Find key with minimal accidentals
+    let best = { sum: Infinity, tonic_pc: 0, mode: 'major' };
+    for (let t = 0; t < 12; t++) {
+      for (let m of ['major', 'minor']) {
+        let sum_acc = 0;
+        for (let note of notes) {
+          let d = pitchToDiatonic(note.pitch, t, m);
+          sum_acc += Math.abs(d.acc);
+        }
+        if (sum_acc < best.sum) {
+          best.sum = sum_acc;
+          best.tonic_pc = t;
+          best.mode = m;
+        }
+      }
     }
-    return num / (Math.sqrt(denA * denB) || 1);
+    return best;
   }
-
-  let bestCorr = -Infinity;
-  let bestTonic = 0;
-  let bestMode = 'major';
-
-  for (let t = 0; t < 12; t++) {
-    const rotMaj = majorProfile.slice(t).concat(majorProfile.slice(0, t));
-    const corrMaj = correlate(profile, rotMaj);
-    if (corrMaj > bestCorr) {
-      bestCorr = corrMaj;
-      bestTonic = t;
-      bestMode = 'major';
-    }
-
-    const rotMin = minorProfile.slice(t).concat(minorProfile.slice(0, t));
-    const corrMin = correlate(profile, rotMin);
-    if (corrMin > bestCorr) {
-      bestCorr = corrMin;
-      bestTonic = t;
-      bestMode = 'minor';
-    }
-  }
-
-  return { tonic_pc: bestTonic, mode: bestMode };
 }
 
 function pitchToDiatonic(midi, tonic_pc, mode) {
@@ -212,7 +207,7 @@ function pitchToDiatonic(midi, tonic_pc, mode) {
     let acc = pc - exp_pc;
     if (acc < -6) acc += 12;
     else if (acc > 5) acc -= 12;
-    if (Math.abs(acc) > 2) continue; // Avoid double flats/sharps
+    if (Math.abs(acc) > 2) continue; // Avoid extreme accidentals
     const dist = Math.abs(acc);
     if (dist < best_dist || (dist === best_dist && Math.abs(d) < Math.abs(best_deg))) {
       best_dist = dist;
@@ -434,8 +429,8 @@ function applyMotifs(encodedVoices, motifs, motifMap, patternMap) {
 
 function compressMidiToJson(inputMidi, outputJson) {
   const midi = parseMidi(inputMidi);
-  const { ppq, tempo, notes } = extractTempoAndPPQAndNotes(midi);
-  const key = detectKey(notes);
+  const { ppq, tempo, notes, key_sig } = extractTempoAndPPQAndNotes(midi);
+  const key = findBestKey(notes, key_sig);
   const tonic_name = tonal.Note.pitchClass(tonal.Note.fromMidi(key.tonic_pc + 60, true));
   const voices = separateVoices(notes);
   let encodedVoices = encodeVoices(voices);

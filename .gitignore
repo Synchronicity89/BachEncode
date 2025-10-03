@@ -54,6 +54,9 @@ midi/
 # output folder
 output/
 
+# debug output
+debug-output.txt
+
 # nyc test coverage
 .nyc_output
 
@@ -90,3 +93,4 @@ jspm_packages/
 # Temporary folders
 tmp/
 temp/
+debug-output.txt
