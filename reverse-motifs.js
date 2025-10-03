@@ -4,6 +4,12 @@ function reverseMotifPitches(jsonFilePath) {
   console.log(`Processing file: ${jsonFilePath}`);
   
   // Read and parse the JSON file
+  // This function reverses all pertinent arrays in each motif definition:
+  // - deg_rels: degree relationships (pitch intervals)
+  // - accs: accidentals 
+  // - deltas: timing deltas
+  // - durs: note durations
+  // - vels: note velocities
   const data = JSON.parse(fs.readFileSync(jsonFilePath, 'utf8'));
   
   if (!data.motifs || !Array.isArray(data.motifs)) {
@@ -27,34 +33,55 @@ function reverseMotifPitches(jsonFilePath) {
     }
   }
   
-  // Reverse the pitch intervals and accidentals in each motif
+  // Reverse all pertinent arrays in each motif
   for (let i = 0; i < data.motifs.length; i++) {
     const motif = data.motifs[i];
+    let hasArrays = false;
     
-    if (motif.intervals && Array.isArray(motif.intervals)) {
-      console.log(`Motif ${i}: Original intervals = [${motif.intervals.join(', ')}]`);
-      
-      // Reverse the intervals array
-      const originalIntervals = [...motif.intervals];
-      motif.intervals = originalIntervals.reverse();
-      
-      console.log(`Motif ${i}: Reversed intervals = [${motif.intervals.join(', ')}]`);
-      
-      // Also reverse the accidentals array if it exists
-      if (motif.accs && Array.isArray(motif.accs)) {
-        console.log(`Motif ${i}: Original accs = [${motif.accs.join(', ')}]`);
-        
-        const originalAccs = [...motif.accs];
-        motif.accs = originalAccs.reverse();
-        
-        console.log(`Motif ${i}: Reversed accs = [${motif.accs.join(', ')}]`);
-      } else {
-        console.log(`Motif ${i}: No accidentals found`);
-      }
-      
+    // Reverse deg_rels (degree relationships - the pitch intervals)
+    if (motif.deg_rels && Array.isArray(motif.deg_rels)) {
+      console.log(`Motif ${i}: Original deg_rels = [${motif.deg_rels.join(', ')}]`);
+      motif.deg_rels = [...motif.deg_rels].reverse();
+      console.log(`Motif ${i}: Reversed deg_rels = [${motif.deg_rels.join(', ')}]`);
+      hasArrays = true;
+    }
+    
+    // Reverse accidentals array
+    if (motif.accs && Array.isArray(motif.accs)) {
+      console.log(`Motif ${i}: Original accs = [${motif.accs.join(', ')}]`);
+      motif.accs = [...motif.accs].reverse();
+      console.log(`Motif ${i}: Reversed accs = [${motif.accs.join(', ')}]`);
+      hasArrays = true;
+    }
+    
+    // Reverse timing deltas array
+    if (motif.deltas && Array.isArray(motif.deltas)) {
+      console.log(`Motif ${i}: Original deltas = [${motif.deltas.join(', ')}]`);
+      motif.deltas = [...motif.deltas].reverse();
+      console.log(`Motif ${i}: Reversed deltas = [${motif.deltas.join(', ')}]`);
+      hasArrays = true;
+    }
+    
+    // Reverse durations array
+    if (motif.durs && Array.isArray(motif.durs)) {
+      console.log(`Motif ${i}: Original durs = [${motif.durs.join(', ')}]`);
+      motif.durs = [...motif.durs].reverse();
+      console.log(`Motif ${i}: Reversed durs = [${motif.durs.join(', ')}]`);
+      hasArrays = true;
+    }
+    
+    // Reverse velocities array
+    if (motif.vels && Array.isArray(motif.vels)) {
+      console.log(`Motif ${i}: Original vels = [${motif.vels.join(', ')}]`);
+      motif.vels = [...motif.vels].reverse();
+      console.log(`Motif ${i}: Reversed vels = [${motif.vels.join(', ')}]`);
+      hasArrays = true;
+    }
+    
+    if (hasArrays) {
       console.log(`Motif ${i}: Used ${motifUsageCount[i]} times`);
     } else {
-      console.log(`Motif ${i}: No intervals found`);
+      console.log(`Motif ${i}: No arrays found to reverse`);
     }
   }
   
