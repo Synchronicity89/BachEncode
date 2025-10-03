@@ -8,6 +8,8 @@
     "test": "jest",
     "compress": "node EncodeDecode.js compress",
     "decompress": "node EncodeDecode.js decompress",
+    "analyze-motifs": "node motif-analysis.js",
+    "reverse-motifs": "node reverse-motifs.js",
     "lint": "eslint *.js",
     "format": "prettier --write *.js"
   },
