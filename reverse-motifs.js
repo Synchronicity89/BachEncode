@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 
 function reverseMotifPitches(jsonFilePath) {
   console.log(`Processing file: ${jsonFilePath}`);
@@ -114,23 +115,67 @@ function main() {
   const args = process.argv.slice(2);
   
   if (args.length !== 1) {
-    console.log('Usage: node reverse-motifs.js <json-file-path>');
-    console.log('Example: node reverse-motifs.js output/bach-invention-13.json');
+    console.log('Usage: node reverse-motifs.js <json-file-path-or-directory>');
+    console.log('Examples:');
+    console.log('  node reverse-motifs.js output/bach-invention-13.json');
+    console.log('  node reverse-motifs.js output/');
     process.exit(1);
   }
   
-  const jsonFilePath = args[0];
+  const inputPath = args[0];
   
-  // Check if file exists
-  if (!fs.existsSync(jsonFilePath)) {
-    console.error(`Error: File not found: ${jsonFilePath}`);
+  // Check if path exists
+  if (!fs.existsSync(inputPath)) {
+    console.error(`Error: Path not found: ${inputPath}`);
     process.exit(1);
   }
   
   try {
-    reverseMotifPitches(jsonFilePath);
+    const stats = fs.statSync(inputPath);
+    
+    if (stats.isDirectory()) {
+      // Process all JSON files in the directory
+      console.log(`Processing directory: ${inputPath}`);
+      const files = fs.readdirSync(inputPath);
+      const jsonFiles = files.filter(file => path.extname(file).toLowerCase() === '.json');
+      
+      if (jsonFiles.length === 0) {
+        console.log('No JSON files found in the directory');
+        return;
+      }
+      
+      console.log(`Found ${jsonFiles.length} JSON files to process:`);
+      jsonFiles.forEach(file => console.log(`  - ${file}`));
+      console.log('');
+      
+      let processedCount = 0;
+      for (const jsonFile of jsonFiles) {
+        const fullPath = path.join(inputPath, jsonFile);
+        try {
+          console.log(`\n${'='.repeat(60)}`);
+          reverseMotifPitches(fullPath);
+          processedCount++;
+        } catch (error) {
+          console.error(`Error processing ${jsonFile}: ${error.message}`);
+        }
+      }
+      
+      console.log(`\n${'='.repeat(60)}`);
+      console.log(`SUMMARY: Successfully processed ${processedCount} of ${jsonFiles.length} JSON files`);
+      
+    } else if (stats.isFile()) {
+      // Process single file
+      if (path.extname(inputPath).toLowerCase() !== '.json') {
+        console.error('Error: File must have .json extension');
+        process.exit(1);
+      }
+      reverseMotifPitches(inputPath);
+    } else {
+      console.error('Error: Path is neither a file nor a directory');
+      process.exit(1);
+    }
   } catch (error) {
-    console.error('Error processing file:', error.message);
+    console.error('Error processing path:', error.message);
     process.exit(1);
   }
 }

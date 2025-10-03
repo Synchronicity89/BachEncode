@@ -140,14 +140,14 @@ function extractTempoAndPPQAndNotes(midi) {
   }
 
   // Quantize timings
-  const quant_unit = 120;
-  notes.forEach(note => {
-    note.start = Math.round(note.start / quant_unit) * quant_unit;
-    const end = note.start + note.dur;
-    const quant_end = Math.round(end / quant_unit) * quant_unit;
-    note.dur = quant_end - note.start;
-    if (note.dur <= 0) note.dur = quant_unit;
-  });
+  // const quant_unit = 120;
+  // notes.forEach(note => {
+  //   note.start = Math.round(note.start / quant_unit) * quant_unit;
+  //   const end = note.start + note.dur;
+  //   const quant_end = Math.round(end / quant_unit) * quant_unit;
+  //   note.dur = quant_end - note.start;
+  //   if (note.dur <= 0) note.dur = quant_unit;
+  // });
 
   debugOutput.push('\n=== FINAL RESULTS ===');
   debugOutput.push('- PPQ: ' + ppq);
@@ -267,6 +267,92 @@ function encodeVoices(voices) {
   });
 }
 
+// Helper function to check if two motifs are retrogrades of each other
+function areMotifRetrogrades(motif1, motif2) {
+  if (motif1.deg_rels.length !== motif2.deg_rels.length) return false;
+  
+  // Calculate intervals for both motifs
+  const intervals1 = [];
+  const intervals2 = [];
+  
+  for (let i = 1; i < motif1.deg_rels.length; i++) {
+    intervals1.push(motif1.deg_rels[i] - motif1.deg_rels[i-1]);
+  }
+  
+  for (let i = 1; i < motif2.deg_rels.length; i++) {
+    intervals2.push(motif2.deg_rels[i] - motif2.deg_rels[i-1]);
+  }
+  
+  // Check if intervals2 is the reverse and negation of intervals1 (retrograde inversion)
+  const reversedIntervals1 = [...intervals1].reverse();
+  const retrogradeInvertedIntervals1 = reversedIntervals1.map(interval => -interval);
+  
+  for (let i = 0; i < retrogradeInvertedIntervals1.length; i++) {
+    if (retrogradeInvertedIntervals1[i] !== intervals2[i]) return false;
+  }
+  
+  // Check that rhythm patterns match (reversed)
+  const reversedDeltas = [...motif1.deltas].reverse();
+  const reversedDurs = [...motif1.durs].reverse();
+  const reversedVels = [...motif1.vels].reverse();
+  const reversedAccs = [...motif1.accs].reverse();
+  
+  for (let i = 0; i < motif2.deltas.length; i++) {
+    if (reversedDeltas[i] !== motif2.deltas[i]) return false;
+  }
+  for (let i = 0; i < motif2.durs.length; i++) {
+    if (reversedDurs[i] !== motif2.durs[i]) return false;
+  }
+  for (let i = 0; i < motif2.vels.length; i++) {
+    if (reversedVels[i] !== motif2.vels[i]) return false;
+  }
+  for (let i = 0; i < motif2.accs.length; i++) {
+    if (reversedAccs[i] !== motif2.accs[i]) return false;
+  }
+  
+  return true;
+}
+
+// Helper function to check if two motifs are inversions of each other (pitch inversion, same time order)
+function areMotifInversions(motif1, motif2) {
+  if (motif1.deg_rels.length !== motif2.deg_rels.length) return false;
+  
+  // Calculate intervals for both motifs
+  const intervals1 = [];
+  const intervals2 = [];
+  
+  for (let i = 1; i < motif1.deg_rels.length; i++) {
+    intervals1.push(motif1.deg_rels[i] - motif1.deg_rels[i-1]);
+  }
+  
+  for (let i = 1; i < motif2.deg_rels.length; i++) {
+    intervals2.push(motif2.deg_rels[i] - motif2.deg_rels[i-1]);
+  }
+  
+  // Check if intervals2 is the negation of intervals1 (pitch inversion, same time order)
+  const invertedIntervals1 = intervals1.map(interval => -interval);
+  
+  for (let i = 0; i < invertedIntervals1.length; i++) {
+    if (invertedIntervals1[i] !== intervals2[i]) return false;
+  }
+  
+  // Check that rhythm patterns match (same order)
+  for (let i = 0; i < motif2.deltas.length; i++) {
+    if (motif1.deltas[i] !== motif2.deltas[i]) return false;
+  }
+  for (let i = 0; i < motif2.durs.length; i++) {
+    if (motif1.durs[i] !== motif2.durs[i]) return false;
+  }
+  for (let i = 0; i < motif2.vels.length; i++) {
+    if (motif1.vels[i] !== motif2.vels[i]) return false;
+  }
+  for (let i = 0; i < motif2.accs.length; i++) {
+    if (motif1.accs[i] !== motif2.accs[i]) return false;
+  }
+  
+  return true;
+}
+
 function findMotifs(encodedVoices, key) {
   const { tonic_pc, mode } = key;
   const minLength = 4;
@@ -364,10 +450,86 @@ function findMotifs(encodedVoices, key) {
     motifMap.set(key_str, id++);
   }
 
-  return { motifs, motifMap, patternMap };
+  // Detect and consolidate retrogrades
+  const keyToMotifId = new Map(); // Maps pattern key to motif ID
+  for (const [key_str, motifId] of motifMap.entries()) {
+    keyToMotifId.set(key_str, motifId);
+  }
+  
+  const transformationPairs = [];
+  const toRemove = new Set();
+  const keyTransformationMap = new Map(); // Maps pattern key to transformation type
+  
+  // Initialize all keys as no transformation
+  for (const key_str of motifMap.keys()) {
+    keyTransformationMap.set(key_str, 'none');
+  }
+  
+  for (let i = 0; i < motifs.length; i++) {
+    if (toRemove.has(i)) continue;
+    for (let j = i + 1; j < motifs.length; j++) {
+      if (toRemove.has(j)) continue;
+      
+      if (areMotifRetrogrades(motifs[i], motifs[j])) {
+        // Found a retrograde pair - keep the first one, remove the second
+        transformationPairs.push({ keep: i, remove: j, type: 'retrograde' });
+        toRemove.add(j);
+        
+        // Find the keys that map to the removed motif and mark them as retrograde
+        for (const [key_str, motifId] of motifMap.entries()) {
+          if (motifId === j) {
+            keyTransformationMap.set(key_str, 'retrograde');
+          }
+        }
+        break; // Each motif should only have one transformation
+      } else if (areMotifInversions(motifs[i], motifs[j])) {
+        // Found an inversion pair - keep the first one, remove the second
+        transformationPairs.push({ keep: i, remove: j, type: 'inverted' });
+        toRemove.add(j);
+        
+        // Find the keys that map to the removed motif and mark them as inverted
+        for (const [key_str, motifId] of motifMap.entries()) {
+          if (motifId === j) {
+            keyTransformationMap.set(key_str, 'inverted');
+          }
+        }
+        break; // Each motif should only have one transformation
+      }
+    }
+  }
+
+  // Create new consolidated motifs array and update mappings
+  const consolidatedMotifs = [];
+  const oldToNewId = new Map();
+  let newId = 0;
+
+  for (let i = 0; i < motifs.length; i++) {
+    if (!toRemove.has(i)) {
+      consolidatedMotifs.push(motifs[i]);
+      oldToNewId.set(i, newId);
+      
+      // Check if this motif had a transformation pair that was removed
+      const transformationPair = transformationPairs.find(pair => pair.keep === i);
+      if (transformationPair) {
+        oldToNewId.set(transformationPair.remove, newId);
+      }
+      
+      newId++;
+    }
+  }
+
+  // Update motifMap with new IDs
+  const newMotifMap = new Map();
+  for (const [key_str, oldId] of motifMap.entries()) {
+    if (oldToNewId.has(oldId)) {
+      newMotifMap.set(key_str, oldToNewId.get(oldId));
+    }
+  }
+
+  return { motifs: consolidatedMotifs, motifMap: newMotifMap, patternMap, keyTransformationMap };
 }
 
-function applyMotifs(encodedVoices, motifs, motifMap, patternMap) {
+function applyMotifs(encodedVoices, motifs, motifMap, patternMap, keyTransformationMap) {
   function getLenFromKey(key) {
     return key.split('|')[0].split(',').length;
   }
@@ -381,6 +543,7 @@ function applyMotifs(encodedVoices, motifs, motifMap, patternMap) {
     const len = getLenFromKey(key);
     const mid = motifMap.get(key);
     if (mid === undefined) continue;
+    
     for (const occ of occs) {
       let isCovered = false;
       for (let j = occ.start; j < occ.start + len; j++) {
@@ -393,13 +556,20 @@ function applyMotifs(encodedVoices, motifs, motifMap, patternMap) {
         for (let j = occ.start; j < occ.start + len; j++) {
           covered[occ.voice].add(j);
         }
-        replacements[occ.voice].push({
+        const transformation = keyTransformationMap.get(key) || 'none';
+        const replacement = {
           start: occ.start,
           len: len,
           motif_id: mid,
           base_pitch: occ.base_pitch,
           delta: encodedVoices[occ.voice][occ.start].delta
-        });
+        };
+        if (transformation === 'retrograde') {
+          replacement.retrograde = true;
+        } else if (transformation === 'inverted') {
+          replacement.inverted = true;
+        }
+        replacements[occ.voice].push(replacement);
       }
     }
   }
@@ -413,11 +583,18 @@ function applyMotifs(encodedVoices, motifs, motifMap, patternMap) {
       for (let j = pos; j < repl.start; j++) {
         newVoice.push(encodedVoices[v][j]);
       }
-      newVoice.push({
+      const motifReplacement = {
         delta: repl.delta,
         motif_id: repl.motif_id,
         base_pitch: repl.base_pitch
-      });
+      };
+      if (repl.retrograde) {
+        motifReplacement.retrograde = true;
+      }
+      if (repl.inverted) {
+        motifReplacement.inverted = true;
+      }
+      newVoice.push(motifReplacement);
       pos = repl.start + repl.len;
     }
     for (let j = pos; j < encodedVoices[v].length; j++) {
@@ -435,8 +612,8 @@ function compressMidiToJson(inputMidi, outputJson) {
   const tonic_name = tonal.Note.pitchClass(tonal.Note.fromMidi(key.tonic_pc + 60, true));
   const voices = separateVoices(notes);
   let encodedVoices = encodeVoices(voices);
-  const { motifs, motifMap, patternMap } = findMotifs(encodedVoices, key);
-  encodedVoices = applyMotifs(encodedVoices, motifs, motifMap, patternMap);
+  const { motifs, motifMap, patternMap, keyTransformationMap } = findMotifs(encodedVoices, key);
+  encodedVoices = applyMotifs(encodedVoices, motifs, motifMap, patternMap, keyTransformationMap);
 
   // Remove unused motifs
   const used = new Set();
@@ -482,30 +659,65 @@ function decodeVoices(encodedVoices, ppq, motifs = [], key = { tonic: 'C', mode:
     for (const item of voice) {
       if (item.motif_id !== undefined) {
         // Handle motif
-        currentTick += item.delta;
+        if (item.delta !== undefined) {
+          currentTick += item.delta;
+        } else if (item.start !== undefined) {
+          currentTick = item.start;
+        }
         const motif = motifs[item.motif_id];
         if (motif) {
-          const base_midi = tonal.Note.midi(item.base_pitch);
+          // Handle motif retrograde if specified
+          let deg_rels = motif.deg_rels;
+          let accs = motif.accs;
+          let deltas = motif.deltas;
+          let durs = motif.durs;
+          let vels = motif.vels;
+          
+          if (item.retrograde === true) {
+            // Apply retrograde to the motif by reversing the degree relationships
+            deg_rels = [...motif.deg_rels].reverse().map(deg => -deg);
+            accs = [...motif.accs].reverse();
+            deltas = [...motif.deltas].reverse();
+            durs = [...motif.durs].reverse();
+            vels = [...motif.vels].reverse();
+          } else if (item.inverted === true) {
+            // Apply inversion to the motif by negating the degree relationships (same time order)
+            deg_rels = motif.deg_rels.map(deg => -deg);
+            // Other attributes remain in the same order for pure inversion
+            accs = [...motif.accs];
+            deltas = [...motif.deltas];
+            durs = [...motif.durs];
+            vels = [...motif.vels];
+          }
+          
+          // Handle both pitch as MIDI number and as note name
+          let base_midi;
+          const pitchValue = item.base_pitch || item.pitch;
+          if (typeof pitchValue === 'number') {
+            base_midi = pitchValue;
+          } else {
+            base_midi = tonal.Note.midi(pitchValue);
+          }
           const base_diatonic = pitchToDiatonic(base_midi, tonic_pc, mode);
           let subTick = currentTick;
-          for (let j = 0; j < motif.deg_rels.length; j++) {
-            const total_deg = base_diatonic.degree + motif.deg_rels[j];
+          for (let j = 0; j < deg_rels.length; j++) {
+            const total_deg = base_diatonic.degree + deg_rels[j];
             const deg_mod = ((total_deg % 7) + 7) % 7;
             const oct_add = Math.floor(total_deg / 7);
             let exp_pc = (tonic_pc + scale_offsets[deg_mod]) % 12;
-            let pc = (exp_pc + motif.accs[j]) % 12;
+            let pc = (exp_pc + accs[j]) % 12;
             if (pc < 0) pc += 12;
             const oct = base_diatonic.oct + oct_add;
             const p = pc + oct * 12;
             notes.push({
               start: subTick,
-              dur: motif.durs[j],
+              dur: durs[j],
               pitch: p,
-              vel: motif.vels[j]
+              vel: vels[j]
             });
-            subTick += motif.durs[j];
-            if (j < motif.deg_rels.length - 1) {
-              subTick += motif.deltas[j];
+            subTick += durs[j];
+            if (j < deg_rels.length - 1) {
+              subTick += deltas[j];
             }
           }
           currentTick = subTick;
@@ -547,7 +759,6 @@ function decompressJsonToMidi(inputJson, outputMidi) {
   );
 
   for (const note of notes) {
-    console.log('Adding note:', note);
     track.addEvent(
       new MidiWriter.NoteEvent({
         pitch: [note.pitch],
@@ -600,6 +811,13 @@ function main() {
     process.exitCode = 1;
   }
 }
+
+// Export functions for testing
+module.exports = {
+  compressMidiToJson,
+  decompressJsonToMidi,
+  decodeVoices
+};
 
 if (require.main === module) {
   main();
