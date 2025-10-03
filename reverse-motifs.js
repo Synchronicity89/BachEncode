@@ -27,7 +27,7 @@ function reverseMotifPitches(jsonFilePath) {
     }
   }
   
-  // Reverse the pitch intervals in each motif
+  // Reverse the pitch intervals and accidentals in each motif
   for (let i = 0; i < data.motifs.length; i++) {
     const motif = data.motifs[i];
     
@@ -39,6 +39,19 @@ function reverseMotifPitches(jsonFilePath) {
       motif.intervals = originalIntervals.reverse();
       
       console.log(`Motif ${i}: Reversed intervals = [${motif.intervals.join(', ')}]`);
+      
+      // Also reverse the accidentals array if it exists
+      if (motif.accs && Array.isArray(motif.accs)) {
+        console.log(`Motif ${i}: Original accs = [${motif.accs.join(', ')}]`);
+        
+        const originalAccs = [...motif.accs];
+        motif.accs = originalAccs.reverse();
+        
+        console.log(`Motif ${i}: Reversed accs = [${motif.accs.join(', ')}]`);
+      } else {
+        console.log(`Motif ${i}: No accidentals found`);
+      }
+      
       console.log(`Motif ${i}: Used ${motifUsageCount[i]} times`);
     } else {
       console.log(`Motif ${i}: No intervals found`);
