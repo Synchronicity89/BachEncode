@@ -148,6 +148,82 @@ function extractTempoAndPPQAndNotes(midi) {
   return { ppq, tempo, notes };
 }
 
+function detectKey(notes) {
+  const pcCount = Array(12).fill(0);
+  for (const note of notes) {
+    pcCount[note.pitch % 12] += note.dur; // Weight by duration
+  }
+  const total = pcCount.reduce((a, b) => a + b, 0) || 1;
+  const profile = pcCount.map(c => c / total);
+
+  const majorProfile = [6.35, 2.23, 3.48, 2.33, 4.38, 4.09, 2.52, 5.19, 2.39, 3.66, 2.29, 2.88];
+  const minorProfile = [6.33, 2.68, 3.52, 5.38, 2.60, 3.53, 2.54, 4.75, 3.98, 2.69, 3.34, 3.17];
+
+  function correlate(a, b) {
+    const meanA = a.reduce((s, v) => s + v, 0) / 12;
+    const meanB = b.reduce((s, v) => s + v, 0) / 12;
+    let num = 0, denA = 0, denB = 0;
+    for (let i = 0; i < 12; i++) {
+      const da = a[i] - meanA;
+      const db = b[i] - meanB;
+      num += da * db;
+      denA += da * da;
+      denB += db * db;
+    }
+    return num / (Math.sqrt(denA * denB) || 1);
+  }
+
+  let bestCorr = -Infinity;
+  let bestTonic = 0;
+  let bestMode = 'major';
+
+  for (let t = 0; t < 12; t++) {
+    const rotMaj = majorProfile.slice(t).concat(majorProfile.slice(0, t));
+    const corrMaj = correlate(profile, rotMaj);
+    if (corrMaj > bestCorr) {
+      bestCorr = corrMaj;
+      bestTonic = t;
+      bestMode = 'major';
+    }
+
+    const rotMin = minorProfile.slice(t).concat(minorProfile.slice(0, t));
+    const corrMin = correlate(profile, rotMin);
+    if (corrMin > bestCorr) {
+      bestCorr = corrMin;
+      bestTonic = t;
+      bestMode = 'minor';
+    }
+  }
+
+  return { tonic_pc: bestTonic, mode: bestMode };
+}
+
+function pitchToDiatonic(midi, tonic_pc, mode) {
+  const scale_offsets = mode === 'major' ? [0, 2, 4, 5, 7, 9, 11] : [0, 2, 3, 5, 7, 8, 11];
+  const pc = midi % 12;
+  const oct = Math.floor(midi / 12);
+  let best_deg = 0;
+  let best_acc = 0;
+  let best_dist = Infinity;
+
+  for (let d = -14; d <= 21; d++) {
+    const d_mod = ((d % 7) + 7) % 7;
+    let exp_pc = (tonic_pc + scale_offsets[d_mod]) % 12;
+    let acc = pc - exp_pc;
+    if (acc < -6) acc += 12;
+    else if (acc > 5) acc -= 12;
+    if (Math.abs(acc) > 2) continue; // Avoid double flats/sharps
+    const dist = Math.abs(acc);
+    if (dist < best_dist || (dist === best_dist && Math.abs(d) < Math.abs(best_deg))) {
+      best_dist = dist;
+      best_acc = acc;
+      best_deg = d;
+    }
+  }
+
+  return { degree: best_deg, acc: best_acc, oct: oct };
+}
+
 function separateVoices(notes) {
   notes.sort((a, b) => a.start - b.start || b.pitch - a.pitch); // Sort by start, then descending pitch for ties
   const voices = [];
@@ -195,10 +271,19 @@ function encodeVoices(voices) {
   });
 }
 
-function findMotifs(encodedVoices) {
+function findMotifs(encodedVoices, key) {
+  const { tonic_pc, mode } = key;
   const minLength = 4;
   const maxLength = 20;
   const patternMap = new Map();
+
+  // Add diatonic info to each note
+  for (const voice of encodedVoices) {
+    for (const item of voice) {
+      item.midi = tonal.Note.midi(item.pitch);
+      item.diatonic = pitchToDiatonic(item.midi, tonic_pc, mode);
+    }
+  }
 
   // Precompute start_ticks for each note in each voice
   const startTicks = encodedVoices.map(voice => {
@@ -217,22 +302,26 @@ function findMotifs(encodedVoices) {
     for (let len = minLength; len <= maxLength; len++) {
       for (let i = 0; i <= voice.length - len; i++) {
         const subseq = voice.slice(i, i + len);
-        const base = tonal.Note.midi(subseq[0].pitch);
-        const relatives = [0];
+        const base_diatonic = subseq[0].diatonic;
+        const rel_degs = [0];
         for (let j = 1; j < len; j++) {
-          relatives.push(tonal.Note.midi(subseq[j].pitch) - base);
+          const d = subseq[j].diatonic;
+          rel_degs.push((d.degree - base_diatonic.degree) + 7 * (d.oct - base_diatonic.oct));
         }
+        const accs = subseq.map(s => s.diatonic.acc);
         const rhythm = [];
-        for (let j = 0; j < len; j++) {
+        // Exclude initial delta for better matching
+        rhythm.push(subseq[0].dur);
+        for (let j = 1; j < len; j++) {
           rhythm.push(subseq[j].delta);
           rhythm.push(subseq[j].dur);
         }
         const vels = subseq.map(s => s.vel);
-        const key = relatives.join(',') + '|' + rhythm.join(',') + '|' + vels.join(',');
-        if (!patternMap.has(key)) {
-          patternMap.set(key, []);
+        const key_str = rel_degs.join(',') + '|' + accs.join(',') + '|' + rhythm.join(',') + '|' + vels.join(',');
+        if (!patternMap.has(key_str)) {
+          patternMap.set(key_str, []);
         }
-        patternMap.get(key).push({
+        patternMap.get(key_str).push({
           voice: v,
           start: i,
           base_pitch: subseq[0].pitch,
@@ -258,25 +347,28 @@ function findMotifs(encodedVoices) {
   const motifs = [];
   const motifMap = new Map();
   let id = 0;
-  for (const [key, occs] of candidates) {
-    const parts = key.split('|');
-    const rel_str = parts[0];
-    const rhythm_str = parts[1];
-    const vels_str = parts[2];
-    const intervals = rel_str.split(',').map(Number);
+  for (const [key_str, occs] of candidates) {
+    const parts = key_str.split('|');
+    const rel_deg_str = parts[0];
+    const acc_str = parts[1];
+    const rhythm_str = parts[2];
+    const vels_str = parts[3];
+    const deg_rels = rel_deg_str.split(',').map(Number);
+    const accs = acc_str.split(',').map(Number);
     const rhythm_nums = rhythm_str.split(',').map(Number);
     const vels = vels_str.split(',').map(Number);
-    const deltas = [];
     const durs = [];
-    for (let k = 0; k < rhythm_nums.length; k += 2) {
+    const deltas = [];
+    durs.push(rhythm_nums[0]); // First dur
+    for (let k = 1; k < rhythm_nums.length; k += 2) {
       deltas.push(rhythm_nums[k]);
       durs.push(rhythm_nums[k + 1]);
     }
-    motifs.push({ intervals, deltas, durs, vels });
-    motifMap.set(key, id++);
+    motifs.push({ deg_rels, accs, deltas, durs, vels });
+    motifMap.set(key_str, id++);
   }
 
-  return { motifs, motifMap, patternMap: patternMap };
+  return { motifs, motifMap, patternMap };
 }
 
 function applyMotifs(encodedVoices, motifs, motifMap, patternMap) {
@@ -343,15 +435,44 @@ function applyMotifs(encodedVoices, motifs, motifMap, patternMap) {
 function compressMidiToJson(inputMidi, outputJson) {
   const midi = parseMidi(inputMidi);
   const { ppq, tempo, notes } = extractTempoAndPPQAndNotes(midi);
+  const key = detectKey(notes);
+  const tonic_name = tonal.Note.pitchClass(tonal.Note.fromMidi(key.tonic_pc + 60, true));
   const voices = separateVoices(notes);
   let encodedVoices = encodeVoices(voices);
-  const { motifs, motifMap, patternMap } = findMotifs(encodedVoices);
+  const { motifs, motifMap, patternMap } = findMotifs(encodedVoices, key);
   encodedVoices = applyMotifs(encodedVoices, motifs, motifMap, patternMap);
-  const compressed = { ppq, tempo, motifs, voices: encodedVoices };
+
+  // Remove unused motifs
+  const used = new Set();
+  for (const voice of encodedVoices) {
+    for (const item of voice) {
+      if (item.motif_id !== undefined) {
+        used.add(item.motif_id);
+      }
+    }
+  }
+  const sortedUsed = Array.from(used).sort((a, b) => a - b);
+  const newMotifs = sortedUsed.map(oldId => motifs[oldId]);
+  const newMap = new Map();
+  sortedUsed.forEach((oldId, index) => {
+    newMap.set(oldId, index);
+  });
+  for (const voice of encodedVoices) {
+    for (const item of voice) {
+      if (item.motif_id !== undefined) {
+        item.motif_id = newMap.get(item.motif_id);
+      }
+    }
+  }
+
+  const compressed = { ppq, tempo, key: { tonic: tonic_name, mode: key.mode }, motifs: newMotifs, voices: encodedVoices };
   fs.writeFileSync(outputJson, JSON.stringify(compressed, null, 2)); // Pretty print for editability
 }
 
-function decodeVoices(encodedVoices, ppq, motifs = []) {
+function decodeVoices(encodedVoices, ppq, motifs = [], key = { tonic: 'C', mode: 'major' }) {
+  const tonic_pc = tonal.Note.midi(key.tonic + '4') % 12;
+  const mode = key.mode;
+  const scale_offsets = mode === 'major' ? [0, 2, 4, 5, 7, 9, 11] : [0, 2, 3, 5, 7, 8, 11];
   const notes = [];
   for (const voice of encodedVoices) {
     let currentTick = 0;
@@ -361,10 +482,18 @@ function decodeVoices(encodedVoices, ppq, motifs = []) {
         currentTick += item.delta;
         const motif = motifs[item.motif_id];
         if (motif) {
-          const base = tonal.Note.midi(item.base_pitch);
+          const base_midi = tonal.Note.midi(item.base_pitch);
+          const base_diatonic = pitchToDiatonic(base_midi, tonic_pc, mode);
           let subTick = currentTick;
-          for (let j = 0; j < motif.intervals.length; j++) {
-            const p = base + motif.intervals[j];
+          for (let j = 0; j < motif.deg_rels.length; j++) {
+            const total_deg = base_diatonic.degree + motif.deg_rels[j];
+            const deg_mod = ((total_deg % 7) + 7) % 7;
+            const oct_add = Math.floor(total_deg / 7);
+            let exp_pc = (tonic_pc + scale_offsets[deg_mod]) % 12;
+            let pc = (exp_pc + motif.accs[j]) % 12;
+            if (pc < 0) pc += 12;
+            const oct = base_diatonic.oct + oct_add;
+            const p = pc + oct * 12;
             notes.push({
               start: subTick,
               dur: motif.durs[j],
@@ -372,8 +501,8 @@ function decodeVoices(encodedVoices, ppq, motifs = []) {
               vel: motif.vels[j]
             });
             subTick += motif.durs[j];
-            if (j < motif.intervals.length - 1) {
-              subTick += motif.deltas[j + 1];
+            if (j < motif.deg_rels.length - 1) {
+              subTick += motif.deltas[j];
             }
           }
           currentTick = subTick;
@@ -399,8 +528,8 @@ function decodeVoices(encodedVoices, ppq, motifs = []) {
 
 function decompressJsonToMidi(inputJson, outputMidi) {
   const compressed = JSON.parse(fs.readFileSync(inputJson, 'utf8'));
-  const { ppq, tempo, motifs = [], voices } = compressed;
-  const notes = decodeVoices(voices, ppq, motifs);
+  const { ppq, tempo, motifs = [], voices, key = { tonic: 'C', mode: 'major' } } = compressed;
+  const notes = decodeVoices(voices, ppq, motifs, key);
 
   const track = new MidiWriter.Track();
   
