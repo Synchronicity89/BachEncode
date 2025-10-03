@@ -10548,19 +10548,19 @@ Event 4: {
 First few notes: [
   {
     "start": 120,
-    "dur": 119,
+    "dur": 120,
     "pitch": 64,
     "vel": 127
   },
   {
     "start": 240,
-    "dur": 119,
+    "dur": 120,
     "pitch": 69,
     "vel": 127
   },
   {
     "start": 360,
-    "dur": 119,
+    "dur": 120,
     "pitch": 72,
     "vel": 127
   }

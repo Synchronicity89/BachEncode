@@ -121,6 +121,16 @@ function extractTempoAndPPQAndNotes(midi) {
     }
   }
 
+  // Quantize timings
+  const quant_unit = 120;
+  notes.forEach(note => {
+    note.start = Math.round(note.start / quant_unit) * quant_unit;
+    const end = note.start + note.dur;
+    const quant_end = Math.round(end / quant_unit) * quant_unit;
+    note.dur = quant_end - note.start;
+    if (note.dur <= 0) note.dur = quant_unit;
+  });
+
   debugOutput.push('\n=== FINAL RESULTS ===');
   debugOutput.push('- PPQ: ' + ppq);
   debugOutput.push('- Tempo: ' + tempo);
@@ -177,7 +187,7 @@ function encodeVoices(voices) {
         delta,
         pitch: tonal.Note.fromMidi(note.pitch, true), // Use sharps
         dur: note.dur,
-        vel: note.vel,
+        vel: note.vel
       });
       prevEnd = note.start + note.dur;
     }
@@ -185,31 +195,203 @@ function encodeVoices(voices) {
   });
 }
 
+function findMotifs(encodedVoices) {
+  const minLength = 4;
+  const maxLength = 20;
+  const patternMap = new Map();
+
+  // Precompute start_ticks for each note in each voice
+  const startTicks = encodedVoices.map(voice => {
+    const ticks = [];
+    let tick = 0;
+    for (const item of voice) {
+      tick += item.delta;
+      ticks.push(tick);
+      tick += item.dur;
+    }
+    return ticks;
+  });
+
+  for (let v = 0; v < encodedVoices.length; v++) {
+    const voice = encodedVoices[v];
+    for (let len = minLength; len <= maxLength; len++) {
+      for (let i = 0; i <= voice.length - len; i++) {
+        const subseq = voice.slice(i, i + len);
+        const base = tonal.Note.midi(subseq[0].pitch);
+        const relatives = [0];
+        for (let j = 1; j < len; j++) {
+          relatives.push(tonal.Note.midi(subseq[j].pitch) - base);
+        }
+        const rhythm = [];
+        for (let j = 0; j < len; j++) {
+          rhythm.push(subseq[j].delta);
+          rhythm.push(subseq[j].dur);
+        }
+        const vels = subseq.map(s => s.vel);
+        const key = relatives.join(',') + '|' + rhythm.join(',') + '|' + vels.join(',');
+        if (!patternMap.has(key)) {
+          patternMap.set(key, []);
+        }
+        patternMap.get(key).push({
+          voice: v,
+          start: i,
+          base_pitch: subseq[0].pitch,
+          start_tick: startTicks[v][i]
+        });
+      }
+    }
+  }
+
+  // Get length from key
+  function getLenFromKey(key) {
+    return key.split('|')[0].split(',').length;
+  }
+
+  // Filter and sort candidates by savings
+  let candidates = Array.from(patternMap.entries()).filter(([k, v]) => v.length >= 2);
+  candidates.sort((a, b) => {
+    const saveA = getLenFromKey(a[0]) * (a[1].length - 1);
+    const saveB = getLenFromKey(b[0]) * (b[1].length - 1);
+    return saveB - saveA;
+  });
+
+  const motifs = [];
+  const motifMap = new Map();
+  let id = 0;
+  for (const [key, occs] of candidates) {
+    const parts = key.split('|');
+    const rel_str = parts[0];
+    const rhythm_str = parts[1];
+    const vels_str = parts[2];
+    const intervals = rel_str.split(',').map(Number);
+    const rhythm_nums = rhythm_str.split(',').map(Number);
+    const vels = vels_str.split(',').map(Number);
+    const deltas = [];
+    const durs = [];
+    for (let k = 0; k < rhythm_nums.length; k += 2) {
+      deltas.push(rhythm_nums[k]);
+      durs.push(rhythm_nums[k + 1]);
+    }
+    motifs.push({ intervals, deltas, durs, vels });
+    motifMap.set(key, id++);
+  }
+
+  return { motifs, motifMap, patternMap: patternMap };
+}
+
+function applyMotifs(encodedVoices, motifs, motifMap, patternMap) {
+  function getLenFromKey(key) {
+    return key.split('|')[0].split(',').length;
+  }
+
+  const candidates = Array.from(patternMap.entries()).filter(([k, v]) => v.length >= 2);
+
+  const covered = encodedVoices.map(() => new Set());
+  const replacements = encodedVoices.map(() => []);
+
+  for (const [key, occs] of candidates) {
+    const len = getLenFromKey(key);
+    const mid = motifMap.get(key);
+    if (mid === undefined) continue;
+    for (const occ of occs) {
+      let isCovered = false;
+      for (let j = occ.start; j < occ.start + len; j++) {
+        if (covered[occ.voice].has(j)) {
+          isCovered = true;
+          break;
+        }
+      }
+      if (!isCovered) {
+        for (let j = occ.start; j < occ.start + len; j++) {
+          covered[occ.voice].add(j);
+        }
+        replacements[occ.voice].push({
+          start: occ.start,
+          len: len,
+          motif_id: mid,
+          base_pitch: occ.base_pitch,
+          delta: encodedVoices[occ.voice][occ.start].delta
+        });
+      }
+    }
+  }
+
+  const newEncodedVoices = [];
+  for (let v = 0; v < encodedVoices.length; v++) {
+    const repls = replacements[v].sort((a, b) => a.start - b.start);
+    const newVoice = [];
+    let pos = 0;
+    for (const repl of repls) {
+      for (let j = pos; j < repl.start; j++) {
+        newVoice.push(encodedVoices[v][j]);
+      }
+      newVoice.push({
+        delta: repl.delta,
+        motif_id: repl.motif_id,
+        base_pitch: repl.base_pitch
+      });
+      pos = repl.start + repl.len;
+    }
+    for (let j = pos; j < encodedVoices[v].length; j++) {
+      newVoice.push(encodedVoices[v][j]);
+    }
+    newEncodedVoices.push(newVoice);
+  }
+  return newEncodedVoices;
+}
+
 function compressMidiToJson(inputMidi, outputJson) {
   const midi = parseMidi(inputMidi);
   const { ppq, tempo, notes } = extractTempoAndPPQAndNotes(midi);
   const voices = separateVoices(notes);
-  const encodedVoices = encodeVoices(voices);
-  const compressed = { ppq, tempo, voices: encodedVoices };
+  let encodedVoices = encodeVoices(voices);
+  const { motifs, motifMap, patternMap } = findMotifs(encodedVoices);
+  encodedVoices = applyMotifs(encodedVoices, motifs, motifMap, patternMap);
+  const compressed = { ppq, tempo, motifs, voices: encodedVoices };
   fs.writeFileSync(outputJson, JSON.stringify(compressed, null, 2)); // Pretty print for editability
 }
 
-function decodeVoices(encodedVoices, ppq) {
+function decodeVoices(encodedVoices, ppq, motifs = []) {
   const notes = [];
   for (const voice of encodedVoices) {
     let currentTick = 0;
     for (const item of voice) {
-      currentTick += item.delta;
-      const pitchNum = tonal.Note.midi(item.pitch);
-      if (pitchNum !== null) {
-        notes.push({
-          start: currentTick,
-          dur: item.dur,
-          pitch: pitchNum,
-          vel: item.vel,
-        });
+      if (item.motif_id !== undefined) {
+        // Handle motif
+        currentTick += item.delta;
+        const motif = motifs[item.motif_id];
+        if (motif) {
+          const base = tonal.Note.midi(item.base_pitch);
+          let subTick = currentTick;
+          for (let j = 0; j < motif.intervals.length; j++) {
+            const p = base + motif.intervals[j];
+            notes.push({
+              start: subTick,
+              dur: motif.durs[j],
+              pitch: p,
+              vel: motif.vels[j]
+            });
+            subTick += motif.durs[j];
+            if (j < motif.intervals.length - 1) {
+              subTick += motif.deltas[j + 1];
+            }
+          }
+          currentTick = subTick;
+        }
+      } else {
+        // Handle single note
+        currentTick += item.delta;
+        const pitchNum = tonal.Note.midi(item.pitch);
+        if (pitchNum !== null) {
+          notes.push({
+            start: currentTick,
+            dur: item.dur,
+            pitch: pitchNum,
+            vel: item.vel
+          });
+        }
+        currentTick += item.dur;
       }
-      currentTick += item.dur;
     }
   }
   return notes;
@@ -217,20 +399,23 @@ function decodeVoices(encodedVoices, ppq) {
 
 function decompressJsonToMidi(inputJson, outputMidi) {
   const compressed = JSON.parse(fs.readFileSync(inputJson, 'utf8'));
-  const { ppq, tempo } = compressed;
-  const notes = decodeVoices(compressed.voices, ppq);
+  const { ppq, tempo, motifs = [], voices } = compressed;
+  const notes = decodeVoices(voices, ppq, motifs);
 
   const track = new MidiWriter.Track();
+  
+  // Add track name using the correct API
+  track.addTrackName('Track 0');
+  
+  // Add tempo event
   track.addEvent(
-    new MidiWriter.MetaEvent({ data: [0x03, ...Buffer.from('Track 0')] })
-  ); // Optional track name
-  track.addEvent(
-    new MidiWriter.SetTempoEvent({
-      microsecondsPerBeat: Math.round(60000000 / tempo),
+    new MidiWriter.TempoEvent({
+      bpm: tempo
     })
   );
 
   for (const note of notes) {
+    console.log('Adding note:', note);
     track.addEvent(
       new MidiWriter.NoteEvent({
         pitch: [note.pitch],
@@ -243,6 +428,7 @@ function decompressJsonToMidi(inputJson, outputMidi) {
 
   const write = new MidiWriter.Writer(track);
   fs.writeFileSync(outputMidi, Buffer.from(write.buildFile()));
+  console.log('MIDI file written successfully');
 }
 
 function main() {
@@ -272,7 +458,6 @@ function main() {
   } catch (error) {
     console.error('Error occurred:', error.message);
     console.error('Stack trace:', error.stack);
-    debugger; // This will break in the debugger when an error occurs
     process.exitCode = 1;
   }
 }
