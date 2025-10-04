@@ -221,11 +221,9 @@ function decompressJsonToMidi(inputJson, outputMidi) {
   const notes = decodeVoices(compressed.voices, ppq);
 
   const track = new MidiWriter.Track();
+  // Remove MetaEvent as it's not needed and API changed
   track.addEvent(
-    new MidiWriter.MetaEvent({ data: [0x03, ...Buffer.from('Track 0')] })
-  ); // Optional track name
-  track.addEvent(
-    new MidiWriter.SetTempoEvent({
+    new MidiWriter.TempoEvent({
       microsecondsPerBeat: Math.round(60000000 / tempo),
     })
   );
