@@ -353,10 +353,13 @@ function areMotifInversions(motif1, motif2) {
   return true;
 }
 
-function findMotifs(encodedVoices, key) {
+function findMotifs(encodedVoices, key, options = {}) {
   const { tonic_pc, mode } = key;
-  const minLength = 4;
-  const maxLength = 20;
+  // Make minLength configurable with a more reasonable default
+  const minLength = options.minLength || 2;
+  const maxLength = options.maxLength || 20;
+  // Make minimum occurrences configurable 
+  const minOccurrences = options.minOccurrences || 2;
   const patternMap = new Map();
 
   // Add diatonic info to each note
@@ -418,36 +421,75 @@ function findMotifs(encodedVoices, key) {
     return key.split('|')[0].split(',').length;
   }
 
-  // Filter and sort candidates by savings
-  let candidates = Array.from(patternMap.entries()).filter(([k, v]) => v.length >= 2);
+  // Filter and sort candidates by savings, but prioritize longer motifs even more strongly
+  let candidates = Array.from(patternMap.entries()).filter(([k, v]) => v.length >= minOccurrences);
   candidates.sort((a, b) => {
-    const saveA = getLenFromKey(a[0]) * (a[1].length - 1);
-    const saveB = getLenFromKey(b[0]) * (b[1].length - 1);
+    const lenA = getLenFromKey(a[0]);
+    const lenB = getLenFromKey(b[0]);
+    const saveA = lenA * (a[1].length - 1);
+    const saveB = lenB * (b[1].length - 1);
+    
+    // First priority: longer motifs (stronger bias towards length)
+    if (lenA !== lenB) {
+      return lenB - lenA;  // Longer motifs first
+    }
+    
+    // Second priority: higher total savings
     return saveB - saveA;
   });
 
   const motifs = [];
   const motifMap = new Map();
+  const selectedOccurrences = new Set(); // Track which positions are already used
   let id = 0;
+  
   for (const [key_str, occs] of candidates) {
-    const parts = key_str.split('|');
-    const rel_deg_str = parts[0];
-    const acc_str = parts[1];
-    const rhythm_str = parts[2];
-    const vels_str = parts[3];
-    const deg_rels = rel_deg_str.split(',').map(Number);
-    const accs = acc_str.split(',').map(Number);
-    const rhythm_nums = rhythm_str.split(',').map(Number);
-    const vels = vels_str.split(',').map(Number);
-    const durs = [];
-    const deltas = [];
-    durs.push(rhythm_nums[0]); // First dur
-    for (let k = 1; k < rhythm_nums.length; k += 2) {
-      deltas.push(rhythm_nums[k]);
-      durs.push(rhythm_nums[k + 1]);
+    // Filter out occurrences that overlap with already selected longer motifs
+    const nonOverlappingOccs = occs.filter(occ => {
+      const motifLength = getLenFromKey(key_str);
+      // Check if any position in this motif is already used
+      for (let i = 0; i < motifLength; i++) {
+        const posKey = `${occ.voice}-${occ.start + i}`;
+        if (selectedOccurrences.has(posKey)) {
+          return false; // This occurrence overlaps with a selected longer motif
+        }
+      }
+      return true;
+    });
+    
+    // Only proceed if we still have enough non-overlapping occurrences
+    if (nonOverlappingOccs.length >= minOccurrences) {
+      // Mark all positions in these occurrences as used
+      const motifLength = getLenFromKey(key_str);
+      for (const occ of nonOverlappingOccs) {
+        for (let i = 0; i < motifLength; i++) {
+          selectedOccurrences.add(`${occ.voice}-${occ.start + i}`);
+        }
+      }
+      
+      // Create the motif
+      const parts = key_str.split('|');
+      const rel_deg_str = parts[0];
+      const acc_str = parts[1];
+      const rhythm_str = parts[2];
+      const vels_str = parts[3];
+      const deg_rels = rel_deg_str.split(',').map(Number);
+      const accs = acc_str.split(',').map(Number);
+      const rhythm_nums = rhythm_str.split(',').map(Number);
+      const vels = vels_str.split(',').map(Number);
+      const durs = [];
+      const deltas = [];
+      durs.push(rhythm_nums[0]); // First dur
+      for (let k = 1; k < rhythm_nums.length; k += 2) {
+        deltas.push(rhythm_nums[k]);
+        durs.push(rhythm_nums[k + 1]);
+      }
+      motifs.push({ deg_rels, accs, deltas, durs, vels });
+      
+      // Update the pattern map to only include non-overlapping occurrences
+      patternMap.set(key_str, nonOverlappingOccs);
+      motifMap.set(key_str, id++);
     }
-    motifs.push({ deg_rels, accs, deltas, durs, vels });
-    motifMap.set(key_str, id++);
   }
 
   // Detect and consolidate retrogrades
@@ -612,7 +654,13 @@ function compressMidiToJson(inputMidi, outputJson) {
   const tonic_name = tonal.Note.pitchClass(tonal.Note.fromMidi(key.tonic_pc + 60, true));
   const voices = separateVoices(notes);
   let encodedVoices = encodeVoices(voices);
-  const { motifs, motifMap, patternMap, keyTransformationMap } = findMotifs(encodedVoices, key);
+  // Use configurable options for motif detection
+  const motifOptions = {
+    minLength: 2,     // Allow 2-note motifs
+    maxLength: 20,    // Keep existing max
+    minOccurrences: 2 // Keep existing minimum repetition requirement
+  };
+  const { motifs, motifMap, patternMap, keyTransformationMap } = findMotifs(encodedVoices, key, motifOptions);
   encodedVoices = applyMotifs(encodedVoices, motifs, motifMap, patternMap, keyTransformationMap);
 
   // Remove unused motifs
