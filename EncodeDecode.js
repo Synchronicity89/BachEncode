@@ -197,7 +197,7 @@ function findBestKey(notes, key_sig) {
 function pitchToDiatonic(midi, tonic_pc, mode) {
   const scale_offsets = mode === 'major' ? [0, 2, 4, 5, 7, 9, 11] : [0, 2, 3, 5, 7, 8, 11];
   const pc = midi % 12;
-  const oct = Math.floor(midi / 12);
+  const oct = Math.floor(midi / 12) - 1; // Fix: MIDI 60 (Middle C) should be octave 4, not 5
   let best_deg = 0;
   let best_acc = 0;
   let best_dist = Infinity;
@@ -751,7 +751,7 @@ function decodeVoices(encodedVoices, ppq, motifs = [], key = { tonic: 'C', mode:
           for (let j = 0; j < deg_rels.length; j++) {
             const total_deg = base_diatonic.degree + deg_rels[j];
             const deg_mod = ((total_deg % 7) + 7) % 7;
-            const oct_add = Math.floor(total_deg / 7);
+            const oct_add = Math.trunc(total_deg / 7); // Fix: Use trunc instead of floor for correct octave calculation
             let exp_pc = (tonic_pc + scale_offsets[deg_mod]) % 12;
             let pc = (exp_pc + accs[j]) % 12;
             if (pc < 0) pc += 12;
@@ -806,13 +806,18 @@ function decompressJsonToMidi(inputJson, outputMidi) {
     })
   );
 
+  // MidiWriter.js uses default PPQ of 128, so we need to scale our timing
+  const defaultPPQ = 128;
+  const scaleFactor = defaultPPQ / ppq;
+  
+  // Scale all note timings to match the default PPQ
   for (const note of notes) {
     track.addEvent(
       new MidiWriter.NoteEvent({
         pitch: [note.pitch],
-        duration: 'T' + note.dur,
+        duration: 'T' + Math.round(note.dur * scaleFactor),
         velocity: note.vel,
-        startTick: note.start,
+        startTick: Math.round(note.start * scaleFactor),
       })
     );
   }
