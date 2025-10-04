@@ -90,3 +90,14 @@ jspm_packages/
 # Temporary folders
 tmp/
 temp/
+/.vs
+/debug-output.txt
+/test-results-18ca0b6.txt
+/test-results-1f06cc5.txt
+/test-results-305fee0.txt
+/test-results-50544ae.txt
+/test-results-64a30b2.txt
+/test-results-b1449c5.txt
+/test-results-c8a0f17.txt
+/test-results-e4838fe.txt
+/EncodeDecode-950271d.js
