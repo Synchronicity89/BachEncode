@@ -232,10 +232,10 @@ function decompressJsonToMidi(inputJson, outputMidi) {
   }));
 
   const track = new MidiWriter.Track();
-  // Remove MetaEvent as it's not needed and API changed
+  // Add tempo event using BPM directly (not microseconds per beat)
   track.addEvent(
     new MidiWriter.TempoEvent({
-      microsecondsPerBeat: Math.round(60000000 / tempo),
+      bpm: tempo
     })
   );
 
