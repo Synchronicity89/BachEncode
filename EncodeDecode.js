@@ -220,6 +220,17 @@ function decompressJsonToMidi(inputJson, outputMidi) {
   const { ppq, tempo } = compressed;
   const notes = decodeVoices(compressed.voices, ppq);
 
+  // MidiWriter.js uses default PPQ of 128, so we need to scale our timing
+  const defaultPPQ = 128;
+  const scaleFactor = defaultPPQ / ppq;
+  
+  // Scale note timing to match MidiWriter's expected PPQ
+  const scaledNotes = notes.map(note => ({
+    ...note,
+    start: Math.round(note.start * scaleFactor),
+    dur: Math.round(note.dur * scaleFactor)
+  }));
+
   const track = new MidiWriter.Track();
   // Remove MetaEvent as it's not needed and API changed
   track.addEvent(
@@ -228,7 +239,7 @@ function decompressJsonToMidi(inputJson, outputMidi) {
     })
   );
 
-  for (const note of notes) {
+  for (const note of scaledNotes) {
     track.addEvent(
       new MidiWriter.NoteEvent({
         pitch: [note.pitch],
