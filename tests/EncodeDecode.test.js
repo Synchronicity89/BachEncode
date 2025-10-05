@@ -682,4 +682,257 @@ describe('EncodeDecode.js', () => {
       }
     });
   });
+
+  describe('Degradation Cycle Testing', () => {
+    test('should maintain voice count and note count through multiple compression cycles', () => {
+      if (!fs.existsSync('test-christus.mid')) {
+        console.warn('Complex test MIDI file not found, skipping degradation test');
+        return;
+      }
+
+      console.log('=== DEGRADATION CYCLE TEST ===');
+      
+      // Start with original MIDI file
+      let currentMidiPath = 'test-christus.mid';
+      const originalMidi = parseMidi(currentMidiPath);
+      const originalData = extractTempoAndPPQAndNotes(originalMidi);
+      
+      console.log(`Original: ${originalData.notes.length} notes`);
+      
+      const tempFiles = [];
+      let cycleData = {
+        noteCount: originalData.notes.length,
+        voiceCount: 0
+      };
+
+      try {
+        // Perform 3 compression/decompression cycles
+        for (let cycle = 1; cycle <= 3; cycle++) {
+          const jsonPath = `test-degradation-cycle${cycle}.json`;
+          const midiPath = `test-degradation-cycle${cycle}.mid`;
+          
+          tempFiles.push(jsonPath, midiPath);
+          
+          console.log(`\n--- Cycle ${cycle} ---`);
+          
+          // Compress MIDI to JSON
+          const compressionResults = compressMidiToJson(currentMidiPath, jsonPath);
+          console.log(`Cycle ${cycle} compression: ${compressionResults.originalNoteCount} notes`);
+          
+          // Decompress JSON back to MIDI
+          decompressJsonToMidi(jsonPath, midiPath);
+          
+          // Analyze the resulting MIDI
+          const cycleMidi = parseMidi(midiPath);
+          const cycleExtracted = extractTempoAndPPQAndNotes(cycleMidi);
+          const cycleVoices = separateVoices(cycleExtracted.notes);
+          
+          console.log(`Cycle ${cycle} result: ${cycleExtracted.notes.length} notes, ${cycleVoices.length} voices`);
+          
+          // Track degradation
+          cycleData = {
+            noteCount: cycleExtracted.notes.length,
+            voiceCount: cycleVoices.length
+          };
+          
+          // Use this cycle's output as input for next cycle
+          currentMidiPath = midiPath;
+        }
+        
+        console.log(`\nFinal result: ${cycleData.noteCount} notes, ${cycleData.voiceCount} voices`);
+        console.log(`Note degradation: ${originalData.notes.length} -> ${cycleData.noteCount} (${((originalData.notes.length - cycleData.noteCount) / originalData.notes.length * 100).toFixed(1)}% loss)`);
+        
+        // THIS TEST SHOULD FAIL - documents the degradation issue
+        // We expect the system to preserve note count and voice count exactly
+        
+        // Test 1: Note count should be preserved exactly (STRICT - should fail)
+        expect(cycleData.noteCount).toBe(originalData.notes.length); // Should preserve ALL notes
+        
+        // Test 2: Voice count should not explode beyond reasonable limits (STRICT - may fail)
+        expect(cycleData.voiceCount).toBeLessThan(10); // Should not create too many voices
+        
+        // Test 3: Should not lose significant musical content
+        const noteLossPercentage = (originalData.notes.length - cycleData.noteCount) / originalData.notes.length * 100;
+        expect(noteLossPercentage).toBeLessThan(1); // Should lose less than 1% of notes
+        
+      } finally {
+        // Clean up temporary files
+        tempFiles.forEach(file => {
+          try {
+            if (fs.existsSync(file)) {
+              fs.unlinkSync(file);
+            }
+          } catch (err) {
+            console.warn(`Failed to clean up ${file}:`, err.message);
+          }
+        });
+      }
+    });
+
+    test('should demonstrate voice explosion through cycles', () => {
+      // Create a simple multi-voice test case
+      const testData = {
+        ppq: 480,
+        tempo: 120,
+        voices: [
+          [
+            { delta: 0, pitch: 'C4', dur: 480, vel: 80 },
+            { delta: 0, pitch: 'E4', dur: 480, vel: 80 }
+          ],
+          [
+            { delta: 0, pitch: 'G4', dur: 480, vel: 80 },
+            { delta: 0, pitch: 'C5', dur: 480, vel: 80 }
+          ]
+        ]
+      };
+
+      const originalVoiceCount = testData.voices.length;
+      console.log(`\n=== VOICE EXPLOSION TEST ===`);
+      console.log(`Starting with ${originalVoiceCount} voices`);
+
+      const tempFiles = [];
+      
+      try {
+        let currentJsonPath = 'test-voice-explosion-input.json';
+        fs.writeFileSync(currentJsonPath, JSON.stringify(testData));
+        tempFiles.push(currentJsonPath);
+
+        let currentVoiceCount = originalVoiceCount;
+        
+        // Perform 2 decompression/compression cycles
+        for (let cycle = 1; cycle <= 2; cycle++) {
+          const midiPath = `test-voice-explosion-cycle${cycle}.mid`;
+          const jsonPath = `test-voice-explosion-cycle${cycle}.json`;
+          
+          tempFiles.push(midiPath, jsonPath);
+          
+          // Decompress to MIDI
+          decompressJsonToMidi(currentJsonPath, midiPath);
+          
+          // Compress back to JSON
+          compressMidiToJson(midiPath, jsonPath);
+          
+          // Analyze voice count
+          const cycleData = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+          currentVoiceCount = cycleData.voices.length;
+          
+          console.log(`Cycle ${cycle}: ${currentVoiceCount} voices`);
+          
+          currentJsonPath = jsonPath;
+        }
+        
+        console.log(`Voice explosion: ${originalVoiceCount} -> ${currentVoiceCount} voices`);
+        
+        // THIS TEST SHOULD FAIL - documents the voice explosion issue
+        expect(currentVoiceCount).toBe(originalVoiceCount); // Should preserve original voice count exactly
+        
+        // Additional strict test - should not lose notes
+        const finalData = JSON.parse(fs.readFileSync(currentJsonPath, 'utf8'));
+        const totalNotesOriginal = testData.voices.reduce((sum, voice) => sum + voice.length, 0);
+        const totalNotesFinal = finalData.voices.reduce((sum, voice) => sum + voice.length, 0);
+        expect(totalNotesFinal).toBe(totalNotesOriginal); // Should preserve ALL notes
+        
+      } finally {
+        // Clean up
+        tempFiles.forEach(file => {
+          try {
+            if (fs.existsSync(file)) {
+              fs.unlinkSync(file);
+            }
+          } catch (err) {
+            // Ignore cleanup errors
+          }
+        });
+      }
+    });
+
+    test('EXPECTED TO FAIL: should preserve voice structure with motif compression cycles', () => {
+      if (!fs.existsSync('test-christus.mid')) {
+        console.warn('Complex test MIDI file not found, skipping aggressive degradation test');
+        return;
+      }
+
+      console.log('\n=== AGGRESSIVE MOTIF DEGRADATION TEST ===');
+      
+      const tempFiles = [];
+      let currentMidiPath = 'test-christus.mid';
+      
+      // Get baseline
+      const originalMidi = parseMidi(currentMidiPath);
+      const originalData = extractTempoAndPPQAndNotes(originalMidi);
+      const originalVoices = separateVoices(originalData.notes);
+      
+      console.log(`Original: ${originalData.notes.length} notes, ${originalVoices.length} voices`);
+      
+      try {
+        // Perform 2 cycles with MOTIF compression (this should cause issues)
+        for (let cycle = 1; cycle <= 2; cycle++) {
+          const jsonPath = `test-aggressive-cycle${cycle}.json`;
+          const midiPath = `test-aggressive-cycle${cycle}.mid`;
+          
+          tempFiles.push(jsonPath, midiPath);
+          
+          console.log(`\n--- Aggressive Cycle ${cycle} with --motif ---`);
+          
+          // Compress with MOTIF option (this triggers the problematic path)
+          const compressionResults = compressMidiToJson(currentMidiPath, jsonPath, { 
+            useMotifCompression: true,
+            motifOptions: {
+              compressionThreshold: 0.3, // Lower threshold = more aggressive
+              minMotifMatches: 2
+            }
+          });
+          
+          console.log(`Cycle ${cycle} compression: ${compressionResults.originalNoteCount} notes, ratio: ${compressionResults.compressionRatio}`);
+          
+          // Decompress back to MIDI
+          decompressJsonToMidi(jsonPath, midiPath);
+          
+          // Analyze degradation
+          const cycleMidi = parseMidi(midiPath);
+          const cycleData = extractTempoAndPPQAndNotes(cycleMidi);
+          const cycleVoices = separateVoices(cycleData.notes);
+          
+          console.log(`Cycle ${cycle} result: ${cycleData.notes.length} notes, ${cycleVoices.length} voices`);
+          
+          currentMidiPath = midiPath;
+        }
+        
+        // Final analysis
+        const finalMidi = parseMidi(currentMidiPath);
+        const finalData = extractTempoAndPPQAndNotes(finalMidi);
+        const finalVoices = separateVoices(finalData.notes);
+        
+        const noteLoss = originalData.notes.length - finalData.notes.length;
+        const voiceExplosion = finalVoices.length - originalVoices.length;
+        
+        console.log(`\nFINAL DEGRADATION ANALYSIS:`);
+        console.log(`- Note loss: ${noteLoss} (${(noteLoss/originalData.notes.length*100).toFixed(1)}%)`);
+        console.log(`- Voice explosion: +${voiceExplosion} voices (${originalVoices.length} -> ${finalVoices.length})`);
+        
+        // THESE TESTS SHOULD FAIL to document the motif compression issues
+        
+        // Test 1: Should not lose ANY notes through motif processing
+        expect(finalData.notes.length).toBe(originalData.notes.length);
+        
+        // Test 2: Should not explode voice count dramatically  
+        expect(finalVoices.length).toBeLessThanOrEqual(originalVoices.length * 2); // Allow max 2x voice expansion
+        
+        // Test 3: Should preserve musical structure integrity
+        expect(voiceExplosion).toBeLessThan(5); // Should not add more than 5 extra voices
+        
+      } finally {
+        // Clean up
+        tempFiles.forEach(file => {
+          try {
+            if (fs.existsSync(file)) {
+              fs.unlinkSync(file);
+            }
+          } catch (err) {
+            // Ignore cleanup errors
+          }
+        });
+      }
+    });
+  });
 });
