@@ -31,7 +31,30 @@ function createCompressionConfig(options = {}) {
 
 function parseMidi(filePath) {
   console.log('Reading MIDI file:', filePath);
-  const midiData = fs.readFileSync(filePath, 'base64');
+  
+  // Validate MIDI file header before parsing
+  const buffer = fs.readFileSync(filePath);
+  if (buffer.length < 14) {
+    throw new Error('Invalid MIDI file: File corrupted or truncated - too small to contain complete MIDI header (minimum 14 bytes required)');
+  }
+  
+  const header = buffer.toString('ascii', 0, 4);
+  if (header !== 'MThd') {
+    throw new Error(`Invalid MIDI file: Expected 'MThd' header, found '${header}'`);
+  }
+  
+  // Validate header length field (should be 6 for standard MIDI)
+  const headerLength = buffer.readUInt32BE(4);
+  if (headerLength !== 6) {
+    throw new Error(`Invalid MIDI file: Expected header length 6, found ${headerLength}`);
+  }
+  
+  // Check if file is truncated by ensuring we have at least the header + first track header
+  if (buffer.length < 14 + 8) { // MThd(4) + length(4) + data(6) + MTrk(4) + track_length(4)
+    throw new Error('Invalid MIDI file: File appears to be truncated or incomplete');
+  }
+  
+  const midiData = buffer.toString('base64');
   console.log('MIDI data length:', midiData.length);
   
   const parsed = midiParser.parse(midiData);
@@ -305,6 +328,17 @@ function decodeVoices(encodedVoices, ppq) {
 
 function decompressJsonToMidi(inputJson, outputMidi, options = {}) {
   let compressed = JSON.parse(fs.readFileSync(inputJson, 'utf8'));
+  
+  // Validate JSON schema before processing
+  if (typeof compressed.tempo !== 'number' || compressed.tempo <= 0) {
+    throw new Error(`Invalid JSON: tempo must be a positive number, got ${typeof compressed.tempo}: ${compressed.tempo}`);
+  }
+  if (typeof compressed.ppq !== 'number' || compressed.ppq <= 0) {
+    throw new Error(`Invalid JSON: ppq must be a positive number, got ${typeof compressed.ppq}: ${compressed.ppq}`);
+  }
+  if (!Array.isArray(compressed.voices)) {
+    throw new Error(`Invalid JSON: voices must be an array, got ${typeof compressed.voices}: ${compressed.voices}`);
+  }
   
   // Apply motif decompression if needed
   if (compressed.motifCompression && compressed.motifCompression.enabled) {
