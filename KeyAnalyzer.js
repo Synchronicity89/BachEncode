@@ -84,7 +84,10 @@ class KeyAnalyzer {
     analyzeWindow(notes) {
         if (notes.length === 0) return null;
 
-        const noteNames = notes.map(note => this.pitchToNoteName(note.pitch)).filter(name => name !== null);
+        const noteNames = notes
+            .filter(note => note && note.pitch) // Filter out null notes and notes without pitch
+            .map(note => this.pitchToNoteName(note.pitch))
+            .filter(name => name !== null);
         const noteSet = new Set(noteNames);
         
         // Calculate scores for each possible key
@@ -92,27 +95,55 @@ class KeyAnalyzer {
         let bestKey = null;
         let bestMode = null;
         let detectedAccidentals = [];
+        let candidates = [];
 
         // Test major keys
         for (const key of Object.keys(this.majorKeys)) {
             const result = this.scoreKeyFit(noteSet, key, 'major');
-            if (result.score > bestScore) {
-                bestScore = result.score;
-                bestKey = key;
-                bestMode = 'major';
-                detectedAccidentals = result.accidentals;
-            }
+            candidates.push({
+                score: result.score,
+                key: key,
+                mode: 'major',
+                accidentals: result.accidentals
+            });
         }
 
         // Test minor keys
         for (const key of Object.keys(this.minorKeys)) {
             const result = this.scoreKeyFit(noteSet, key, 'minor');
-            if (result.score > bestScore) {
-                bestScore = result.score;
-                bestKey = key;
-                bestMode = 'minor';
-                detectedAccidentals = result.accidentals;
+            candidates.push({
+                score: result.score,
+                key: key,
+                mode: 'minor',
+                accidentals: result.accidentals
+            });
+        }
+
+        // Find best candidate with tie-breaking logic
+        candidates.sort((a, b) => {
+            if (Math.abs(a.score - b.score) < 0.001) {
+                // If scores are essentially equal, prefer the key that matches
+                // the first or last note (common indicators of tonic)
+                const firstNote = noteNames[0];
+                const lastNote = noteNames[noteNames.length - 1];
+                
+                const aMatchesTonic = (a.key === firstNote || a.key === lastNote);
+                const bMatchesTonic = (b.key === firstNote || b.key === lastNote);
+                
+                if (aMatchesTonic && !bMatchesTonic) return -1;
+                if (!aMatchesTonic && bMatchesTonic) return 1;
+                
+                // If still tied, no preference
+                return 0;
             }
+            return b.score - a.score; // Higher score first
+        });
+
+        if (candidates.length > 0 && candidates[0].score > 0) {
+            bestScore = candidates[0].score;
+            bestKey = candidates[0].key;
+            bestMode = candidates[0].mode;
+            detectedAccidentals = candidates[0].accidentals;
         }
 
         return {
@@ -126,6 +157,12 @@ class KeyAnalyzer {
     // Score how well a set of notes fits a key signature
     scoreKeyFit(noteSet, key, mode) {
         const keySignature = mode === 'major' ? this.majorKeys[key] : this.minorKeys[key];
+        
+        // Handle invalid keys
+        if (!keySignature) {
+            return { score: 0, accidentals: [] };
+        }
+        
         const diatonicNotes = this.getDiatonicScale(key, mode);
         
         let score = 0;
@@ -155,6 +192,11 @@ class KeyAnalyzer {
     getDiatonicScale(key, mode) {
         const majorScale = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
         const keySignature = mode === 'major' ? this.majorKeys[key] : this.minorKeys[key];
+        
+        // Handle invalid keys by returning natural scale
+        if (!keySignature) {
+            return majorScale;
+        }
         
         // Apply key signature to the scale
         return majorScale.map(note => {
@@ -200,7 +242,7 @@ class KeyAnalyzer {
             if (current.key === last.key && current.mode === last.mode) {
                 // Merge with previous
                 last.endNote = current.endNote;
-                last.confidence = (last.confidence + current.confidence) / 2;
+                last.confidence = Math.round((last.confidence + current.confidence) / 2 * 1000) / 1000;
             } else {
                 merged.push(current);
             }
