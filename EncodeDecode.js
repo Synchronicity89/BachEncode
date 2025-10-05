@@ -3,6 +3,32 @@ const midiParser = require('midi-parser-js');
 const MidiWriter = require('midi-writer-js');
 const tonal = require('@tonaljs/tonal');
 
+// Optional motif compression - only load if needed
+let MotifCompressor = null;
+function getMotifCompressor() {
+    if (!MotifCompressor) {
+        try {
+            MotifCompressor = require('./MotifCompressor');
+        } catch (error) {
+            console.warn('MotifCompressor not available:', error.message);
+            return null;
+        }
+    }
+    return MotifCompressor;
+}
+
+// Factory function for creating compression configurations
+function createCompressionConfig(options = {}) {
+    return {
+        useMotifCompression: options.useMotifCompression || false,
+        motifOptions: {
+            compressionThreshold: options.compressionThreshold || 0.5,
+            minMotifMatches: options.minMotifMatches || 1,
+            ...options.motifOptions
+        }
+    };
+}
+
 function parseMidi(filePath) {
   console.log('Reading MIDI file:', filePath);
   const midiData = fs.readFileSync(filePath, 'base64');
@@ -131,6 +157,19 @@ function extractTempoAndPPQAndNotes(midi) {
     debugOutput.push('First few notes: ' + JSON.stringify(notes.slice(0, 3), null, 2));
   }
 
+  // CHORD HANDLING FIX: Sort notes deterministically 
+  // Primary sort: by start time (earliest first)
+  // Secondary sort: by pitch (lowest first) for simultaneous notes
+  // This ensures consistent ordering across compression/decompression cycles
+  notes.sort((a, b) => {
+    if (a.start !== b.start) {
+      return a.start - b.start; // Sort by start time first
+    }
+    return a.pitch - b.pitch; // For simultaneous notes, sort by pitch (lowest first)
+  });
+  
+  debugOutput.push('Notes sorted by time then pitch for consistent chord handling');
+
   // Write debug output to file
   fs.writeFileSync('debug-output.txt', debugOutput.join('\n'));
   console.log(`Extraction complete: ${notes.length} notes found. Debug output written to debug-output.txt`);
@@ -139,7 +178,9 @@ function extractTempoAndPPQAndNotes(midi) {
 }
 
 function separateVoices(notes) {
-  notes.sort((a, b) => a.start - b.start || b.pitch - a.pitch); // Sort by start, then descending pitch for ties
+  // Notes should already be sorted by the extractTempoAndPPQAndNotes function,
+  // but ensure consistent sorting: by start time, then by pitch (lowest first)
+  notes.sort((a, b) => a.start - b.start || a.pitch - b.pitch);
   const voices = [];
 
   for (const note of notes) {
@@ -185,13 +226,45 @@ function encodeVoices(voices) {
   });
 }
 
-function compressMidiToJson(inputMidi, outputJson) {
+function compressMidiToJson(inputMidi, outputJson, options = {}) {
   const midi = parseMidi(inputMidi);
   const { ppq, tempo, notes } = extractTempoAndPPQAndNotes(midi);
   const voices = separateVoices(notes);
   const encodedVoices = encodeVoices(voices);
-  const compressed = { ppq, tempo, voices: encodedVoices };
+  let compressed = { ppq, tempo, voices: encodedVoices };
+  
+  let compressionResults = {
+    originalNoteCount: notes.length,
+    compressionRatio: 1.0,
+    motifCount: 0,
+    useMotifs: false
+  };
+  
+  // Apply motif compression if enabled
+  if (options.useMotifCompression || options.useMotifs) {
+    console.log('Applying motif compression...');
+    const MotifCompressorClass = getMotifCompressor();
+    if (MotifCompressorClass) {
+      const motifCompressor = new MotifCompressorClass();
+      // Apply custom configuration if provided
+      if (options.motifOptions) {
+        Object.assign(motifCompressor, options.motifOptions);
+      }
+      compressed = motifCompressor.compress(compressed);
+      
+      // Extract compression metrics from the compressed data
+      if (compressed.motifCompression && compressed.motifCompression.compressionStats) {
+        compressionResults.compressionRatio = compressed.motifCompression.compressionStats.compressionRatio;
+        compressionResults.motifCount = compressed.motifCompression.motifLibrary ? compressed.motifCompression.motifLibrary.length : 0;
+        compressionResults.useMotifs = true;
+      }
+    } else {
+      console.warn('Motif compression requested but MotifCompressor not available');
+    }
+  }
+  
   fs.writeFileSync(outputJson, JSON.stringify(compressed, null, 2)); // Pretty print for editability
+  return compressionResults;
 }
 
 function decodeVoices(encodedVoices, ppq) {
@@ -215,8 +288,21 @@ function decodeVoices(encodedVoices, ppq) {
   return notes;
 }
 
-function decompressJsonToMidi(inputJson, outputMidi) {
-  const compressed = JSON.parse(fs.readFileSync(inputJson, 'utf8'));
+function decompressJsonToMidi(inputJson, outputMidi, options = {}) {
+  let compressed = JSON.parse(fs.readFileSync(inputJson, 'utf8'));
+  
+  // Apply motif decompression if needed
+  if (compressed.motifCompression && compressed.motifCompression.enabled) {
+    console.log('Applying motif decompression...');
+    const MotifCompressorClass = getMotifCompressor();
+    if (MotifCompressorClass) {
+      const motifCompressor = new MotifCompressorClass();
+      compressed = motifCompressor.decompress(compressed);
+    } else {
+      console.warn('Motif compression detected but MotifCompressor not available');
+    }
+  }
+  
   const { ppq, tempo } = compressed;
   const notes = decodeVoices(compressed.voices, ppq);
 
@@ -258,22 +344,35 @@ function main() {
   try {
     const args = process.argv.slice(2);
     if (args.length < 3) {
-      console.log('Usage: node program.js compress input.midi output.json');
+      console.log('Usage: node program.js compress input.midi output.json [--motif]');
       console.log('Or: node program.js decompress input.json output.midi');
+      console.log('Options:');
+      console.log('  --motif    Enable motif-based compression (experimental)');
       return;
     }
 
     const command = args[0];
     const input = args[1];
     const output = args[2];
+    
+    // Parse options
+    const options = {};
+    for (let i = 3; i < args.length; i++) {
+      if (args[i] === '--motif') {
+        options.useMotifCompression = true;
+      }
+    }
 
     console.log(`Command: ${command}, Input: ${input}, Output: ${output}`);
+    if (options.useMotifCompression) {
+      console.log('Motif compression enabled');
+    }
 
     if (command === 'compress') {
-      compressMidiToJson(input, output);
+      compressMidiToJson(input, output, options);
       console.log('Compression completed successfully');
     } else if (command === 'decompress') {
-      decompressJsonToMidi(input, output);
+      decompressJsonToMidi(input, output, options);
       console.log('Decompression completed successfully');
     } else {
       console.log('Unknown command');
@@ -285,6 +384,18 @@ function main() {
     process.exitCode = 1;
   }
 }
+
+// Export functions for use as a module
+module.exports = {
+  compressMidiToJson,
+  decompressJsonToMidi,
+  createCompressionConfig,
+  parseMidi,
+  extractTempoAndPPQAndNotes,
+  separateVoices,
+  encodeVoices,
+  decodeVoices
+};
 
 if (require.main === module) {
   main();
