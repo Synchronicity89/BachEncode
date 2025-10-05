@@ -40,8 +40,8 @@ class KeyAnalyzer {
             'Ab': ['Bb', 'Eb', 'Ab', 'Db', 'Gb', 'Cb', 'Fb']
         };
 
-        // Circle of fifths for key relationships
-        this.circleOfFifths = ['C', 'G', 'D', 'A', 'E', 'B', 'F#', 'C#', 'F', 'Bb', 'Eb', 'Ab', 'Db', 'Gb', 'Cb'];
+        // Circle of fifths for key relationships (clockwise: sharps increase, flats decrease)  
+        this.circleOfFifths = ['C', 'G', 'D', 'A', 'E', 'B', 'F#', 'Db', 'Ab', 'Eb', 'Bb', 'F'];
     }
 
     // Convert pitch notation to note name (e.g., "C4" -> "C", "F#5" -> "F#")
