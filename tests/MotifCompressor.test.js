@@ -562,4 +562,152 @@ describe('MotifCompressor', () => {
             }
         });
     });
+
+    // NEW FAILING TESTS TO ISOLATE BWV785 COMPRESSION BUGS
+    describe('BWV785 Compression Issues (Bug Isolation)', () => {
+        const fs = require('fs');
+        const path = require('path');
+        
+        let bwvData;
+        
+        beforeEach(() => {
+            // Load BWV785 data if available
+            const bwvPath = path.join(__dirname, '..', 'test-bwv785.json');
+            if (fs.existsSync(bwvPath)) {
+                bwvData = JSON.parse(fs.readFileSync(bwvPath, 'utf8'));
+            } else {
+                // Create mock BWV785-like data for testing
+                bwvData = {
+                    tempo: 120,
+                    ppq: 480,
+                    voices: [
+                        // Generate 300+ notes to simulate BWV785 complexity
+                        Array.from({length: 300}, (_, i) => ({
+                            delta: i * 48,
+                            pitch: `${['C', 'D', 'E', 'F', 'G', 'A', 'B'][i % 7]}${3 + Math.floor(i / 50)}`,
+                            dur: 240 + (i % 3) * 120,
+                            vel: 70 + (i % 20)
+                        })),
+                        Array.from({length: 318}, (_, i) => ({
+                            delta: i * 36,
+                            pitch: `${['G', 'A', 'B', 'C', 'D', 'E', 'F'][i % 7]}${2 + Math.floor(i / 60)}`,
+                            dur: 180 + (i % 4) * 90,
+                            vel: 60 + (i % 25)
+                        }))
+                    ]
+                };
+            }
+        });
+
+        test('SHOULD FAIL: BWV785 compression should not exceed 20% note loss', () => {
+            // This SHOULD FAIL due to 38.2% note loss in integration tests
+            const originalCount = bwvData.voices.reduce((sum, voice) => sum + voice.length, 0);
+            
+            const compressed = motifCompressor.compress(bwvData);
+            
+            if (compressed.motifCompression) {
+                const stats = compressed.motifCompression.compressionStats;
+                const noteLossPercentage = (stats.originalNotes - stats.compressedReferences) / stats.originalNotes;
+                
+                // Integration tests show 38.2% loss - this should FAIL
+                expect(noteLossPercentage).toBeLessThan(0.20); // Max 20% loss for Bach
+                
+                console.log(`EXPECTED FAILURE: Note loss ${(noteLossPercentage * 100).toFixed(1)}% exceeds 20% threshold`);
+            }
+        });
+
+        test('SHOULD FAIL: motif detection should not be over-aggressive on unique phrases', () => {
+            // This SHOULD FAIL if algorithm compresses non-repetitive content
+            const uniquePhrasesData = {
+                tempo: 120,
+                ppq: 480,
+                voices: [
+                    [
+                        // All completely unique musical phrases
+                        { delta: 0, pitch: 'C4', dur: 240, vel: 80 },
+                        { delta: 240, pitch: 'F#4', dur: 360, vel: 75 },
+                        { delta: 360, pitch: 'Bb4', dur: 180, vel: 90 },
+                        { delta: 180, pitch: 'D#5', dur: 480, vel: 65 },
+                        { delta: 480, pitch: 'G#3', dur: 120, vel: 95 },
+                        { delta: 120, pitch: 'C#5', dur: 300, vel: 70 }
+                    ]
+                ]
+            };
+
+            const compressed = motifCompressor.compress(uniquePhrasesData);
+            
+            if (compressed.motifCompression) {
+                const stats = compressed.motifCompression.compressionStats;
+                
+                // Should NOT compress unique content significantly
+                expect(stats.compressionRatio).toBeLessThan(1.1); // Max 10% compression for unique content
+                
+                console.log(`EXPECTED FAILURE: Unique content compressed by ${((stats.compressionRatio - 1) * 100).toFixed(1)}%`);
+            }
+        });
+
+        test('SHOULD FAIL: compression ratio should be reasonable for Bach inventions', () => {
+            // This SHOULD FAIL due to excessive compression in integration tests
+            const compressed = motifCompressor.compress(bwvData);
+            
+            if (compressed.motifCompression) {
+                const stats = compressed.motifCompression.compressionStats;
+                
+                // Bach inventions have moderate repetition, not excessive
+                // Integration tests show aggressive compression - should FAIL
+                expect(stats.compressionRatio).toBeLessThan(1.3); // Max 30% compression for Bach
+                
+                console.log(`EXPECTED FAILURE: Compression ratio ${stats.compressionRatio.toFixed(2)}x too aggressive for Bach`);
+            }
+        });
+
+        test('SHOULD FAIL: motif library should contain musically sensible patterns', () => {
+            // This SHOULD FAIL if motifs are musically nonsensical
+            const compressed = motifCompressor.compress(bwvData);
+            
+            if (compressed.motifCompression && compressed.motifCompression.motifLibrary.length > 0) {
+                const motifs = compressed.motifCompression.motifLibrary;
+                
+                let failedMotifs = 0;
+                
+                motifs.forEach((motif, index) => {
+                    // Motifs should be reasonable musical length
+                    if (motif.length < 2 || motif.length > 12) {
+                        failedMotifs++;
+                        console.log(`EXPECTED FAILURE: Motif ${index} has unreasonable length: ${motif.length}`);
+                    }
+                    
+                    // Confidence should be high for compression
+                    if (motif.confidence < 60) {
+                        failedMotifs++;
+                        console.log(`EXPECTED FAILURE: Motif ${index} has low confidence: ${motif.confidence}%`);
+                    }
+                    
+                    // Should have found multiple occurrences
+                    if (motif.matches < 2) {
+                        failedMotifs++;
+                        console.log(`EXPECTED FAILURE: Motif ${index} has insufficient matches: ${motif.matches}`);
+                    }
+                });
+                
+                // Should have mostly good motifs
+                expect(failedMotifs).toBe(0);
+            }
+        });
+
+        test('SHOULD FAIL: round-trip compression should preserve note count exactly', () => {
+            // This SHOULD FAIL due to 1-note loss in integration tests
+            const originalCount = bwvData.voices.reduce((sum, voice) => sum + voice.length, 0);
+            
+            const compressed = motifCompressor.compress(bwvData);
+            const decompressed = motifCompressor.decompress(compressed);
+            
+            const decompressedCount = decompressed.voices.reduce((sum, voice) => sum + voice.length, 0);
+            
+            // Should preserve exact note count - this SHOULD FAIL
+            expect(decompressedCount).toBe(originalCount);
+            
+            console.log(`EXPECTED FAILURE: Lost ${originalCount - decompressedCount} notes in round-trip`);
+        });
+    });
 });

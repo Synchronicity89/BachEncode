@@ -14,11 +14,11 @@ const {
 } = require('../EncodeDecode');
 
 describe('EncodeDecode.js', () => {
-  let testMidiPath, testJsonPath, testOutputPath;
+  let testMidiPath, testJsonPath, testOutputPath; testOutputPath;
 
   beforeEach(() => {
-    testMidiPath = path.join(__dirname, '..', 'test-minimal-one-note.mid');
-    testJsonPath = path.join(__dirname, '..', 'test-minimal-one-note.json');
+    testMidiPath = path.join(__dirname, '..', 'midi', 'BWV785.MID');
+    testJsonPath = path.join(__dirname, '..', 'test-bwv785.json');
     testOutputPath = path.join(__dirname, '..', 'test-output-temp.json');
   });
 
@@ -283,6 +283,107 @@ describe('EncodeDecode.js', () => {
     });
   });
 
+  // NEW ERROR HANDLING TESTS THAT SHOULD FAIL
+  describe('File Validation Issues (Bug Isolation)', () => {
+    test('SHOULD FAIL: should detect invalid MIDI headers', () => {
+      // This SHOULD FAIL because integration tests show corrupted MIDI doesn't throw
+      const corruptedMidiPath = 'corrupted-test.mid';
+      
+      // Write invalid MIDI header
+      const buffer = Buffer.from([0x4D, 0x54, 0x68, 0x65]); // Incomplete "MThd" header
+      fs.writeFileSync(corruptedMidiPath, buffer);
+      
+      try {
+        // This should FAIL - corrupted MIDI should throw but doesn't in integration tests
+        expect(() => {
+          parseMidi(corruptedMidiPath);
+        }).toThrow();
+        
+        console.log('EXPECTED FAILURE: Corrupted MIDI should throw error but does not');
+        
+      } finally {
+        // Clean up
+        if (fs.existsSync(corruptedMidiPath)) {
+          fs.unlinkSync(corruptedMidiPath);
+        }
+      }
+    });
+
+    test('SHOULD FAIL: should validate JSON schema before processing', () => {
+      // This SHOULD FAIL because integration tests show malformed JSON doesn't throw
+      const malformedJsonPath = 'malformed-test.json';
+      
+      // Write structurally valid JSON but semantically invalid for decompression
+      const malformedData = {
+        tempo: "not-a-number",
+        ppq: -1,
+        voices: "not-an-array"
+      };
+      
+      fs.writeFileSync(malformedJsonPath, JSON.stringify(malformedData));
+      
+      try {
+        // This should FAIL - malformed JSON should throw but doesn't in integration tests
+        expect(() => {
+          decompressJsonToMidi(malformedJsonPath, 'test-output.mid');
+        }).toThrow();
+        
+        console.log('EXPECTED FAILURE: Malformed JSON should throw error but does not');
+        
+      } finally {
+        // Clean up
+        if (fs.existsSync(malformedJsonPath)) {
+          fs.unlinkSync(malformedJsonPath);
+        }
+        if (fs.existsSync('test-output.mid')) {
+          fs.unlinkSync('test-output.mid');
+        }
+      }
+    });
+
+    test('SHOULD FAIL: should throw specific error types for different corruption types', () => {
+      // Test different corruption scenarios return appropriate errors
+      const scenarios = [
+        {
+          name: 'empty-file',
+          content: Buffer.alloc(0),
+          expectedError: /empty|invalid|corrupted/i
+        },
+        {
+          name: 'wrong-header',
+          content: Buffer.from('RIFF'), // Wrong file type
+          expectedError: /MIDI|header|format/i
+        },
+        {
+          name: 'truncated-file',
+          content: Buffer.from([0x4D, 0x54, 0x68, 0x64, 0x00, 0x00]), // Incomplete header
+          expectedError: /truncated|incomplete|corrupted/i
+        }
+      ];
+
+      scenarios.forEach(scenario => {
+        const testPath = `corruption-${scenario.name}.mid`;
+        
+        try {
+          fs.writeFileSync(testPath, scenario.content);
+          
+          // This should FAIL - each corruption type should throw specific errors
+          expect(() => {
+            parseMidi(testPath);
+          }).toThrow(scenario.expectedError);
+          
+        } catch (assertionError) {
+          console.log(`EXPECTED FAILURE: ${scenario.name} corruption should throw ${scenario.expectedError} but does not`);
+          throw assertionError;
+        } finally {
+          if (fs.existsSync(testPath)) {
+            fs.unlinkSync(testPath);
+          }
+        }
+      });
+    });
+  });
+
   describe('PPQ and Timing Accuracy', () => {
     test('should handle different PPQ values correctly', () => {
       const testData = {
@@ -310,14 +411,14 @@ describe('EncodeDecode.js', () => {
   });
 
   describe('Zero Duration Note Detection and Fix', () => {
-    test('should fix zero-duration notes in MIDI parsing', () => {
-      if (!fs.existsSync('test-minimal-one-note.mid')) {
-        console.warn('Test MIDI file not found, skipping test');
+    test('should fix zero-duration notes in BWV785 MIDI parsing', () => {
+      if (!fs.existsSync('midi/BWV785.MID')) {
+        console.warn('BWV785 MIDI file not found, skipping test');
         return;
       }
 
       // Parse MIDI that has zero-duration notes
-      const midi = parseMidi('test-minimal-one-note.mid');
+      const midi = parseMidi('midi/BWV785.MID');
       const { ppq, notes } = extractTempoAndPPQAndNotes(midi);
       
       // After the fix, there should be no zero-duration notes
@@ -371,20 +472,20 @@ describe('EncodeDecode.js', () => {
       process.exit = originalExit;
     });
 
-    test('should handle compress command via CLI', () => {
-      if (!fs.existsSync('test-minimal-one-note.mid')) {
-        console.warn('Test MIDI file not found, skipping CLI test');
+    test('should handle compress command via CLI with BWV785', () => {
+      if (!fs.existsSync('midi/BWV785.MID')) {
+        console.warn('BWV785 MIDI file not found, skipping CLI test');
         return;
       }
 
       // Mock command line arguments
-      process.argv = ['node', 'EncodeDecode.js', 'compress', 'test-minimal-one-note.mid', 'test-cli-output.json'];
+      process.argv = ['node', 'EncodeDecode.js', 'compress', 'midi/BWV785.MID', 'test-cli-output.json'];
       
       // Import and call main function
       const EncodeDecode = require('../EncodeDecode');
       
       // We can't easily test main() without refactoring, so test the core function directly
-      const compressionResults = compressMidiToJson('test-minimal-one-note.mid', 'test-cli-output.json');
+      const compressionResults = compressMidiToJson('midi/BWV785.MID', 'test-cli-output.json');
       
       expect(fs.existsSync('test-cli-output.json')).toBe(true);
       expect(compressionResults.originalNoteCount).toBeGreaterThan(0);
@@ -412,15 +513,15 @@ describe('EncodeDecode.js', () => {
       }
     });
 
-    test('should handle motif option via CLI', () => {
-      if (!fs.existsSync('test-minimal-one-note.mid')) {
-        console.warn('Test MIDI file not found, skipping motif CLI test');
+    test('should handle motif option via CLI with BWV785', () => {
+      if (!fs.existsSync('midi/BWV785.MID')) {
+        console.warn('BWV785 MIDI file not found, skipping motif CLI test');
         return;
       }
 
-      // Test with motif compression
-      const options = { useMotifCompression: true };
-      const compressionResults = compressMidiToJson('test-minimal-one-note.mid', 'test-motif-output.json', options);
+      // Test with motif compression (optimized for BWV785 invention patterns)
+      const options = { useMotifCompression: true, compressionThreshold: 0.3 };
+      const compressionResults = compressMidiToJson('midi/BWV785.MID', 'test-motif-output.json', options);
       
       expect(fs.existsSync('test-motif-output.json')).toBe(true);
       
@@ -502,21 +603,24 @@ describe('EncodeDecode.js', () => {
       }
     });
 
-    test('should identify timing issues that cause voice loss', () => {
-      // Test with actual complex MIDI data
-      if (!fs.existsSync('test-christus.mid') || !fs.existsSync('test-christus.json')) {
-        console.warn('Complex test files not found, skipping timing test');
+    test('should identify timing issues that cause voice loss with BWV785', () => {
+      // Test with BWV785 invention data
+      if (!fs.existsSync('midi/BWV785.MID')) {
+        console.warn('BWV785 files not found, skipping timing test');
         return;
       }
 
-      // First, decompress the JSON to MIDI
-      decompressJsonToMidi('test-christus.json', 'test-timing-check.mid');
+      // First, compress the MIDI to JSON
+      compressMidiToJson('midi/BWV785.MID', 'test-bwv785-timing-original.json');
+      
+      // Then decompress to MIDI
+      decompressJsonToMidi('test-bwv785-timing-original.json', 'test-bwv785-timing-check.mid');
       
       // Then re-compress to see if we lose data
-      const compressionResults = compressMidiToJson('test-timing-check.mid', 'test-timing-recompressed.json');
+      const compressionResults = compressMidiToJson('test-bwv785-timing-check.mid', 'test-bwv785-timing-recompressed.json');
       
-      const original = JSON.parse(fs.readFileSync('test-christus.json', 'utf8'));
-      const recompressed = JSON.parse(fs.readFileSync('test-timing-recompressed.json', 'utf8'));
+      const original = JSON.parse(fs.readFileSync('test-bwv785-timing-original.json', 'utf8'));
+      const recompressed = JSON.parse(fs.readFileSync('test-bwv785-timing-recompressed.json', 'utf8'));
       
       // ISSUE IDENTIFIED: Major voice explosion in complex MIDI roundtrip
       console.log(`Complex MIDI voice explosion: ${original.voices.length} -> ${recompressed.voices.length} voices`);
@@ -683,256 +787,219 @@ describe('EncodeDecode.js', () => {
     });
   });
 
-  describe('Degradation Cycle Testing', () => {
-    test('should maintain voice count and note count through multiple compression cycles', () => {
-      if (!fs.existsSync('test-christus.mid')) {
-        console.warn('Complex test MIDI file not found, skipping degradation test');
-        return;
-      }
-
-      console.log('=== DEGRADATION CYCLE TEST ===');
+  // NEW UNIT TESTS TO ISOLATE BUGS FOUND IN INTEGRATION TESTS
+  describe('Timing Precision Issues (Bug Isolation)', () => {
+    test('should calculate note start times within 1ms precision', () => {
+      // This should FAIL due to the 244ms deviation seen in integration tests
+      const midiData = parseMidi(testMidiPath);
+      const { ppq, notes } = extractTempoAndPPQAndNotes(midiData);
       
-      // Start with original MIDI file
-      let currentMidiPath = 'test-christus.mid';
-      const originalMidi = parseMidi(currentMidiPath);
-      const originalData = extractTempoAndPPQAndNotes(originalMidi);
+      // Test timing precision by checking consecutive note timing calculations
+      const sortedNotes = notes.sort((a, b) => a.start - b.start);
       
-      console.log(`Original: ${originalData.notes.length} notes`);
-      
-      const tempFiles = [];
-      let cycleData = {
-        noteCount: originalData.notes.length,
-        voiceCount: 0
-      };
-
-      try {
-        // Perform 3 compression/decompression cycles
-        for (let cycle = 1; cycle <= 3; cycle++) {
-          const jsonPath = `test-degradation-cycle${cycle}.json`;
-          const midiPath = `test-degradation-cycle${cycle}.mid`;
-          
-          tempFiles.push(jsonPath, midiPath);
-          
-          console.log(`\n--- Cycle ${cycle} ---`);
-          
-          // Compress MIDI to JSON
-          const compressionResults = compressMidiToJson(currentMidiPath, jsonPath);
-          console.log(`Cycle ${cycle} compression: ${compressionResults.originalNoteCount} notes`);
-          
-          // Decompress JSON back to MIDI
-          decompressJsonToMidi(jsonPath, midiPath);
-          
-          // Analyze the resulting MIDI
-          const cycleMidi = parseMidi(midiPath);
-          const cycleExtracted = extractTempoAndPPQAndNotes(cycleMidi);
-          const cycleVoices = separateVoices(cycleExtracted.notes);
-          
-          console.log(`Cycle ${cycle} result: ${cycleExtracted.notes.length} notes, ${cycleVoices.length} voices`);
-          
-          // Track degradation
-          cycleData = {
-            noteCount: cycleExtracted.notes.length,
-            voiceCount: cycleVoices.length
-          };
-          
-          // Use this cycle's output as input for next cycle
-          currentMidiPath = midiPath;
-        }
+      for (let i = 1; i < Math.min(10, sortedNotes.length); i++) {
+        const prevNote = sortedNotes[i-1];
+        const currNote = sortedNotes[i];
         
-        console.log(`\nFinal result: ${cycleData.noteCount} notes, ${cycleData.voiceCount} voices`);
-        console.log(`Note degradation: ${originalData.notes.length} -> ${cycleData.noteCount} (${((originalData.notes.length - cycleData.noteCount) / originalData.notes.length * 100).toFixed(1)}% loss)`);
+        // Calculate expected timing based on PPQ and tempo
+        const timeDiff = currNote.start - prevNote.start;
         
-        // THIS TEST SHOULD FAIL - documents the degradation issue
-        // We expect the system to preserve note count and voice count exactly
+        // Timing should be quantized to reasonable musical subdivisions
+        // BWV785 uses 16th note patterns, so timing should align to PPQ/4 boundaries
+        const quantizedExpected = Math.round(timeDiff / (ppq / 4)) * (ppq / 4);
+        const deviation = Math.abs(timeDiff - quantizedExpected);
         
-        // Test 1: Note count should be preserved exactly (STRICT - should fail)
-        expect(cycleData.noteCount).toBe(originalData.notes.length); // Should preserve ALL notes
-        
-        // Test 2: Voice count should not explode beyond reasonable limits (STRICT - may fail)
-        expect(cycleData.voiceCount).toBeLessThan(10); // Should not create too many voices
-        
-        // Test 3: Should not lose significant musical content
-        const noteLossPercentage = (originalData.notes.length - cycleData.noteCount) / originalData.notes.length * 100;
-        expect(noteLossPercentage).toBeLessThan(1); // Should lose less than 1% of notes
-        
-      } finally {
-        // Clean up temporary files
-        tempFiles.forEach(file => {
-          try {
-            if (fs.existsSync(file)) {
-              fs.unlinkSync(file);
-            }
-          } catch (err) {
-            console.warn(`Failed to clean up ${file}:`, err.message);
-          }
-        });
+        // This test should FAIL - we're seeing 244ms deviations in integration tests
+        expect(deviation).toBeLessThanOrEqual(1); // 1 tick precision expected
       }
     });
 
-    test('should demonstrate voice explosion through cycles', () => {
-      // Create a simple multi-voice test case
-      const testData = {
-        ppq: 480,
-        tempo: 120,
-        voices: [
-          [
-            { delta: 0, pitch: 'C4', dur: 480, vel: 80 },
-            { delta: 0, pitch: 'E4', dur: 480, vel: 80 }
-          ],
-          [
-            { delta: 0, pitch: 'G4', dur: 480, vel: 80 },
-            { delta: 0, pitch: 'C5', dur: 480, vel: 80 }
-          ]
-        ]
-      };
-
-      const originalVoiceCount = testData.voices.length;
-      console.log(`\n=== VOICE EXPLOSION TEST ===`);
-      console.log(`Starting with ${originalVoiceCount} voices`);
-
-      const tempFiles = [];
+    test('should handle PPQ conversion accurately', () => {
+      // This should FAIL due to PPQ mismatches in integration tests
+      const midiData = parseMidi(testMidiPath);
+      const { ppq: originalPPQ, notes } = extractTempoAndPPQAndNotes(midiData);
       
-      try {
-        let currentJsonPath = 'test-voice-explosion-input.json';
-        fs.writeFileSync(currentJsonPath, JSON.stringify(testData));
-        tempFiles.push(currentJsonPath);
-
-        let currentVoiceCount = originalVoiceCount;
+      // Test PPQ conversion by simulating different target PPQ values
+      const targetPPQ = 480; // Standard PPQ
+      
+      notes.forEach(note => {
+        const originalTicks = note.start;
+        const convertedTicks = Math.round((originalTicks * targetPPQ) / originalPPQ);
+        const backConverted = Math.round((convertedTicks * originalPPQ) / targetPPQ);
         
-        // Perform 2 decompression/compression cycles
-        for (let cycle = 1; cycle <= 2; cycle++) {
-          const midiPath = `test-voice-explosion-cycle${cycle}.mid`;
-          const jsonPath = `test-voice-explosion-cycle${cycle}.json`;
-          
-          tempFiles.push(midiPath, jsonPath);
-          
-          // Decompress to MIDI
-          decompressJsonToMidi(currentJsonPath, midiPath);
-          
-          // Compress back to JSON
-          compressMidiToJson(midiPath, jsonPath);
-          
-          // Analyze voice count
-          const cycleData = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
-          currentVoiceCount = cycleData.voices.length;
-          
-          console.log(`Cycle ${cycle}: ${currentVoiceCount} voices`);
-          
-          currentJsonPath = jsonPath;
-        }
+        // Round-trip conversion should preserve timing within 1 tick
+        const roundTripError = Math.abs(originalTicks - backConverted);
         
-        console.log(`Voice explosion: ${originalVoiceCount} -> ${currentVoiceCount} voices`);
-        
-        // THIS TEST SHOULD FAIL - documents the voice explosion issue
-        expect(currentVoiceCount).toBe(originalVoiceCount); // Should preserve original voice count exactly
-        
-        // Additional strict test - should not lose notes
-        const finalData = JSON.parse(fs.readFileSync(currentJsonPath, 'utf8'));
-        const totalNotesOriginal = testData.voices.reduce((sum, voice) => sum + voice.length, 0);
-        const totalNotesFinal = finalData.voices.reduce((sum, voice) => sum + voice.length, 0);
-        expect(totalNotesFinal).toBe(totalNotesOriginal); // Should preserve ALL notes
-        
-      } finally {
-        // Clean up
-        tempFiles.forEach(file => {
-          try {
-            if (fs.existsSync(file)) {
-              fs.unlinkSync(file);
-            }
-          } catch (err) {
-            // Ignore cleanup errors
-          }
-        });
-      }
+        // This should FAIL - PPQ conversion introduces timing errors
+        expect(roundTripError).toBeLessThanOrEqual(1);
+      });
     });
 
-    test('EXPECTED TO FAIL: should preserve voice structure with motif compression cycles', () => {
-      if (!fs.existsSync('test-christus.mid')) {
-        console.warn('Complex test MIDI file not found, skipping aggressive degradation test');
-        return;
-      }
-
-      console.log('\n=== AGGRESSIVE MOTIF DEGRADATION TEST ===');
+    test('should preserve sub-tick timing precision in MIDI parsing', () => {
+      // This should FAIL - test for floating point precision issues
+      const midiData = parseMidi(testMidiPath);
+      const { notes } = extractTempoAndPPQAndNotes(midiData);
       
-      const tempFiles = [];
-      let currentMidiPath = 'test-christus.mid';
+      // Check for timing precision issues in consecutive note events
+      const timings = notes.map(n => n.start).sort((a, b) => a - b);
       
-      // Get baseline
-      const originalMidi = parseMidi(currentMidiPath);
-      const originalData = extractTempoAndPPQAndNotes(originalMidi);
-      const originalVoices = separateVoices(originalData.notes);
-      
-      console.log(`Original: ${originalData.notes.length} notes, ${originalVoices.length} voices`);
-      
-      try {
-        // Perform 2 cycles with MOTIF compression (this should cause issues)
-        for (let cycle = 1; cycle <= 2; cycle++) {
-          const jsonPath = `test-aggressive-cycle${cycle}.json`;
-          const midiPath = `test-aggressive-cycle${cycle}.mid`;
-          
-          tempFiles.push(jsonPath, midiPath);
-          
-          console.log(`\n--- Aggressive Cycle ${cycle} with --motif ---`);
-          
-          // Compress with MOTIF option (this triggers the problematic path)
-          const compressionResults = compressMidiToJson(currentMidiPath, jsonPath, { 
-            useMotifCompression: true,
-            motifOptions: {
-              compressionThreshold: 0.3, // Lower threshold = more aggressive
-              minMotifMatches: 2
-            }
-          });
-          
-          console.log(`Cycle ${cycle} compression: ${compressionResults.originalNoteCount} notes, ratio: ${compressionResults.compressionRatio}`);
-          
-          // Decompress back to MIDI
-          decompressJsonToMidi(jsonPath, midiPath);
-          
-          // Analyze degradation
-          const cycleMidi = parseMidi(midiPath);
-          const cycleData = extractTempoAndPPQAndNotes(cycleMidi);
-          const cycleVoices = separateVoices(cycleData.notes);
-          
-          console.log(`Cycle ${cycle} result: ${cycleData.notes.length} notes, ${cycleVoices.length} voices`);
-          
-          currentMidiPath = midiPath;
+      for (let i = 1; i < timings.length; i++) {
+        const timeDiff = timings[i] - timings[i-1];
+        
+        // Very small time differences suggest precision issues
+        if (timeDiff > 0 && timeDiff < 0.1) {
+          // This indicates floating point precision problems
+          expect(timeDiff).toBeGreaterThanOrEqual(1); // Should be at least 1 tick
         }
+      }
+    });
+  });
+
+  describe('Note Preservation Issues (Bug Isolation)', () => {
+    test('should preserve exact note count through encoding/decoding cycle', () => {
+      // This should FAIL due to 1-note loss seen in integration tests
+      const midiData = parseMidi(testMidiPath);
+      const { notes } = extractTempoAndPPQAndNotes(midiData);
+      const originalCount = notes.length;
+      
+      // Test the core encoding/decoding cycle that's losing notes
+      const voices = separateVoices(notes);
+      const encoded = encodeVoices(voices);
+      const decoded = decodeVoices(encoded, 480);
+      
+      // This should FAIL - we're losing exactly 1 note (618->617)
+      expect(decoded.length).toBe(originalCount);
+    });
+
+    test('should maintain note uniqueness during voice separation', () => {
+      // This should FAIL - test for note duplication/loss in voice separation
+      const midiData = parseMidi(testMidiPath);
+      const { notes } = extractTempoAndPPQAndNotes(midiData);
+      
+      const voices = separateVoices(notes);
+      const totalNotesInVoices = voices.reduce((sum, voice) => sum + voice.length, 0);
+      
+      // Voice separation should preserve total note count exactly
+      expect(totalNotesInVoices).toBe(notes.length);
+      
+      // Check for note duplication by creating a set of note signatures
+      const originalSignatures = new Set(notes.map(n => `${n.start}-${n.pitch}-${n.dur}`));
+      const voiceSignatures = new Set();
+      
+      voices.forEach(voice => {
+        voice.forEach(note => {
+          const signature = `${note.start}-${note.pitch}-${note.dur}`;
+          voiceSignatures.add(signature);
+        });
+      });
+      
+      // Should have same unique notes
+      expect(voiceSignatures.size).toBe(originalSignatures.size);
+    });
+
+    test('should handle edge case notes without dropping them', () => {
+      // This should FAIL - test boundary conditions causing note loss
+      const midiData = parseMidi(testMidiPath);
+      const { notes } = extractTempoAndPPQAndNotes(midiData);
+      
+      // Find edge case notes that might be dropped
+      const edgeCases = notes.filter(note => 
+        note.dur === 0 ||           // Zero duration
+        note.start === 0 ||        // Start at beginning
+        note.pitch < 21 ||         // Very low notes
+        note.pitch > 108 ||        // Very high notes
+        note.vel === 0             // Zero velocity
+      );
+      
+      if (edgeCases.length > 0) {
+        const voices = separateVoices(notes);
+        const encoded = encodeVoices(voices);
+        const decoded = decodeVoices(encoded, 480);
         
-        // Final analysis
-        const finalMidi = parseMidi(currentMidiPath);
-        const finalData = extractTempoAndPPQAndNotes(finalMidi);
-        const finalVoices = separateVoices(finalData.notes);
-        
-        const noteLoss = originalData.notes.length - finalData.notes.length;
-        const voiceExplosion = finalVoices.length - originalVoices.length;
-        
-        console.log(`\nFINAL DEGRADATION ANALYSIS:`);
-        console.log(`- Note loss: ${noteLoss} (${(noteLoss/originalData.notes.length*100).toFixed(1)}%)`);
-        console.log(`- Voice explosion: +${voiceExplosion} voices (${originalVoices.length} -> ${finalVoices.length})`);
-        
-        // THESE TESTS SHOULD FAIL to document the motif compression issues
-        
-        // Test 1: Should not lose ANY notes through motif processing
-        expect(finalData.notes.length).toBe(originalData.notes.length);
-        
-        // Test 2: Should not explode voice count dramatically  
-        expect(finalVoices.length).toBeLessThanOrEqual(originalVoices.length * 2); // Allow max 2x voice expansion
-        
-        // Test 3: Should preserve musical structure integrity
-        expect(voiceExplosion).toBeLessThan(5); // Should not add more than 5 extra voices
-        
-      } finally {
-        // Clean up
-        tempFiles.forEach(file => {
-          try {
-            if (fs.existsSync(file)) {
-              fs.unlinkSync(file);
-            }
-          } catch (err) {
-            // Ignore cleanup errors
-          }
+        // All edge case notes should survive the round trip
+        edgeCases.forEach(edgeNote => {
+          const survived = decoded.some(decodedNote => 
+            Math.abs(decodedNote.start - edgeNote.start) <= 1 &&
+            decodedNote.pitch === edgeNote.pitch
+          );
+          
+          expect(survived).toBe(true);
         });
       }
     });
   });
+
+  describe('Voice Detection Issues (Bug Isolation)', () => {
+    test('should correctly count voices in polyphonic BWV785', () => {
+      // This should FAIL - expected 4 voices but got 3 in integration tests
+      const midiData = parseMidi(testMidiPath);
+      const { notes } = extractTempoAndPPQAndNotes(midiData);
+      
+      const voices = separateVoices(notes);
+      
+      // BWV785 is a two-part invention, so should be exactly 2 voices
+      // If integration test expected 4, there might be a voice doubling issue
+      expect(voices.length).toBe(2); // Bach invention should be 2 voices
+      
+      // Test voice overlap - true polyphony requires simultaneous notes
+      let hasSimultaneousNotes = false;
+      for (let i = 0; i < voices.length - 1; i++) {
+        for (let j = i + 1; j < voices.length; j++) {
+          const voice1 = voices[i];
+          const voice2 = voices[j];
+          
+          // Check for temporal overlap between voices
+          for (const note1 of voice1) {
+            for (const note2 of voice2) {
+              const note1End = note1.start + note1.dur;
+              const note2End = note2.start + note2.dur;
+              
+              if (note1.start < note2End && note2.start < note1End) {
+                hasSimultaneousNotes = true;
+                break;
+              }
+            }
+            if (hasSimultaneousNotes) break;
+          }
+          if (hasSimultaneousNotes) break;
+        }
+        if (hasSimultaneousNotes) break;
+      }
+      
+      expect(hasSimultaneousNotes).toBe(true); // Should have polyphonic content
+    });
+
+    test('should preserve voice assignments through processing', () => {
+      // This should FAIL - test voice-to-channel mapping consistency
+      const midiData = parseMidi(testMidiPath);
+      const { notes } = extractTempoAndPPQAndNotes(midiData);
+      
+      const voices = separateVoices(notes);
+      const encoded = encodeVoices(voices);
+      const decoded = decodeVoices(encoded, 480);
+      
+      // Re-separate the decoded notes to see if voice structure is preserved
+      const reVoices = separateVoices(decoded);
+      
+      // Should maintain similar voice count (allowing for small variations)
+      expect(Math.abs(reVoices.length - voices.length)).toBeLessThanOrEqual(1);
+      
+      // Check that voice density is preserved
+      const originalDensity = voices.map(voice => voice.length);
+      const reDensity = reVoices.map(voice => voice.length);
+      
+      originalDensity.sort((a, b) => b - a); // Sort descending
+      reDensity.sort((a, b) => b - a);
+      
+      // Voice sizes should be roughly preserved
+      for (let i = 0; i < Math.min(originalDensity.length, reDensity.length); i++) {
+        const densityDiff = Math.abs(originalDensity[i] - reDensity[i]);
+        const tolerance = Math.max(1, Math.floor(originalDensity[i] * 0.1)); // 10% tolerance
+        
+        expect(densityDiff).toBeLessThanOrEqual(tolerance);
+      }
+    });
+  });
+
+
 });
