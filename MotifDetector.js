@@ -63,8 +63,8 @@ class MotifDetector {
         const scaleDegreeVoice = [];
         
         voice.forEach((note, index) => {
-            // Skip notes with invalid pitch values
-            if (!note.pitch || typeof note.pitch !== 'string') {
+            // Skip null notes or notes with invalid pitch values
+            if (!note || !note.pitch || typeof note.pitch !== 'string') {
                 return;
             }
             
@@ -156,7 +156,7 @@ class MotifDetector {
     }
 
     // Find motif matches with transformations - FIXED for compression
-    findMotifMatches(motifs, allVoices, options = {}) {
+    findMotifMatches(motifs, allVoices, options = {}, keyAnalysis = null) {
         const matches = [];
         const transformations = options.transformations || ['exact', 'retrograde', 'inversion', 'retrograde-inversion'];
         const allowTimeDilation = options.allowTimeDilation !== false;
@@ -169,15 +169,24 @@ class MotifDetector {
             allVoices.forEach((voice, voiceIndex) => {
                 // Search through all positions in this voice
                 for (let pos = 0; pos <= voice.length - candidateMotif.length; pos++) {
-                    // Skip if this is the original motif position in the same voice
-                    if (candidateMotif.voiceIndex !== undefined && 
-                        voiceIndex === candidateMotif.voiceIndex && 
-                        pos === candidateMotif.startIndex) {
-                        continue;
+                    // Skip if this is the original motif position or overlaps with it in the same voice
+                    if (candidateMotif.voiceIndex !== undefined && voiceIndex === candidateMotif.voiceIndex) {
+                        const candidateStart = candidateMotif.startIndex;
+                        const candidateEnd = candidateStart + candidateMotif.length - 1;
+                        const testStart = pos;
+                        const testEnd = pos + candidateMotif.length - 1;
+                        
+                        // Skip if positions overlap (including exact match)
+                        if (testStart <= candidateEnd && testEnd >= candidateStart) {
+                            continue;
+                        }
                     }
                     
                     // Create a test motif at this position
-                    const testMotif = this.extractMotifAtPosition(voice, pos, candidateMotif.length, voiceIndex);
+                    // Extract voice-specific key analysis
+                    const voiceKeyAnalysis = keyAnalysis ? 
+                        (keyAnalysis.voiceKeys?.find(v => v.voiceIndex === voiceIndex)?.keyAnalysis || []) : [];
+                    const testMotif = this.extractMotifAtPosition(voice, pos, candidateMotif.length, voiceIndex, voiceKeyAnalysis);
                     
                     // Test each transformation type
                     for (const transformation of transformations) {
@@ -205,18 +214,41 @@ class MotifDetector {
     }
     
     // Helper method to extract a motif at a specific position
-    extractMotifAtPosition(notes, startIndex, length, voiceIndex) {
+    extractMotifAtPosition(notes, startIndex, length, voiceIndex, keyAnalysis) {
         const motifNotes = notes.slice(startIndex, startIndex + length);
         
-        // Calculate patterns
+        // Convert to scale degrees (consistent with extractMotifs)
+        const scaleDegreeNotes = [];
+        for (let i = 0; i < motifNotes.length; i++) {
+            const note = motifNotes[i];
+            if (!note || !note.pitch || typeof note.pitch !== 'string') {
+                continue;
+            }
+            
+            const keyContext = this.getKeyContextForNote(startIndex + i, keyAnalysis);
+            const noteName = note.pitch.slice(0, -1); // Remove octave
+            const scaleDegree = this.noteToScaleDegree(noteName, keyContext);
+            
+            scaleDegreeNotes.push({
+                ...note,
+                scaleDegree,
+                keyContext
+            });
+        }
+        
+        // Calculate patterns using scale degrees (consistent with extractMotifs)
+        const pitchPattern = scaleDegreeNotes.map(n => n.scaleDegree).filter(d => d !== null);
         const intervalPattern = [];
         const rhythmPattern = [];
         
-        for (let i = 1; i < motifNotes.length; i++) {
-            intervalPattern.push(motifNotes[i].pitch - motifNotes[i-1].pitch);
+        for (let i = 1; i < pitchPattern.length; i++) {
+            intervalPattern.push(pitchPattern[i] - pitchPattern[i - 1]);
+        }
+        
+        for (let i = 0; i < scaleDegreeNotes.length; i++) {
             rhythmPattern.push({
-                delta: motifNotes[i].delta,
-                dur: motifNotes[i].dur
+                delta: scaleDegreeNotes[i].delta,
+                dur: scaleDegreeNotes[i].dur
             });
         }
         
@@ -225,6 +257,7 @@ class MotifDetector {
             length,
             voiceIndex,
             notes: motifNotes,
+            pitchPattern,
             intervalPattern,
             rhythmPattern,
             originalNotes: motifNotes
@@ -367,7 +400,7 @@ class MotifDetector {
         // Find matches across all voices for each voice's motifs
         results.voiceMotifs.forEach(voiceData => {
             console.log(`Finding matches in voice ${voiceData.voiceIndex}...`);
-            const matches = this.findMotifMatches(voiceData.motifs, voices, options.matchOptions);
+            const matches = this.findMotifMatches(voiceData.motifs, voices, options.matchOptions, keyAnalysis);
             
             matches.forEach(match => {
                 match.type = 'cross-voice';
@@ -387,6 +420,32 @@ class MotifDetector {
         
         console.log(`Motif analysis complete: ${results.statistics.totalMotifs} motifs, ${results.statistics.totalMatches} matches`);
         return results;
+    }
+
+    // Convert pitch name to MIDI number for interval calculations
+    pitchToMidi(pitch) {
+        // If it's already a number, return it
+        if (typeof pitch === 'number') {
+            return pitch;
+        }
+        
+        // If it's undefined or null, return default
+        if (!pitch) {
+            return 60; // Default to C4
+        }
+        
+        // Handle string pitch names
+        const noteMap = { 'C': 0, 'D': 2, 'E': 4, 'F': 5, 'G': 7, 'A': 9, 'B': 11 };
+        const match = pitch.match(/^([A-G])([#b]?)(\d+)$/);
+        if (!match) return 60; // Default to C4
+        
+        const [, note, accidental, octave] = match;
+        let midi = noteMap[note] + (parseInt(octave) + 1) * 12;
+        
+        if (accidental === '#') midi += 1;
+        else if (accidental === 'b') midi -= 1;
+        
+        return midi;
     }
 }
 

@@ -255,19 +255,24 @@ describe('MotifDetector', () => {
     describe('extractMotifAtPosition', () => {
         test('should extract motif at specific position', () => {
             const notes = [
-                { pitch: 60, delta: 0, dur: 480 },
-                { pitch: 62, delta: 480, dur: 480 },
-                { pitch: 64, delta: 480, dur: 480 },
-                { pitch: 65, delta: 480, dur: 480 }
+                { pitch: 'C4', delta: 0, dur: 480 },
+                { pitch: 'D4', delta: 480, dur: 480 },
+                { pitch: 'E4', delta: 480, dur: 480 },
+                { pitch: 'F4', delta: 480, dur: 480 }
             ];
 
-            const motif = detector.extractMotifAtPosition(notes, 1, 3, 0);
+            // Provide key analysis context for the method
+            const keyAnalysis = [
+                { key: 'C', mode: 'major', startNote: 0, endNote: 3 }
+            ];
+
+            const motif = detector.extractMotifAtPosition(notes, 1, 3, 0, keyAnalysis);
 
             expect(motif.startIndex).toBe(1);
             expect(motif.length).toBe(3);
             expect(motif.voiceIndex).toBe(0);
             expect(motif.notes).toHaveLength(3);
-            expect(motif.intervalPattern).toEqual([2, 1]); // 64-62=2, 65-64=1
+            expect(motif.intervalPattern).toEqual([1, 1]); // D→E→F in C major: 2→3→4, intervals [1, 1]
         });
 
         test('should handle edge positions correctly', () => {
@@ -459,7 +464,8 @@ describe('MotifDetector', () => {
                     startIndex: 0,
                     length: 3,
                     voiceIndex: 0,
-                    intervalPattern: [2, 2], // Pattern: +2, +2 semitones
+                    intervalPattern: [1, 1], // Pattern: C-D-E in scale degrees (1-2-3), intervals [1, 1]
+                    pitchPattern: [1, 2, 3], // Scale degrees
                     rhythmPattern: [
                         { delta: 480, dur: 480 },
                         { delta: 480, dur: 480 }
@@ -468,15 +474,15 @@ describe('MotifDetector', () => {
             ];
 
             const allVoices = [
-                [ // Voice 0 - original: C-D-E (60-62-64)
-                    { pitch: 60, delta: 0, dur: 480 },
-                    { pitch: 62, delta: 480, dur: 480 },
-                    { pitch: 64, delta: 480, dur: 480 }
+                [ // Voice 0 - original: C-D-E
+                    { pitch: 'C4', delta: 0, dur: 480 },
+                    { pitch: 'D4', delta: 480, dur: 480 },
+                    { pitch: 'E4', delta: 480, dur: 480 }
                 ],
-                [ // Voice 1 - contains exact match: G-A-B (67-69-71)
-                    { pitch: 67, delta: 0, dur: 480 },
-                    { pitch: 69, delta: 480, dur: 480 },
-                    { pitch: 71, delta: 480, dur: 480 }
+                [ // Voice 1 - contains exact match: C-D-E
+                    { pitch: 'C4', delta: 0, dur: 480 },
+                    { pitch: 'D4', delta: 480, dur: 480 },
+                    { pitch: 'E4', delta: 480, dur: 480 }
                 ]
             ];
 
@@ -521,19 +527,20 @@ describe('MotifDetector', () => {
                     startIndex: 0,
                     length: 2,
                     voiceIndex: 0,
-                    intervalPattern: [2],
+                    intervalPattern: [1], // C-D in scale degrees (1-2), interval [1]
+                    pitchPattern: [1, 2], // Scale degrees C=1, D=2
                     rhythmPattern: [{ delta: 480, dur: 480 }]
                 }
             ];
 
             const allVoices = [
                 [
-                    { pitch: 60, delta: 0, dur: 480 },
-                    { pitch: 62, delta: 480, dur: 480 }
+                    { pitch: 'C4', delta: 0, dur: 480 },
+                    { pitch: 'D4', delta: 480, dur: 480 }
                 ],
                 [
-                    { pitch: 67, delta: 0, dur: 480 },
-                    { pitch: 65, delta: 480, dur: 480 } // Inverted pattern [-2]
+                    { pitch: 'D4', delta: 0, dur: 480 },
+                    { pitch: 'C4', delta: 480, dur: 480 } // Inverted pattern D-C (2-1), interval [-1]
                 ]
             ];
 

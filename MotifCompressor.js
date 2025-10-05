@@ -7,12 +7,14 @@ const KeyAnalyzer = require('./KeyAnalyzer');
 const MotifDetector = require('./MotifDetector');
 
 class MotifCompressor {
-    constructor() {
+    constructor(options = {}) {
         this.keyAnalyzer = new KeyAnalyzer();
         this.motifDetector = new MotifDetector();
-        this.compressionThreshold = 0.5; // Minimum confidence for motif compression (lowered to reproduce issue)
-        this.minMotifMatches = 1; // Minimum matches required to compress a motif (lowered to reproduce issue)  
-        this.maxCompressionRatio = 0.8; // Maximum fraction of notes that can be compressed (increased to reproduce issue)
+        this.compressionThreshold = options.compressionThreshold || 0.5; // Minimum confidence for motif compression
+        this.minMotifMatches = options.minMotifMatches || 3; // Minimum matches required to compress a motif (original + 3 matches = 4 total instances)
+        this.maxCompressionRatio = options.maxCompressionRatio || 0.8; // Maximum fraction of notes that can be compressed
+        this.conservativeMode = options.conservativeMode || false; // Avoid transformations, prefer exact matches
+        this.exactMatchesOnly = options.exactMatchesOnly || false; // Only use exact matches, no transformations at all
     }
 
     /**
@@ -119,12 +121,11 @@ class MotifCompressor {
     identifyCompressibleMotifs(motifAnalysis, totalNotes) {
         const motifMatchCounts = new Map();
         
-        // Count matches per motif using motif.startIndex as unique identifier
+        // Count matches per motif using voice, startIndex, and length as unique identifier
+        // Only count motif1 to avoid double-counting (each match represents motif1 found at motif2's position)
         motifAnalysis.motifMatches.forEach(match => {
-            const motif1Key = `${match.voiceIndex}_${match.motif1.startIndex}`;
-            const motif2Key = `${match.voiceIndex}_${match.motif2.startIndex}`;
+            const motif1Key = `${match.motif1.voiceIndex}_${match.motif1.startIndex}_${match.motif1.length}`;
             motifMatchCounts.set(motif1Key, (motifMatchCounts.get(motif1Key) || 0) + 1);
-            motifMatchCounts.set(motif2Key, (motifMatchCounts.get(motif2Key) || 0) + 1);
         });
         
         console.log(`Total motif matches: ${motifAnalysis.motifMatches.length}`);
@@ -136,7 +137,7 @@ class MotifCompressor {
         // Iterate through all voice motifs
         motifAnalysis.voiceMotifs.forEach(voiceData => {
             voiceData.motifs.forEach((motif, motifIndex) => {
-                const motifKey = `${voiceData.voiceIndex}_${motif.startIndex}`;
+                const motifKey = `${voiceData.voiceIndex}_${motif.startIndex}_${motif.length}`;
                 const matchCount = motifMatchCounts.get(motifKey) || 0;
                 
                 if (matchCount >= this.minMotifMatches) {
@@ -147,9 +148,23 @@ class MotifCompressor {
                     );
                     
                     // Find high-confidence matches for this motif
-                    const highConfidenceMatches = allMatches.filter(match => 
+                    let highConfidenceMatches = allMatches.filter(match => 
                         match.confidence >= this.compressionThreshold
                     );
+                    
+                    // In conservative mode, prefer exact matches (no transformations)
+                    if (this.conservativeMode || this.exactMatchesOnly) {
+                        const exactMatches = highConfidenceMatches.filter(match => 
+                            match.transformation === 'exact'
+                        );
+                        // In exactMatchesOnly mode, ONLY use exact matches
+                        if (this.exactMatchesOnly) {
+                            highConfidenceMatches = exactMatches;
+                        } else if (exactMatches.length >= this.minMotifMatches) {
+                            // In conservative mode, prefer exact matches but fall back if needed
+                            highConfidenceMatches = exactMatches;
+                        }
+                    }
                     
                     // Debug: show confidence scores for first few motifs
                     if (compressible.length < 3 && allMatches.length > 0) {
@@ -169,7 +184,16 @@ class MotifCompressor {
         });
         
         // Sort by potential compression savings
-        const sortedCompressible = compressible.sort((a, b) => b.savings - a.savings);
+        // Sort compressible motifs - in conservative mode, prefer shorter motifs for better integrity
+        const sortedCompressible = compressible.sort((a, b) => {
+            if (this.conservativeMode) {
+                // Prefer shorter motifs first, then by savings
+                if (a.motif.length !== b.motif.length) {
+                    return a.motif.length - b.motif.length;
+                }
+            }
+            return b.savings - a.savings;
+        });
         
         // Apply non-overlapping selection to prevent over-compression
         return this.selectNonOverlappingMotifs(sortedCompressible, totalNotes);
@@ -266,13 +290,18 @@ class MotifCompressor {
                         }
                     });
                     
-                    // Update compressed note count  
-                    compressedNoteCount += notesSaved;
-                    
-                    selected.push({
-                        ...item,
-                        matches: validMatches
-                    });
+                    // Check if adding this motif would exceed compression ratio limit
+                    if (compressedNoteCount + notesSaved <= maxCompressedNotes) {
+                        // Update compressed note count  
+                        compressedNoteCount += notesSaved;
+                        
+                        selected.push({
+                            ...item,
+                            matches: validMatches
+                        });
+                    } else {
+                        // Skip this motif to respect maxCompressionRatio limit
+                    }
                 }
             }
         });
@@ -395,8 +424,22 @@ class MotifCompressor {
                 const item = voice[i];
                 
                 if (item.type === 'motif_original') {
-                    // Replace with original notes
-                    voice.splice(i, 1, ...item.notes);
+                    // Replace with original notes - preserve all original properties
+                    const originalNotes = item.notes.map(note => {
+                        const expandedNote = { ...note };
+                        // Remove internal processing properties, preserve original music properties
+                        delete expandedNote.scaleDegree;
+                        delete expandedNote.keyContext;
+                        delete expandedNote.noteIndex;
+                        // Ensure we have the pitch property from originalPitch if missing
+                        if (!expandedNote.pitch && expandedNote.originalPitch) {
+                            expandedNote.pitch = expandedNote.originalPitch;
+                        }
+                        delete expandedNote.originalPitch;
+                        delete expandedNote.type;
+                        return expandedNote;
+                    });
+                    voice.splice(i, 1, ...originalNotes);
                 } else if (item.type === 'motif_reference') {
                     // Expand motif reference with transformation
                     const motifDef = motifMap.get(item.motifId);
@@ -406,14 +449,42 @@ class MotifCompressor {
                             item.transformation,
                             item.timeDilation
                         );
-                        // Preserve all timing properties from the motif reference to the first expanded note
-                        if (expandedNotes.length > 0) {
-                            if (item.delta !== undefined) expandedNotes[0].delta = item.delta;
-                            if (item.start !== undefined) expandedNotes[0].start = item.start;
-                            if (item.tick !== undefined) expandedNotes[0].tick = item.tick;
-                            if (item.instanceId !== undefined) expandedNotes[0].instanceId = item.instanceId;
+                        // Clean up expanded notes and preserve timing from reference
+                        const cleanedNotes = expandedNotes.map((note, index) => {
+                            const cleanedNote = { ...note };
+                            // Remove internal processing properties
+                            delete cleanedNote.scaleDegree;
+                            delete cleanedNote.keyContext;
+                            delete cleanedNote.noteIndex;
+                            // Ensure we have the pitch property from originalPitch if missing
+                            if (!cleanedNote.pitch && cleanedNote.originalPitch) {
+                                cleanedNote.pitch = cleanedNote.originalPitch;
+                            }
+                            delete cleanedNote.originalPitch;
+                            delete cleanedNote.type;
+                            
+                            // For the first note, preserve timing properties from the motif reference
+                            if (index === 0) {
+                                if (item.delta !== undefined) cleanedNote.delta = item.delta;
+                                if (item.start !== undefined) cleanedNote.start = item.start;
+                                if (item.tick !== undefined) cleanedNote.tick = item.tick;
+                                if (item.instanceId !== undefined) cleanedNote.instanceId = item.instanceId;
+                            }
+                            return cleanedNote;
+                        });
+                        
+                        // Calculate start times for subsequent notes
+                        if (item.start !== undefined) {
+                            let currentStart = item.start;
+                            for (let noteIndex = 1; noteIndex < cleanedNotes.length; noteIndex++) {
+                                const currentNote = cleanedNotes[noteIndex];
+                                if (currentNote.delta !== undefined) {
+                                    currentStart += currentNote.delta;
+                                    cleanedNotes[noteIndex].start = currentStart;
+                                }
+                            }
                         }
-                        voice.splice(i, 1, ...expandedNotes);
+                        voice.splice(i, 1, ...cleanedNotes);
                     }
                 } else if (item.type === 'regular_note') {
                     // Regular note - remove the type property and keep as-is
@@ -428,7 +499,7 @@ class MotifCompressor {
      * Apply transformation to motif notes
      */
     applyMotifTransformation(originalNotes, transformation, timeDilation = 1.0) {
-        let transformedNotes = [...originalNotes];
+        let transformedNotes = originalNotes.map(note => ({ ...note }));
         
         // Apply pitch transformations
         if (transformation === 'retrograde') {
@@ -436,18 +507,26 @@ class MotifCompressor {
         } else if (transformation === 'inversion') {
             // Apply pitch inversion (flip intervals around center)
             const centerPitch = this.calculateCenterPitch(transformedNotes);
-            transformedNotes = transformedNotes.map(note => ({
-                ...note,
-                pitch: this.invertPitch(note.pitch, centerPitch)
-            }));
+            transformedNotes = transformedNotes.map(note => {
+                const pitch = note.pitch || note.originalPitch;
+                return {
+                    ...note,
+                    pitch: this.invertPitch(pitch, centerPitch),
+                    originalPitch: this.invertPitch(pitch, centerPitch)
+                };
+            });
         } else if (transformation === 'retrograde-inversion') {
             // Apply both transformations
             transformedNotes = transformedNotes.reverse();
             const centerPitch = this.calculateCenterPitch(transformedNotes);
-            transformedNotes = transformedNotes.map(note => ({
-                ...note,
-                pitch: this.invertPitch(note.pitch, centerPitch)
-            }));
+            transformedNotes = transformedNotes.map(note => {
+                const pitch = note.pitch || note.originalPitch;
+                return {
+                    ...note,
+                    pitch: this.invertPitch(pitch, centerPitch),
+                    originalPitch: this.invertPitch(pitch, centerPitch)
+                };
+            });
         }
         
         // Apply time dilation
@@ -465,7 +544,7 @@ class MotifCompressor {
      * Calculate center pitch for inversion
      */
     calculateCenterPitch(notes) {
-        const pitches = notes.map(note => this.pitchToMidi(note.pitch));
+        const pitches = notes.map(note => this.pitchToMidi(note.pitch || note.originalPitch));
         const minPitch = Math.min(...pitches);
         const maxPitch = Math.max(...pitches);
         return (minPitch + maxPitch) / 2;
