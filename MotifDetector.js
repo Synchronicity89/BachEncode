@@ -13,21 +13,22 @@ class MotifDetector {
         };
         
         // For handling accidentals in scale degree calculation
+        // Note: Enharmonic equivalents must have the same scale degree
         this.chromaticToScaleDegree = {
             'C': 1, 'C#': 1.5, 'Db': 1.5,
             'D': 2, 'D#': 2.5, 'Eb': 2.5,
-            'E': 3, 'E#': 3.5, 'Fb': 2.5,
+            'E': 3, 'E#': 4, 'Fb': 3,        // E# = F, Fb = E
             'F': 4, 'F#': 4.5, 'Gb': 4.5,
             'G': 5, 'G#': 5.5, 'Ab': 5.5,
             'A': 6, 'A#': 6.5, 'Bb': 6.5,
-            'B': 7, 'B#': 7.5, 'Cb': 6.5
+            'B': 7, 'B#': 1, 'Cb': 7         // B# = C, Cb = B
         };
 
         // Minimum motif length and similarity thresholds
         this.minMotifLength = 3;
         this.maxMotifLength = 12;
-        this.similarityThreshold = 0.8;
-        this.rhythmSimilarityThreshold = 0.7;
+        this.similarityThreshold = 0.6; // Lowered for better pattern detection
+        this.rhythmSimilarityThreshold = 0.5; // Lowered for better rhythm matching
     }
 
     // Convert a note to scale degree within a given key context
@@ -40,7 +41,7 @@ class MotifDetector {
         
         if (!scaleDegree) return null;
         
-        // Adjust for key transposition
+        // Adjust for key transposition - the key root should be scale degree 1
         const keyRoot = this.scaleDegrees[key];
         scaleDegree = ((scaleDegree - keyRoot + 7) % 7) + 1;
         
@@ -51,10 +52,8 @@ class MotifDetector {
             scaleDegree -= 0.5;
         }
         
-        // Adjust for minor mode (relative to major)
-        if (mode === 'minor') {
-            scaleDegree = ((scaleDegree + 2 - 1) % 7) + 1;
-        }
+        // No additional adjustment needed for minor mode since the key parameter 
+        // already represents the tonic (A for A minor, C for C major)
         
         return scaleDegree;
     }
@@ -64,6 +63,11 @@ class MotifDetector {
         const scaleDegreeVoice = [];
         
         voice.forEach((note, index) => {
+            // Skip notes with invalid pitch values
+            if (!note.pitch || typeof note.pitch !== 'string') {
+                return;
+            }
+            
             // Find the key context for this note
             const keyContext = this.getKeyContextForNote(index, keyAnalysis);
             const noteName = note.pitch.slice(0, -1); // Remove octave
@@ -160,14 +164,15 @@ class MotifDetector {
         // For each motif, find all occurrences throughout all voices
         for (let i = 0; i < motifs.length; i++) {
             const candidateMotif = motifs[i];
-            const motifMatches = [];
             
             // Search through all voices for this motif pattern
             allVoices.forEach((voice, voiceIndex) => {
                 // Search through all positions in this voice
                 for (let pos = 0; pos <= voice.length - candidateMotif.length; pos++) {
-                    // Skip if this is the original motif position
-                    if (voiceIndex === candidateMotif.voiceIndex && pos === candidateMotif.startIndex) {
+                    // Skip if this is the original motif position in the same voice
+                    if (candidateMotif.voiceIndex !== undefined && 
+                        voiceIndex === candidateMotif.voiceIndex && 
+                        pos === candidateMotif.startIndex) {
                         continue;
                     }
                     
@@ -179,7 +184,7 @@ class MotifDetector {
                         const similarity = this.compareMotifs(candidateMotif, testMotif, transformation, allowTimeDilation);
                         
                         if (similarity.pitch >= this.similarityThreshold) {
-                            motifMatches.push({
+                            matches.push({
                                 motif1: candidateMotif,
                                 motif2: testMotif,
                                 motifIndex2: pos,
@@ -194,9 +199,6 @@ class MotifDetector {
                     }
                 }
             });
-            
-            // Add all matches for this motif
-            matches.push(...motifMatches);
         }
         
         return matches;
@@ -347,6 +349,11 @@ class MotifDetector {
             console.log(`Analyzing voice ${voiceIndex}...`);
             const voiceKeyAnalysis = keyAnalysis.voiceKeys.find(v => v.voiceIndex === voiceIndex)?.keyAnalysis || [];
             const motifs = this.extractMotifs(voice, voiceKeyAnalysis, options.motifOptions);
+            
+            // Add voiceIndex to each motif
+            motifs.forEach(motif => {
+                motif.voiceIndex = voiceIndex;
+            });
             
             results.voiceMotifs.push({
                 voiceIndex,

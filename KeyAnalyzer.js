@@ -46,6 +46,9 @@ class KeyAnalyzer {
 
     // Convert pitch notation to note name (e.g., "C4" -> "C", "F#5" -> "F#")
     pitchToNoteName(pitch) {
+        if (!pitch || typeof pitch !== 'string') {
+            return null; // Handle null or invalid pitch values
+        }
         return pitch.slice(0, -1); // Remove octave number
     }
 
@@ -81,7 +84,7 @@ class KeyAnalyzer {
     analyzeWindow(notes) {
         if (notes.length === 0) return null;
 
-        const noteNames = notes.map(note => this.pitchToNoteName(note.pitch));
+        const noteNames = notes.map(note => this.pitchToNoteName(note.pitch)).filter(name => name !== null);
         const noteSet = new Set(noteNames);
         
         // Calculate scores for each possible key
