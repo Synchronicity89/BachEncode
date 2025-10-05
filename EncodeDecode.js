@@ -157,6 +157,21 @@ function extractTempoAndPPQAndNotes(midi) {
     debugOutput.push('First few notes: ' + JSON.stringify(notes.slice(0, 3), null, 2));
   }
 
+  // ZERO-DURATION NOTE FIX: Apply minimum duration to prevent silent notes
+  const minDuration = Math.max(1, Math.round(ppq * 0.05)); // 5% of quarter note
+  let zeroDurationCount = 0;
+  notes.forEach(note => {
+    if (note.dur === 0) {
+      note.dur = minDuration;
+      zeroDurationCount++;
+    }
+  });
+  
+  if (zeroDurationCount > 0) {
+    debugOutput.push(`Fixed ${zeroDurationCount} zero-duration notes (applied minimum duration: ${minDuration} ticks)`);
+    console.log(`Fixed ${zeroDurationCount} zero-duration notes with minimum duration: ${minDuration} ticks`);
+  }
+
   // CHORD HANDLING FIX: Sort notes deterministically 
   // Primary sort: by start time (earliest first)
   // Secondary sort: by pitch (lowest first) for simultaneous notes
