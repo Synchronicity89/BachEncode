@@ -149,7 +149,7 @@ The voice silencing issue was primarily caused by:
 - **Comprehensive test coverage** to prevent regressions
 
 ### User Experience Improvement ✅
-- MIDI files processed with `--motif` option will no longer have completely silent notes
+- MIDI files processed with motif compression (now default) will no longer have completely silent notes
 - Minimum note duration ensures all musical content remains audible
 - Better error handling prevents crashes on malformed MIDI files
 
@@ -158,8 +158,8 @@ The voice silencing issue was primarily caused by:
 The zero-duration fix is now automatic:
 
 ```bash
-# This will now automatically fix zero-duration notes
-node EncodeDecode.js compress input.mid output.json --motif
+# This will now automatically fix zero-duration notes (motif compression is now default)
+node EncodeDecode.js compress input.mid output.json
 
 # The resulting MIDI will have all notes with minimum audible duration
 node EncodeDecode.js decompress output.json final-output.mid
@@ -175,4 +175,4 @@ This comprehensive testing and debugging effort has:
 4. ✅ **Provided debugging tools** for continued investigation
 5. ✅ **Established robust testing infrastructure** for ongoing development
 
-The voice silencing problem with `--motif` compression has been significantly improved, with the main technical cause (zero-duration notes) completely resolved.
+The voice silencing problem with motif compression (now enabled by default) has been significantly improved, with the main technical cause (zero-duration notes) completely resolved.

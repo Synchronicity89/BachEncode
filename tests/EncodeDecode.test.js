@@ -776,10 +776,10 @@ describe('EncodeDecode.js', () => {
         expect(process.argv.length).toBeLessThan(5);
         
         // Test valid compress arguments
-        process.argv = ['node', 'EncodeDecode.js', 'compress', 'input.mid', 'output.json', '--motif'];
+        process.argv = ['node', 'EncodeDecode.js', 'compress', 'input.mid', 'output.json', '--no-motifs'];
         const args = process.argv.slice(2);
-        expect(args.length).toBe(4); // compress, input.mid, output.json, --motif
-        expect(args[3]).toBe('--motif');
+        expect(args.length).toBe(4); // compress, input.mid, output.json, --no-motifs
+        expect(args[3]).toBe('--no-motifs');
         
       } finally {
         process.argv = originalArgv;

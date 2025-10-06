@@ -409,9 +409,9 @@ describe('EncodeDecode.js - Integration Tests', () => {
       const jsonPath = 'test-cli-motif-bwv785.json';
       tempFiles.push(jsonPath);
 
-      // Mock process.argv for compress command with motif option
+      // Mock process.argv for compress command (motif compression enabled by default)
       const originalArgv = process.argv;
-      process.argv = ['node', 'EncodeDecode.js', 'compress', 'midi/BWV785.MID', jsonPath, '--motif'];
+      process.argv = ['node', 'EncodeDecode.js', 'compress', 'midi/BWV785.MID', jsonPath];
 
       // Test motif compression function directly
       const config = createCompressionConfig({ useMotifCompression: true });
@@ -680,7 +680,7 @@ describe('EncodeDecode.js - Integration Tests', () => {
           
           tempFiles.push(jsonPath, midiPath);
           
-          console.log(`\n--- BWV785 Aggressive Cycle ${cycle} with --motif ---`);
+          console.log(`\n--- BWV785 Aggressive Cycle ${cycle} with motif compression (default) ---`);
           
           // Compress with MOTIF option (this triggers the problematic path)
           const compressionResults = compressMidiToJson(currentMidiPath, jsonPath, { 

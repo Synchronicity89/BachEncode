@@ -161,14 +161,21 @@ class MotifDetector {
         const transformations = options.transformations || ['exact', 'retrograde', 'inversion', 'retrograde-inversion'];
         const allowTimeDilation = options.allowTimeDilation !== false;
         
+        // Add performance limits to prevent stack overflow on complex pieces like BWV785
+        const maxMotifs = Math.min(motifs.length, 50); // Limit motifs processed
+        const maxPositionsPerVoice = 100; // Limit positions checked per voice
+        
         // For each motif, find all occurrences throughout all voices
-        for (let i = 0; i < motifs.length; i++) {
+        for (let i = 0; i < maxMotifs; i++) {
             const candidateMotif = motifs[i];
             
             // Search through all voices for this motif pattern
             allVoices.forEach((voice, voiceIndex) => {
-                // Search through all positions in this voice
-                for (let pos = 0; pos <= voice.length - candidateMotif.length; pos++) {
+                // Limit search positions to prevent performance explosion
+                const maxPos = Math.min(voice.length - candidateMotif.length, maxPositionsPerVoice);
+                
+                // Search through limited positions in this voice
+                for (let pos = 0; pos <= maxPos; pos++) {
                     // Skip if this is the original motif position or overlaps with it in the same voice
                     if (candidateMotif.voiceIndex !== undefined && voiceIndex === candidateMotif.voiceIndex) {
                         const candidateStart = candidateMotif.startIndex;

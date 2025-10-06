@@ -20,10 +20,14 @@ function getMotifCompressor() {
 // Factory function for creating compression configurations
 function createCompressionConfig(options = {}) {
     return {
-        useMotifCompression: options.useMotifCompression || false,
+        useMotifCompression: options.useMotifCompression || options.useMotifs || false,
         motifOptions: {
-            compressionThreshold: options.compressionThreshold || 0.5,
+            // Higher threshold for exact matches only - be more selective
+            compressionThreshold: options.compressionThreshold || 0.9,
             minMotifMatches: options.minMotifMatches || 1,
+            // Force exact matches only - disable transformations for simplicity and timing accuracy
+            exactMatchesOnly: true,
+            conservativeMode: true,
             ...options.motifOptions
         }
     };
@@ -223,23 +227,61 @@ function separateVoices(notes) {
 
   for (const note of notes) {
     let bestVoice = null;
-    let bestDist = Infinity;
+    let bestScore = Infinity;
 
     for (const voice of voices) {
-      const lastNote = voice[voice.length - 1];
-      if (lastNote.start + lastNote.dur <= note.start) {
-        const dist = Math.abs(lastNote.pitch - note.pitch);
-        if (dist < bestDist) {
-          bestDist = dist;
+      let canAssign = true;
+      let score = 0;
+      
+      // Check for conflicts with existing notes in this voice
+      for (let i = voice.length - 1; i >= 0; i--) {
+        const existingNote = voice[i];
+        
+        // Stop checking if we've gone too far back in time
+        if (existingNote.start + existingNote.dur < note.start - 500) break;
+        
+        const noteEnd = note.start + note.dur;
+        const existingEnd = existingNote.start + existingNote.dur;
+        const hasOverlap = note.start < existingEnd && existingNote.start < noteEnd;
+        
+        if (hasOverlap) {
+          // Same pitch simultaneously - impossible in one voice
+          if (existingNote.pitch === note.pitch) {
+            canAssign = false;
+            break;
+          }
+          
+          // Heavy penalty for overlapping notes - forces voice separation in polyphonic music
+          score += 500;
+        }
+      }
+      
+      if (canAssign) {
+        const lastNote = voice[voice.length - 1];
+        
+        // Calculate basic compatibility score
+        const pitchDist = Math.abs(lastNote.pitch - note.pitch);
+        const timingGap = Math.max(0, note.start - (lastNote.start + lastNote.dur));
+        
+        score += pitchDist + (timingGap / 50);
+        
+        // Bonus for non-overlapping notes (encourages monophonic voices)
+        if (note.start >= lastNote.start + lastNote.dur) {
+          score -= 100; // Prefer sequential notes
+        }
+        
+        if (score < bestScore) {
+          bestScore = score;
           bestVoice = voice;
         }
       }
     }
 
-    if (bestVoice) {
-      bestVoice.push(note);
-    } else {
+    // Create a new voice if no suitable voice found or if the best score is too high
+    if (!bestVoice || bestScore > 600) {
       voices.push([note]);
+    } else {
+      bestVoice.push(note);
     }
   }
 
@@ -249,16 +291,17 @@ function separateVoices(notes) {
 function encodeVoices(voices) {
   return voices.map(voice => {
     const encoded = [];
-    let prevEnd = 0;
+    let prevStart = 0;
     for (const note of voice) {
-      const delta = note.start - prevEnd;
+      const delta = note.start - prevStart;
       encoded.push({
+        type: 'regular_note', // Always add type field for consistency
         delta,
         pitch: tonal.Note.fromMidi(note.pitch, true), // Use sharps
         dur: note.dur,
         vel: note.vel,
       });
-      prevEnd = note.start + note.dur;
+      prevStart = note.start; // Track note start times, not end times
     }
     return encoded;
   });
@@ -320,7 +363,7 @@ function decodeVoices(encodedVoices, ppq) {
           vel: item.vel,
         });
       }
-      currentTick += item.dur;
+      // Don't advance currentTick by duration - each delta is relative to previous note start
     }
   }
   return notes;
@@ -347,9 +390,48 @@ function decompressJsonToMidi(inputJson, outputMidi, options = {}) {
     if (MotifCompressorClass) {
       const motifCompressor = new MotifCompressorClass();
       compressed = motifCompressor.decompress(compressed);
+      
+      // Fix voice timing after motif decompression to ensure synchronization
+      compressed.voices = compressed.voices.map(voice => {
+        let prevStart = 0;
+        return voice.map(note => {
+          const currentStart = prevStart + note.delta;
+          const fixedNote = {
+            ...note,
+            delta: currentStart - prevStart
+          };
+          prevStart = currentStart;
+          return fixedNote;
+        });
+      });
     } else {
       console.warn('Motif compression detected but MotifCompressor not available');
     }
+  }
+  
+  // Export motif-free JSON if requested
+  if (options.exportJson) {
+    // Ensure all notes have consistent type field and property ordering
+    const normalizedVoices = compressed.voices.map(voice => 
+      voice.map(note => ({
+        type: 'regular_note', // Add type field for consistency
+        delta: note.delta,
+        pitch: note.pitch,
+        dur: note.dur,
+        vel: note.vel
+      }))
+    );
+    
+    const motifFreeJson = {
+      ppq: compressed.ppq,
+      tempo: compressed.tempo,
+      voices: normalizedVoices
+    };
+    const jsonOutputPath = options.exportJson === true ? 
+      outputMidi.replace(/\.[^.]+$/, '-motif-free.json') : 
+      options.exportJson;
+    fs.writeFileSync(jsonOutputPath, JSON.stringify(motifFreeJson, null, 2));
+    console.log(`Motif-free JSON exported to: ${jsonOutputPath}`);
   }
   
   const { ppq, tempo } = compressed;
@@ -393,10 +475,11 @@ function main() {
   try {
     const args = process.argv.slice(2);
     if (args.length < 3) {
-      console.log('Usage: node program.js compress input.midi output.json [--motif]');
-      console.log('Or: node program.js decompress input.json output.midi');
+      console.log('Usage: node program.js compress input.midi output.json [--no-motifs]');
+      console.log('Or: node program.js decompress input.json output.midi [--export-json [path]]');
       console.log('Options:');
-      console.log('  --motif    Enable motif-based compression (experimental)');
+      console.log('  --no-motifs    Disable motif-based compression (motifs enabled by default)');
+      console.log('  --export-json  Export motif-free JSON during decompression (optional path)');
       return;
     }
 
@@ -405,16 +488,29 @@ function main() {
     const output = args[2];
     
     // Parse options
-    const options = {};
+    const options = {
+      useMotifCompression: true  // Default to true for compression
+    };
+    
     for (let i = 3; i < args.length; i++) {
-      if (args[i] === '--motif') {
-        options.useMotifCompression = true;
+      if (args[i] === '--no-motifs') {
+        options.useMotifCompression = false;
+      } else if (args[i] === '--export-json') {
+        // Check if next argument is a custom path
+        if (i + 1 < args.length && !args[i + 1].startsWith('--')) {
+          options.exportJson = args[i + 1];
+          i++; // Skip the next argument since we used it as the path
+        } else {
+          options.exportJson = true; // Use default naming
+        }
       }
     }
 
     console.log(`Command: ${command}, Input: ${input}, Output: ${output}`);
     if (options.useMotifCompression) {
-      console.log('Motif compression enabled');
+      console.log('Motif compression enabled (default)');
+    } else {
+      console.log('Motif compression disabled');
     }
 
     if (command === 'compress') {
