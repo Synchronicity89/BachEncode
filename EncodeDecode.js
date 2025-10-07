@@ -647,46 +647,49 @@ function applyMotifs(encodedVoices, motifs, motifMap, patternMap, keyTransformat
   return newEncodedVoices;
 }
 
-function compressMidiToJson(inputMidi, outputJson) {
+function compressMidiToJson(inputMidi, outputJson, options = {}) {
   const midi = parseMidi(inputMidi);
   const { ppq, tempo, notes, key_sig } = extractTempoAndPPQAndNotes(midi);
   const key = findBestKey(notes, key_sig);
   const tonic_name = tonal.Note.pitchClass(tonal.Note.fromMidi(key.tonic_pc + 60, true));
   const voices = separateVoices(notes);
   let encodedVoices = encodeVoices(voices);
-  // Use configurable options for motif detection
-  const motifOptions = {
-    minLength: 2,     // Allow 2-note motifs
-    maxLength: 20,    // Keep existing max
-    minOccurrences: 2 // Keep existing minimum repetition requirement
-  };
-  const { motifs, motifMap, patternMap, keyTransformationMap } = findMotifs(encodedVoices, key, motifOptions);
-  encodedVoices = applyMotifs(encodedVoices, motifs, motifMap, patternMap, keyTransformationMap);
-
-  // Remove unused motifs
-  const used = new Set();
-  for (const voice of encodedVoices) {
-    for (const item of voice) {
-      if (item.motif_id !== undefined) {
-        used.add(item.motif_id);
+  let newMotifs = [];
+  // Skip motif detection entirely if forced motifless
+  if (!options.forceMotifless) {
+    const motifOptions = {
+      minLength: 2,     // Allow 2-note motifs
+      maxLength: 20,    // Keep existing max
+      minOccurrences: 2 // Keep existing minimum repetition requirement
+    };
+    const { motifs, motifMap, patternMap, keyTransformationMap } = findMotifs(encodedVoices, key, motifOptions);
+    encodedVoices = applyMotifs(encodedVoices, motifs, motifMap, patternMap, keyTransformationMap);
+    // Remove unused motifs
+    const used = new Set();
+    for (const voice of encodedVoices) {
+      for (const item of voice) {
+        if (item.motif_id !== undefined) {
+          used.add(item.motif_id);
+        }
+      }
+    }
+    const sortedUsed = Array.from(used).sort((a, b) => a - b);
+    newMotifs = sortedUsed.map(oldId => motifs[oldId]);
+    const newMap = new Map();
+    sortedUsed.forEach((oldId, index) => newMap.set(oldId, index));
+    for (const voice of encodedVoices) {
+      for (const item of voice) {
+        if (item.motif_id !== undefined) {
+          item.motif_id = newMap.get(item.motif_id);
+        }
       }
     }
   }
-  const sortedUsed = Array.from(used).sort((a, b) => a - b);
-  const newMotifs = sortedUsed.map(oldId => motifs[oldId]);
-  const newMap = new Map();
-  sortedUsed.forEach((oldId, index) => {
-    newMap.set(oldId, index);
-  });
-  for (const voice of encodedVoices) {
-    for (const item of voice) {
-      if (item.motif_id !== undefined) {
-        item.motif_id = newMap.get(item.motif_id);
-      }
-    }
-  }
 
-  const compressed = { ppq, tempo, key: { tonic: tonic_name, mode: key.mode }, motifs: newMotifs, voices: encodedVoices };
+  const compressed = { ppq, tempo, key: { tonic: tonic_name, mode: key.mode }, voices: encodedVoices };
+  if (!options.forceMotifless && newMotifs.length) {
+    compressed.motifs = newMotifs;
+  }
   
   // Ensure output directory exists
   const outputDir = path.dirname(outputJson);
@@ -789,10 +792,171 @@ function decodeVoices(encodedVoices, ppq, motifs = [], key = { tonic: 'C', mode:
   return notes;
 }
 
-function decompressJsonToMidi(inputJson, outputMidi) {
+// Expand motifs into plain note voices (regular_note style)
+function expandMotifsToRegularVoices(compressed) {
+  const { ppq, motifs = [], voices, key = { tonic: 'C', mode: 'major' } } = compressed;
+  const tonic_pc = tonal.Note.midi(key.tonic + '4') % 12;
+  const mode = key.mode;
+  const scale_offsets = mode === 'major' ? [0, 2, 4, 5, 7, 9, 11] : [0, 2, 3, 5, 7, 8, 11];
+  const expandedVoices = [];
+  // Per voice expansion retaining ordering
+  for (const voice of voices) {
+    const expandedNotes = [];
+    let currentTick = 0;
+    for (const item of voice) {
+      if (item.motif_id !== undefined && motifs[item.motif_id]) {
+        // Advance by delta first
+        currentTick += (item.delta || 0);
+        const motif = motifs[item.motif_id];
+        let deg_rels = motif.deg_rels;
+        let accs = motif.accs;
+        let deltas = motif.deltas;
+        let durs = motif.durs;
+        let vels = motif.vels;
+        if (item.retrograde === true) {
+          deg_rels = [...deg_rels].reverse().map(d => -d);
+          accs = [...accs].reverse();
+          deltas = [...deltas].reverse();
+          durs = [...durs].reverse();
+          vels = [...vels].reverse();
+        } else if (item.inverted === true) {
+          deg_rels = deg_rels.map(d => -d);
+        }
+        // Determine base midi
+        const pitchValue = item.base_pitch || item.pitch;
+        const base_midi = typeof pitchValue === 'number' ? pitchValue : tonal.Note.midi(pitchValue);
+        const base_diatonic = pitchToDiatonic(base_midi, tonic_pc, mode);
+        let subTick = currentTick;
+        for (let j = 0; j < deg_rels.length; j++) {
+          const total_deg = base_diatonic.degree + deg_rels[j];
+          const deg_mod = ((total_deg % 7) + 7) % 7;
+          const oct_add = Math.trunc(total_deg / 7);
+          let exp_pc = (tonic_pc + scale_offsets[deg_mod]) % 12;
+          let pc = (exp_pc + accs[j]) % 12;
+          if (pc < 0) pc += 12;
+          const oct = base_diatonic.oct + oct_add;
+          const midiPitch = pc + oct * 12;
+          expandedNotes.push({ start: subTick, dur: durs[j], pitch: midiPitch, vel: vels[j] });
+          subTick += durs[j];
+          if (j < deg_rels.length - 1) subTick += deltas[j];
+        }
+        currentTick = subTick; // Move to end of motif
+      } else {
+        currentTick += item.delta;
+        const midiPitch = tonal.Note.midi(item.pitch);
+        if (midiPitch != null) {
+          expandedNotes.push({ start: currentTick, dur: item.dur, pitch: midiPitch, vel: item.vel });
+        }
+        currentTick += item.dur;
+      }
+    }
+    // Convert expanded notes back to regular_note JSON
+    expandedNotes.sort((a,b)=> a.start - b.start || a.pitch - b.pitch);
+    const regularVoice = [];
+    let prevEnd = 0;
+    for (const n of expandedNotes) {
+      const delta = n.start - prevEnd;
+      regularVoice.push({
+        type: 'regular_note',
+        delta,
+        pitch: tonal.Note.fromMidi(n.pitch, true),
+        dur: n.dur,
+        vel: n.vel
+      });
+      prevEnd = n.start + n.dur;
+    }
+    expandedVoices.push(regularVoice);
+  }
+  return expandedVoices;
+}
+
+// Expanded variant that annotates each produced note with motif / transformation metadata.
+function expandMotifsToAnnotatedVoices(compressed) {
+  const { motifs = [], voices, key = { tonic: 'C', mode: 'major' } } = compressed;
+  const tonic_pc = tonal.Note.midi(key.tonic + '4') % 12;
+  const mode = key.mode;
+  const scale_offsets = mode === 'major' ? [0, 2, 4, 5, 7, 9, 11] : [0, 2, 3, 5, 7, 8, 11];
+  const annotatedVoices = [];
+  for (const voice of voices) {
+    const expanded = [];
+    let currentTick = 0;
+    for (const item of voice) {
+      if (item.motif_id !== undefined && motifs[item.motif_id]) {
+        currentTick += (item.delta || 0);
+        const motif = motifs[item.motif_id];
+        let deg_rels = motif.deg_rels;
+        let accs = motif.accs;
+        let deltas = motif.deltas;
+        let durs = motif.durs;
+        let vels = motif.vels;
+        let transformation = 'none';
+        if (item.retrograde === true) {
+          transformation = 'retrograde';
+          deg_rels = [...deg_rels].reverse().map(d => -d);
+          accs = [...accs].reverse();
+          deltas = [...deltas].reverse();
+          durs = [...durs].reverse();
+          vels = [...vels].reverse();
+        } else if (item.inverted === true) {
+          transformation = 'inverted';
+          deg_rels = deg_rels.map(d => -d);
+        }
+        const pitchValue = item.base_pitch || item.pitch;
+        const base_midi = typeof pitchValue === 'number' ? pitchValue : tonal.Note.midi(pitchValue);
+        const base_diatonic = pitchToDiatonic(base_midi, tonic_pc, mode);
+        let subTick = currentTick;
+        for (let j = 0; j < deg_rels.length; j++) {
+          const total_deg = base_diatonic.degree + deg_rels[j];
+          const deg_mod = ((total_deg % 7) + 7) % 7;
+          const oct_add = Math.trunc(total_deg / 7);
+          let exp_pc = (tonic_pc + scale_offsets[deg_mod]) % 12;
+            let pc = (exp_pc + accs[j]) % 12; if (pc < 0) pc += 12;
+          const oct = base_diatonic.oct + oct_add;
+          const midiPitch = pc + oct * 12;
+          expanded.push({
+            start: subTick,
+            dur: durs[j],
+            pitch: midiPitch,
+            vel: vels[j],
+            motif_id: item.motif_id,
+            motif_note_index: j,
+            transformation
+          });
+          subTick += durs[j];
+          if (j < deg_rels.length - 1) subTick += deltas[j];
+        }
+        currentTick = subTick;
+      } else {
+        currentTick += item.delta;
+        const midiPitch = tonal.Note.midi(item.pitch);
+        if (midiPitch != null) {
+          expanded.push({ start: currentTick, dur: item.dur, pitch: midiPitch, vel: item.vel, motif_id: null, motif_note_index: null, transformation: 'none' });
+        }
+        currentTick += item.dur;
+      }
+    }
+    annotatedVoices.push(expanded.sort((a,b)=> a.start - b.start || a.pitch - b.pitch));
+  }
+  return annotatedVoices;
+}
+
+function decompressJsonToMidi(inputJson, outputMidi, options = {}) {
   const compressed = JSON.parse(fs.readFileSync(inputJson, 'utf8'));
   const { ppq, tempo, motifs = [], voices, key = { tonic: 'C', mode: 'major' } } = compressed;
   const notes = decodeVoices(voices, ppq, motifs, key);
+
+  // Optional motifless JSON export during decompression
+  if (options.exportMotiflessJson) {
+    const expandedVoices = expandMotifsToRegularVoices(compressed);
+    const motiflessJson = { ppq, tempo, key, voices: expandedVoices };
+    const exportPath = typeof options.exportMotiflessJson === 'string'
+      ? options.exportMotiflessJson
+      : outputMidi.replace(/\.[^.]+$/, '-motifless.json');
+    const outDir = path.dirname(exportPath);
+    if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
+    fs.writeFileSync(exportPath, JSON.stringify(motiflessJson, null, 2));
+    console.log(`Motifless JSON exported to: ${exportPath}`);
+  }
 
   const track = new MidiWriter.Track();
   
@@ -838,22 +1002,40 @@ function main() {
   try {
     const args = process.argv.slice(2);
     if (args.length < 3) {
-      console.log('Usage: node program.js compress input.midi output.json');
-      console.log('Or: node program.js decompress input.json output.midi');
+      console.log('Usage: node EncodeDecode.js compress <input.midi> <output.json> [--force-motifless]');
+      console.log('   or: node EncodeDecode.js decompress <input.json> <output.midi> [--export-motifless-json [path]]');
+      console.log('\nOptions:');
+      console.log('  --force-motifless           Skip motif detection and store only regular notes');
+      console.log('  --export-motifless-json     While decompressing, emit an expanded motifless JSON (optional path)');
       return;
     }
 
     const command = args[0];
     const input = args[1];
     const output = args[2];
+    const cliOptions = { forceMotifless: false, exportMotiflessJson: false };
+    for (let i = 3; i < args.length; i++) {
+      const arg = args[i];
+      if (arg === '--force-motifless') {
+        cliOptions.forceMotifless = true;
+      } else if (arg === '--export-motifless-json') {
+        // Optional custom path
+        if (i + 1 < args.length && !args[i+1].startsWith('--')) {
+          cliOptions.exportMotiflessJson = args[i+1];
+          i++;
+        } else {
+          cliOptions.exportMotiflessJson = true; // use default naming
+        }
+      }
+    }
 
     console.log(`Command: ${command}, Input: ${input}, Output: ${output}`);
 
     if (command === 'compress') {
-      compressMidiToJson(input, output);
+      compressMidiToJson(input, output, { forceMotifless: cliOptions.forceMotifless });
       console.log('Compression completed successfully');
     } else if (command === 'decompress') {
-      decompressJsonToMidi(input, output);
+      decompressJsonToMidi(input, output, { exportMotiflessJson: cliOptions.exportMotiflessJson });
       console.log('Decompression completed successfully');
     } else {
       console.log('Unknown command');
@@ -869,7 +1051,9 @@ function main() {
 module.exports = {
   compressMidiToJson,
   decompressJsonToMidi,
-  decodeVoices
+  decodeVoices,
+  expandMotifsToRegularVoices,
+  expandMotifsToAnnotatedVoices
 };
 
 if (require.main === module) {
