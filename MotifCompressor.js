@@ -6,15 +6,42 @@
 const KeyAnalyzer = require('./KeyAnalyzer');
 const MotifDetector = require('./MotifDetector');
 
+// Load configuration with exact matches only as the new default
+function loadDefaultConfig() {
+    try {
+        const { loadMotifConfig } = require('./motif-config');
+        return loadMotifConfig();
+    } catch (error) {
+        // Fallback to safe defaults if config module not available
+        return {
+            exactMatchesOnly: true,  // Changed default to true based on user feedback
+            conservativeMode: true,
+            compressionThreshold: 0.8,
+            minMotifMatches: 1,
+            maxCompressionRatio: 1.0
+        };
+    }
+}
+
 class MotifCompressor {
     constructor(options = {}) {
+        // Load defaults from configuration, then override with provided options
+        const defaults = loadDefaultConfig();
+        const config = { ...defaults, ...options };
+        
         this.keyAnalyzer = new KeyAnalyzer();
         this.motifDetector = new MotifDetector();
-        this.compressionThreshold = options.compressionThreshold || 0.5; // Minimum confidence for motif compression
-        this.minMotifMatches = options.minMotifMatches || 1; // Minimum matches required to compress a motif (original + 1 match = 2 total instances)
-        this.maxCompressionRatio = options.maxCompressionRatio || 1.0; // No arbitrary limit - compress all valid motifs
-        this.conservativeMode = options.conservativeMode || false; // Avoid transformations, prefer exact matches
-        this.exactMatchesOnly = options.exactMatchesOnly || false; // Only use exact matches, no transformations at all
+        this.compressionThreshold = config.compressionThreshold;
+        this.minMotifMatches = config.minMotifMatches;
+        this.maxCompressionRatio = config.maxCompressionRatio;
+        this.conservativeMode = config.conservativeMode;
+        this.exactMatchesOnly = config.exactMatchesOnly;
+        
+        if (this.exactMatchesOnly) {
+            console.log('🎯 MotifCompressor: Using exact matches only (no transformations)');
+        } else {
+            console.log('🔄 MotifCompressor: Allowing transformations (retrograde, inversion, etc.)');
+        }
     }
 
     /**
