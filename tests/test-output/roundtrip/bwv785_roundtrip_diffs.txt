@@ -1,6 +1,0 @@
-=== ROUND TRIP DEGRADATION DETECTED ===
-Original JSON: C:\Users\baker\source\repos\BachEncode\tests\test-output\roundtrip\bwv785_roundtrip_original.json
-Recompressed JSON: C:\Users\baker\source\repos\BachEncode\tests\test-output\roundtrip\bwv785_roundtrip_recompressed.json
-Total differences collected (capped at 200): 1
-First 100 differences:
-voice 0 note 0 field dur differs: 215 vs 141

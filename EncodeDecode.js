@@ -7,10 +7,9 @@
  *
  * Planned reintroductions (future steps):
  *  1. Add deterministic multi-track export (one MIDI track per logical voice) WITHOUT altering key logic.
- *  2. Add optional overlap layering per voice (Voice X Layer Y) – isolated inside decompressJsonToMidi.
- *  3. Add import-time merging of layering tracks back into a single logical voice preserving original deltas.
- *  4. Preserve sustained note durations lost due to overlap truncation (first note 215→141 issue).
- *  5. Maintain pitch fidelity (already previously verified 580/580 identical) while fixing duration.
+ *  2. (Baseline simplified) No automatic overlap handling. Track-preserve mode assumes each track is already a single logical voice; any intra-track overlaps simply pass through (as in the original 1-diff snapshot).
+ *  3. (Deferred) Future (if reintroduced): import-time merging of layering tracks back into a single logical voice preserving original deltas.
+ *  4. Maintain pitch fidelity (already previously verified 580/580 identical) while pursuing duration fidelity under no-overlap assumption.
  *
  * Baseline objective now: run motifless roundtrip degradation test to capture current single diff
  * (expected: first note dur mismatch) before reintroducing layering cleanly.
@@ -445,11 +444,13 @@ function compressMidiToJson(inputMidi, outputJson) {
   let voices;
   let voiceMeta = [];
   if (preserveTracks && perTrackNotes.length > 0 && perTrackNotes.some(t => t.length > 0)) {
-    // Use each MIDI track (with notes) as a voice, preserving order
-    voices = perTrackNotes.filter(t => t.length > 0).map((arr, idx) => {
-      voiceMeta.push({ trackIndex: idx, noteCount: arr.length });
-      return arr.slice().sort((a,b)=> a.start - b.start || a.pitch - b.pitch);
-    });
+    // Simple per-track mapping (original 1-diff snapshot behavior), no overlap validation or splitting.
+    voices = perTrackNotes
+      .filter(t => t.length > 0)
+      .map((arr, idx) => {
+        voiceMeta.push({ trackIndex: idx, noteCount: arr.length });
+        return arr.slice().sort((a,b)=> a.start - b.start || a.pitch - b.pitch);
+      });
   } else {
     voices = separateVoices(notes);
     voiceMeta = voices.map((v,i)=>({ heuristic:true, index:i, noteCount:v.length }));
@@ -596,11 +597,14 @@ function decodeSingleVoice(encodedVoice, ppq, motifs = [], key = { tonic: 'C', m
 function decompressJsonToMidi(inputJson, outputMidi) {
   const compressed = JSON.parse(fs.readFileSync(inputJson, 'utf8'));
   const { ppq, tempo, motifs = [], voices, key = { tonic: 'C', mode: 'major' } } = compressed;
-  // Multi-track export (one MIDI track per logical voice). Layering comes later.
+  // Multi-track export (one MIDI track per logical voice). Layering removed; assumes no overlaps per voice.
   const tracks = [];
   for (let v = 0; v < voices.length; v++) {
     const encodedVoice = voices[v];
     const voiceNotes = decodeSingleVoice(encodedVoice, ppq, motifs, key);
+    if (v === 0 && voiceNotes.length) {
+      console.log('[Decompress Debug] First voice first note decoded start/dur:', voiceNotes[0].start, voiceNotes[0].dur);
+    }
     const track = new MidiWriter.Track();
     track.addTrackName(`Voice ${v}`);
     if (v === 0) {
