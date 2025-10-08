@@ -4,6 +4,10 @@ const midiParser = require('midi-parser-js');
 const MidiWriter = require('midi-writer-js');
 const tonal = require('@tonaljs/tonal');
 
+// Configuration: hard-disable retrograde and any (future) time-dilation logic.
+// This reduces scope to exact + inversion motif reuse only.
+const DISABLE_RETROGRADE_AND_TIME_DILATION = true;
+
 function parseMidi(filePath) {
   console.log('Reading MIDI file:', filePath);
   const midiData = fs.readFileSync(filePath, 'base64');
@@ -269,6 +273,7 @@ function encodeVoices(voices) {
 
 // Helper function to check if two motifs are retrogrades of each other
 function areMotifRetrogrades(motif1, motif2) {
+  if (DISABLE_RETROGRADE_AND_TIME_DILATION) return false; // feature disabled
   if (motif1.deg_rels.length !== motif2.deg_rels.length) return false;
   
   // Calculate intervals for both motifs
@@ -511,31 +516,20 @@ function findMotifs(encodedVoices, key, options = {}) {
     if (toRemove.has(i)) continue;
     for (let j = i + 1; j < motifs.length; j++) {
       if (toRemove.has(j)) continue;
-      
-      if (areMotifRetrogrades(motifs[i], motifs[j])) {
-        // Found a retrograde pair - keep the first one, remove the second
+      if (!DISABLE_RETROGRADE_AND_TIME_DILATION && areMotifRetrogrades(motifs[i], motifs[j])) {
         transformationPairs.push({ keep: i, remove: j, type: 'retrograde' });
         toRemove.add(j);
-        
-        // Find the keys that map to the removed motif and mark them as retrograde
         for (const [key_str, motifId] of motifMap.entries()) {
-          if (motifId === j) {
-            keyTransformationMap.set(key_str, 'retrograde');
-          }
+          if (motifId === j) keyTransformationMap.set(key_str, 'retrograde');
         }
-        break; // Each motif should only have one transformation
+        break;
       } else if (areMotifInversions(motifs[i], motifs[j])) {
-        // Found an inversion pair - keep the first one, remove the second
         transformationPairs.push({ keep: i, remove: j, type: 'inverted' });
         toRemove.add(j);
-        
-        // Find the keys that map to the removed motif and mark them as inverted
         for (const [key_str, motifId] of motifMap.entries()) {
-          if (motifId === j) {
-            keyTransformationMap.set(key_str, 'inverted');
-          }
+          if (motifId === j) keyTransformationMap.set(key_str, 'inverted');
         }
-        break; // Each motif should only have one transformation
+        break;
       }
     }
   }
@@ -606,7 +600,7 @@ function applyMotifs(encodedVoices, motifs, motifMap, patternMap, keyTransformat
           base_pitch: occ.base_pitch,
           delta: encodedVoices[occ.voice][occ.start].delta
         };
-        if (transformation === 'retrograde') {
+        if (transformation === 'retrograde' && !DISABLE_RETROGRADE_AND_TIME_DILATION) {
           replacement.retrograde = true;
         } else if (transformation === 'inverted') {
           replacement.inverted = true;
@@ -630,7 +624,7 @@ function applyMotifs(encodedVoices, motifs, motifMap, patternMap, keyTransformat
         motif_id: repl.motif_id,
         base_pitch: repl.base_pitch
       };
-      if (repl.retrograde) {
+      if (repl.retrograde && !DISABLE_RETROGRADE_AND_TIME_DILATION) {
         motifReplacement.retrograde = true;
       }
       if (repl.inverted) {
@@ -724,8 +718,7 @@ function decodeVoices(encodedVoices, ppq, motifs = [], key = { tonic: 'C', mode:
           let durs = motif.durs;
           let vels = motif.vels;
           
-          if (item.retrograde === true) {
-            // Apply retrograde to the motif by reversing the degree relationships
+          if (item.retrograde === true && !DISABLE_RETROGRADE_AND_TIME_DILATION) {
             deg_rels = [...motif.deg_rels].reverse().map(deg => -deg);
             accs = [...motif.accs].reverse();
             deltas = [...motif.deltas].reverse();
@@ -813,7 +806,7 @@ function expandMotifsToRegularVoices(compressed) {
         let deltas = motif.deltas;
         let durs = motif.durs;
         let vels = motif.vels;
-        if (item.retrograde === true) {
+        if (item.retrograde === true && !DISABLE_RETROGRADE_AND_TIME_DILATION) {
           deg_rels = [...deg_rels].reverse().map(d => -d);
           accs = [...accs].reverse();
           deltas = [...deltas].reverse();
@@ -890,7 +883,7 @@ function expandMotifsToAnnotatedVoices(compressed) {
         let durs = motif.durs;
         let vels = motif.vels;
         let transformation = 'none';
-        if (item.retrograde === true) {
+        if (item.retrograde === true && !DISABLE_RETROGRADE_AND_TIME_DILATION) {
           transformation = 'retrograde';
           deg_rels = [...deg_rels].reverse().map(d => -d);
           accs = [...accs].reverse();
