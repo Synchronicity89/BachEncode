@@ -42,7 +42,7 @@ function extractTempoAndPPQAndNotes(midi) {
   let tempo = 120; // default
   let key_sig = null;
   const notes = [];
-  const activeNotes = new Map();
+  const activeNotes = []; // one map per track (for multi-track voice preservation)
 
   // Collect metas and notes from all tracks
   debugOutput.push('MIDI tracks: ' + (midi.track ? midi.track.length : 'No tracks found'));
@@ -54,6 +54,7 @@ function extractTempoAndPPQAndNotes(midi) {
   
   for (let trackIndex = 0; trackIndex < tracks.length; trackIndex++) {
     const track = tracks[trackIndex];
+    activeNotes[trackIndex] = new Map();
     debugOutput.push(`\n=== TRACK ${trackIndex} ===`);
     debugOutput.push('Track keys: ' + Object.keys(track).join(', '));
     
@@ -111,7 +112,7 @@ function extractTempoAndPPQAndNotes(midi) {
           debugOutput.push(`NoteOn found: note=${noteNumber}, vel=${velocity}, tick=${currentTick}`);
         }
         console.log(`NoteOn: note=${noteNumber}, vel=${velocity}, tick=${currentTick}`);
-        activeNotes.set(noteNumber, { start: currentTick, vel: velocity });
+  activeNotes[trackIndex].set(noteNumber, { start: currentTick, vel: velocity });
       }
       else if (event.type === 8 || (event.type === 9 && event.data && event.data.length >= 2 && event.data[1] === 0)) {
         // Note Off (type 8) or Note On with velocity 0 (type 9, vel 0)
@@ -120,7 +121,7 @@ function extractTempoAndPPQAndNotes(midi) {
           debugOutput.push(`NoteOff found: note=${noteNumber}, tick=${currentTick}`);
         }
         console.log(`NoteOff: note=${noteNumber}, tick=${currentTick}`);
-        const onEvent = activeNotes.get(noteNumber);
+  const onEvent = activeNotes[trackIndex].get(noteNumber);
         if (onEvent) {
           const note = {
             start: onEvent.start,
@@ -132,8 +133,9 @@ function extractTempoAndPPQAndNotes(midi) {
             debugOutput.push('Adding note: ' + JSON.stringify(note));
           }
           console.log('Adding note:', note);
-          notes.push(note);
-          activeNotes.delete(noteNumber);
+          // Tag with track index to preserve voice identity
+          notes.push({ ...note, track: trackIndex });
+          activeNotes[trackIndex].delete(noteNumber);
         }
       }
     }
@@ -157,7 +159,7 @@ function extractTempoAndPPQAndNotes(midi) {
   debugOutput.push('- PPQ: ' + ppq);
   debugOutput.push('- Tempo: ' + tempo);
   debugOutput.push('- Total notes found: ' + notes.length);
-  debugOutput.push('- Active notes remaining: ' + activeNotes.size);
+  debugOutput.push('- Active notes arrays: ' + activeNotes.length);
   
   if (notes.length > 0) {
     debugOutput.push('First few notes: ' + JSON.stringify(notes.slice(0, 3), null, 2));
@@ -225,31 +227,38 @@ function pitchToDiatonic(midi, tonic_pc, mode) {
 }
 
 function separateVoices(notes) {
-  notes.sort((a, b) => a.start - b.start || b.pitch - a.pitch); // Sort by start, then descending pitch for ties
+  // If notes carry a 'track' property, group strictly by track index to preserve original voice separation.
+  const byTrack = new Map();
+  let hasTrack = false;
+  for (const n of notes) {
+    if (n.track !== undefined) {
+      hasTrack = true;
+      if (!byTrack.has(n.track)) byTrack.set(n.track, []);
+      byTrack.get(n.track).push(n);
+    }
+  }
+  if (hasTrack) {
+    // Sort notes within each track by start time
+    const voices = Array.from(byTrack.entries())
+      .sort((a,b)=> a[0]-b[0])
+      .map(([_, arr]) => arr.sort((x,y)=> x.start - y.start || x.pitch - y.pitch));
+    return voices;
+  }
+  // Fallback to heuristic (legacy path)
+  notes.sort((a, b) => a.start - b.start || b.pitch - a.pitch);
   const voices = [];
-
   for (const note of notes) {
     let bestVoice = null;
     let bestDist = Infinity;
-
     for (const voice of voices) {
       const lastNote = voice[voice.length - 1];
       if (lastNote.start + lastNote.dur <= note.start) {
         const dist = Math.abs(lastNote.pitch - note.pitch);
-        if (dist < bestDist) {
-          bestDist = dist;
-          bestVoice = voice;
-        }
+        if (dist < bestDist) { bestDist = dist; bestVoice = voice; }
       }
     }
-
-    if (bestVoice) {
-      bestVoice.push(note);
-    } else {
-      voices.push([note]);
-    }
+    if (bestVoice) bestVoice.push(note); else voices.push([note]);
   }
-
   return voices;
 }
 
@@ -936,11 +945,12 @@ function expandMotifsToAnnotatedVoices(compressed) {
 function decompressJsonToMidi(inputJson, outputMidi, options = {}) {
   const compressed = JSON.parse(fs.readFileSync(inputJson, 'utf8'));
   const { ppq, tempo, motifs = [], voices, key = { tonic: 'C', mode: 'major' } } = compressed;
-  const notes = decodeVoices(voices, ppq, motifs, key);
 
-  // Optional motifless JSON export during decompression
+  // Expand each voice separately so we can write one MIDI track per voice to preserve separation.
+  const expandedVoices = expandMotifsToRegularVoices(compressed);
+
+  // Optional motifless JSON export during decompression (now reuse expandedVoices directly)
   if (options.exportMotiflessJson) {
-    const expandedVoices = expandMotifsToRegularVoices(compressed);
     const motiflessJson = { ppq, tempo, key, voices: expandedVoices };
     const exportPath = typeof options.exportMotiflessJson === 'string'
       ? options.exportMotiflessJson
@@ -951,44 +961,51 @@ function decompressJsonToMidi(inputJson, outputMidi, options = {}) {
     console.log(`Motifless JSON exported to: ${exportPath}`);
   }
 
-  const track = new MidiWriter.Track();
-  
-  // Add track name using the correct API
-  track.addTrackName('Track 0');
-  
-  // Add tempo event
-  track.addEvent(
-    new MidiWriter.TempoEvent({
-      bpm: tempo
-    })
-  );
-
-  // MidiWriter.js uses default PPQ of 128, so we need to scale our timing
-  const defaultPPQ = 128;
-  const scaleFactor = defaultPPQ / ppq;
-  
-  // Scale all note timings to match the default PPQ
-  for (const note of notes) {
-    track.addEvent(
-      new MidiWriter.NoteEvent({
-        pitch: [note.pitch],
-        duration: 'T' + Math.round(note.dur * scaleFactor),
+  // Build multi-track MIDI (one track per voice) to minimize re-separation drift.
+  const tracks = [];
+  expandedVoices.forEach((voice, vIndex) => {
+    const track = new MidiWriter.Track();
+    track.addTrackName(`Voice ${vIndex}`);
+    if (vIndex === 0) {
+      // Put tempo in first track only
+      track.addEvent(new MidiWriter.TempoEvent({ bpm: tempo }));
+    }
+    // Reconstruct absolute timing from deltas to avoid relying on any implicit state.
+    let absoluteTick = 0;
+    for (const note of voice) {
+      // Safety: ensure required fields
+      const delta = typeof note.delta === 'number' ? note.delta : 0;
+      const dur = typeof note.dur === 'number' ? note.dur : 0;
+      absoluteTick += delta;
+      // Preserve original pitch spelling if it was already a string; fall back to MIDI number if necessary.
+      let pitchToken;
+      if (typeof note.pitch === 'string') {
+        // Convert note.pitch string to midi to ensure writer acceptance, but keep original spelling if needed later.
+        const midiVal = tonal.Note.midi(note.pitch);
+        pitchToken = midiVal != null ? midiVal : note.pitch;
+      } else if (typeof note.pitch === 'number') {
+        pitchToken = note.pitch;
+      } else {
+        continue; // skip malformed note
+      }
+      track.addEvent(new MidiWriter.NoteEvent({
+        pitch: [pitchToken],
+        duration: 'T' + dur,
         velocity: note.vel,
-        startTick: Math.round(note.start * scaleFactor),
-      })
-    );
-  }
+        startTick: absoluteTick
+      }));
+      absoluteTick += dur;
+    }
+    tracks.push(track);
+  });
 
-  const write = new MidiWriter.Writer(track);
-  
-  // Ensure output directory exists
+  // MidiWriter still assumes 128 PPQ internally; to preserve raw timing we leave values literal.
+  // (Future improvement: swap to a library supporting custom PPQ or write a minimal SMF encoder.)
+  const writer = new MidiWriter.Writer(tracks);
   const outputDir = path.dirname(outputMidi);
-  if (!fs.existsSync(outputDir)) {
-    fs.mkdirSync(outputDir, { recursive: true });
-  }
-  
-  fs.writeFileSync(outputMidi, Buffer.from(write.buildFile()));
-  console.log('MIDI file written successfully');
+  if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
+  fs.writeFileSync(outputMidi, Buffer.from(writer.buildFile()));
+  console.log('Multi-track MIDI file written successfully');
 }
 
 function main() {
