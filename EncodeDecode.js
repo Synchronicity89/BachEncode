@@ -220,31 +220,72 @@ function extractTempoAndPPQAndNotes(midi) {
 }
 
 function findBestKey(notes, key_sig) {
+  // If explicit key signature meta is present, retain but still validate if ambiguous
   if (key_sig) {
-    let sf = key_sig.sf;
-    let mode = key_sig.mode;
-    let major_tonic = (sf * 7 % 12 + 12) % 12;
-    let tonic_pc = mode === 'major' ? major_tonic : (major_tonic + 9) % 12;
+    let sf = key_sig.sf; let mode = key_sig.mode === 1 || key_sig.mode === 'minor' ? 'minor' : 'major';
+    const major_tonic = ((sf * 7) % 12 + 12) % 12; // circle of fifths mapping
+    const tonic_pc = mode === 'major' ? major_tonic : (major_tonic + 9) % 12; // minor relative (down 3 semitones)
     return { tonic_pc, mode };
-  } else {
-    // Find key with minimal accidentals (baseline logic)
-    let best = { sum: Infinity, tonic_pc: 0, mode: 'major' };
-    for (let t = 0; t < 12; t++) {
-      for (let m of ['major', 'minor']) {
-        let sum_acc = 0;
-        for (let note of notes) {
-          let d = pitchToDiatonic(note.pitch, t, m);
-          sum_acc += Math.abs(d.acc);
-        }
-        if (sum_acc < best.sum) {
-          best.sum = sum_acc;
-          best.tonic_pc = t;
-          best.mode = m;
-        }
+  }
+  if (!notes || notes.length === 0) return { tonic_pc: 0, mode: 'major' };
+
+  // Build pitch-class histogram
+  const pcCounts = new Array(12).fill(0);
+  for (const n of notes) pcCounts[n.pitch % 12]++;
+
+  // Cadence weighting: emphasize first N and last N strong notes
+  const STRONG_WINDOW = Math.min(16, Math.floor(notes.length / 4));
+  const firstWindow = notes.slice(0, STRONG_WINDOW).map(n => n.pitch % 12);
+  const lastWindow = notes.slice(-STRONG_WINDOW).map(n => n.pitch % 12);
+  const cadenceCounts = new Array(12).fill(0);
+  for (const pc of firstWindow) cadenceCounts[pc] += 1.5; // slightly heavier start
+  for (const pc of lastWindow) cadenceCounts[pc] += 2.0; // heavier end cadence
+
+  // Accidental direction heuristic: count raw sharps vs flats based on nearest natural mapping around C major
+  // (Simplified: compute diatonic fits for C major to detect tendency toward sharps or flats)
+  let sharpBias = 0, flatBias = 0;
+  for (const n of notes) {
+    const pc = n.pitch % 12;
+    // crude mapping: if closer to a sharp name vs flat name
+    const flatPreferred = [1,3,6,8,10]; // pcs with common flat enharmonics
+    if (flatPreferred.includes(pc)) flatBias++; else sharpBias++;
+  }
+  const biasScore = flatBias - sharpBias; // positive -> favor flat keys
+
+  const MODES = ['major','minor'];
+  let best = null;
+  for (let tonic_pc = 0; tonic_pc < 12; tonic_pc++) {
+    for (const mode of MODES) {
+      // Compute diatonic accidentals & score
+      let accPenalty = 0;
+      let coverage = 0; // sum of counts for scale tones
+      const scale_offsets = mode === 'major' ? [0,2,4,5,7,9,11] : [0,2,3,5,7,8,11];
+      for (let degree = 0; degree < 7; degree++) {
+        const pc = (tonic_pc + scale_offsets[degree]) % 12;
+        const cnt = pcCounts[pc];
+        coverage += cnt;
+      }
+      // Accidentals: pass through notes to compute needed acc for each actual pitch relative to candidate
+      for (const n of notes) {
+        const d = pitchToDiatonic(n.pitch, tonic_pc, mode);
+        accPenalty += Math.abs(d.acc);
+      }
+      // Cadence boost if tonic appears in cadence windows or dominant-tonic pattern strong at end
+      const tonicCountCad = cadenceCounts[tonic_pc];
+      const dominant_pc = (tonic_pc + 7) % 12;
+      const dominantCad = cadenceCounts[dominant_pc];
+      const cadenceBoost = (tonicCountCad * 2) + dominantCad;
+      // Flat bias: if candidate tonic is a flat-friendly pc (10=Bb, 3=Eb, 8=Ab, 1=Db/F# ambiguous) and biasScore>0 boost
+      const flatFriendly = [10,3,8,1,6];
+      const flatBoost = flatFriendly.includes(tonic_pc) ? Math.max(0, biasScore) * 0.5 : 0;
+      // Composite score (higher better) vs penalty (lower better)
+      const score = coverage + cadenceBoost + flatBoost - accPenalty * 1.2;
+      if (!best || score > best.score) {
+        best = { tonic_pc, mode, score };
       }
     }
-    return best;
   }
+  return { tonic_pc: best.tonic_pc, mode: best.mode };
 }
 
 function pitchToDiatonic(midi, tonic_pc, mode) {
@@ -319,186 +360,203 @@ function encodeVoices(voices) {
 
 // (Retrograde / inversion helpers removed in baseline revert – will re-add if needed post-baseline.)
 
+// New motif mining: longest-first maximal motifs + optional contiguous sub-motif derivation
 function findMotifs(encodedVoices, key) {
   const { tonic_pc, mode } = key;
-  const minLength = 4;
-  const maxLength = 20;
-  const patternMap = new Map();
-
-  // Add diatonic info to each note
+  const MIN_LEN = 4;
+  const MAX_LEN = 20;
+  // Annotate each note with diatonic info (cache)
   for (const voice of encodedVoices) {
     for (const item of voice) {
-      item.midi = tonal.Note.midi(item.pitch);
-      item.diatonic = pitchToDiatonic(item.midi, tonic_pc, mode);
+      if (item.midi == null) item.midi = tonal.Note.midi(item.pitch);
+      if (!item.diatonic) item.diatonic = pitchToDiatonic(item.midi, tonic_pc, mode);
     }
   }
 
-  // Precompute start_ticks for each note in each voice
-  const startTicks = encodedVoices.map(voice => {
-    const ticks = [];
-    let tick = 0;
-    for (const item of voice) {
-      tick += item.delta;
-      ticks.push(tick);
-      tick += item.dur;
+  // Helper to build a structural key for a subsequence
+  function encodeSubseq(seq) {
+    if (seq.length === 0) return null;
+    const base = seq[0].diatonic;
+    const deg_rels = [0];
+    for (let i=1;i<seq.length;i++) {
+      const d = seq[i].diatonic;
+      deg_rels.push((d.degree - base.degree) + 7 * (d.oct - base.oct));
     }
-    return ticks;
-  });
+    const accs = seq.map(n => n.diatonic.acc);
+    const rhythm = [seq[0].dur];
+    for (let i=1;i<seq.length;i++) { rhythm.push(seq[i].delta, seq[i].dur); }
+    const vels = seq.map(n => n.vel);
+    return {
+      key: deg_rels.join(',')+'|'+accs.join(',')+'|'+rhythm.join(',')+'|'+vels.join(','),
+      deg_rels, accs, rhythm, vels
+    };
+  }
 
-  for (let v = 0; v < encodedVoices.length; v++) {
+  // Collect occurrences per length per voice to enable greedy extension.
+  // For each start position we attempt to extend until mismatch or MAX_LEN.
+  const occurrenceBucket = new Map(); // key -> array of {voice,start}
+  for (let v=0; v<encodedVoices.length; v++) {
     const voice = encodedVoices[v];
-    for (let len = minLength; len <= maxLength; len++) {
-      for (let i = 0; i <= voice.length - len; i++) {
-        const subseq = voice.slice(i, i + len);
-        const base_diatonic = subseq[0].diatonic;
-        const rel_degs = [0];
-        for (let j = 1; j < len; j++) {
-          const d = subseq[j].diatonic;
-          rel_degs.push((d.degree - base_diatonic.degree) + 7 * (d.oct - base_diatonic.oct));
-        }
-        const accs = subseq.map(s => s.diatonic.acc);
-        const rhythm = [];
-        // Exclude initial delta for better matching
-        rhythm.push(subseq[0].dur);
-        for (let j = 1; j < len; j++) {
-          rhythm.push(subseq[j].delta);
-          rhythm.push(subseq[j].dur);
-        }
-        const vels = subseq.map(s => s.vel);
-        const key_str = rel_degs.join(',') + '|' + accs.join(',') + '|' + rhythm.join(',') + '|' + vels.join(',');
-        if (!patternMap.has(key_str)) {
-          patternMap.set(key_str, []);
-        }
-        patternMap.get(key_str).push({
-          voice: v,
-          start: i,
-          base_pitch: subseq[0].pitch,
-          start_tick: startTicks[v][i]
-        });
+    for (let i=0;i<voice.length;i++) {
+      for (let len=MIN_LEN; len<=MAX_LEN && i+len<=voice.length; len++) {
+        const subseq = voice.slice(i,i+len);
+        const enc = encodeSubseq(subseq);
+        if (!enc) continue;
+        if (!occurrenceBucket.has(enc.key)) occurrenceBucket.set(enc.key,{ meta:enc, occs:[] });
+        occurrenceBucket.get(enc.key).occs.push({ voice:v, start:i });
       }
     }
   }
 
-  // Get length from key
-  function getLenFromKey(key) {
-    return key.split('|')[0].split(',').length;
-  }
+  // Filter to repeated patterns only
+  const repeated = Array.from(occurrenceBucket.values()).filter(e => e.occs.length >= 2);
 
-  // Filter and sort candidates by savings
-  let candidates = Array.from(patternMap.entries()).filter(([k, v]) => v.length >= 2);
-  candidates.sort((a, b) => {
-    const saveA = getLenFromKey(a[0]) * (a[1].length - 1);
-    const saveB = getLenFromKey(b[0]) * (b[1].length - 1);
+  // Sort by (length desc, total coverage savings desc)
+  repeated.sort((a,b) => {
+    const lenA = a.meta.deg_rels.length, lenB = b.meta.deg_rels.length;
+    if (lenB !== lenA) return lenB - lenA; // prefer longer first
+    const saveA = lenA * (a.occs.length - 1);
+    const saveB = lenB * (b.occs.length - 1);
     return saveB - saveA;
   });
 
   const motifs = [];
   const motifMap = new Map();
-  let id = 0;
-  for (const [key_str, occs] of candidates) {
-    const parts = key_str.split('|');
-    const rel_deg_str = parts[0];
-    const acc_str = parts[1];
-    const rhythm_str = parts[2];
-    const vels_str = parts[3];
-    const deg_rels = rel_deg_str.split(',').map(Number);
-    const accs = acc_str.split(',').map(Number);
-    const rhythm_nums = rhythm_str.split(',').map(Number);
-    const vels = vels_str.split(',').map(Number);
+  const coverage = encodedVoices.map(v => new Array(v.length).fill(false));
+
+  function buildMotif(meta, sampleOcc) {
+    const { deg_rels, accs, rhythm, vels } = meta;
     const durs = [];
     const deltas = [];
-    durs.push(rhythm_nums[0]); // First dur
-    for (let k = 1; k < rhythm_nums.length; k += 2) {
-      deltas.push(rhythm_nums[k]);
-      durs.push(rhythm_nums[k + 1]);
-    }
-    // Compute relative MIDI intervals (midi_rels) from first occurrence to preserve exact octave when expanding.
+    durs.push(rhythm[0]);
+    for (let i=1;i<rhythm.length;i+=2) { deltas.push(rhythm[i]); durs.push(rhythm[i+1]); }
+    // Derive midi_rels from first occurrence
     let midi_rels = null;
     try {
-      if (occs && occs.length > 0) {
-        const sample = occs[0];
-        const seq = encodedVoices[sample.voice].slice(sample.start, sample.start + deg_rels.length);
-        if (seq.length === deg_rels.length) {
-          const baseMidi = tonal.Note.midi(seq[0].pitch);
-            if (baseMidi !== null) {
-            midi_rels = seq.map(n => tonal.Note.midi(n.pitch) - baseMidi);
+      const seq = encodedVoices[sampleOcc.voice].slice(sampleOcc.start, sampleOcc.start + deg_rels.length);
+      if (seq.length === deg_rels.length) {
+        const baseMidi = tonal.Note.midi(seq[0].pitch);
+        if (baseMidi != null) midi_rels = seq.map(n => tonal.Note.midi(n.pitch) - baseMidi);
+      }
+    } catch(_) {}
+    return { deg_rels, accs, deltas, durs, vels, midi_rels };
+  }
+
+  // Accept motifs greedily if they introduce uncovered indices for at least one full occurrence.
+  for (const entry of repeated) {
+    const len = entry.meta.deg_rels.length;
+    // Skip shorter motifs fully contained in already accepted coverage windows (heuristic pruning)
+    let anyAcceptableOcc = false;
+    for (const occ of entry.occs) {
+      let blocked = false;
+      for (let j=0;j<len;j++) { if (coverage[occ.voice][occ.start + j]) { blocked = true; break; } }
+      if (!blocked) { anyAcceptableOcc = true; break; }
+    }
+    if (!anyAcceptableOcc) continue;
+    const motif = buildMotif(entry.meta, entry.occs[0]);
+    const motifId = motifs.length; motifs.push(motif); motifMap.set(entry.meta.key, motifId);
+    // Mark coverage for all non-overlapping occurrences
+    for (const occ of entry.occs) {
+      let blocked = false;
+      for (let j=0;j<len;j++) if (coverage[occ.voice][occ.start + j]) { blocked = true; break; }
+      if (blocked) continue;
+      for (let j=0;j<len;j++) coverage[occ.voice][occ.start + j] = true;
+    }
+  }
+
+  // Optional: derive contiguous sub-motifs (length >=3) for reuse of interior segments not yet covered
+  // Only add if they appear at least twice in uncovered regions and not already represented.
+  const subMin = 3;
+  const subAddedKeys = new Set();
+  for (let v=0; v<encodedVoices.length; v++) {
+    const voice = encodedVoices[v];
+    for (let i=0;i<voice.length;i++) {
+      if (!coverage[v][i]) {
+        for (let len=subMin; len<=MAX_LEN && i+len<=voice.length; len++) {
+          const subseq = voice.slice(i,i+len);
+          const enc = encodeSubseq(subseq);
+            if (!enc) continue;
+          if (enc.deg_rels.length < subMin) continue;
+          if (motifMap.has(enc.key) || subAddedKeys.has(enc.key)) continue;
+          // Count uncovered occurrences quickly
+          let count=0;
+          for (let j=0;j<encodedVoices[v].length - len +1;j++) {
+            const cand = voice.slice(j,j+len);
+            // Quick structural compare by building key (optimization: could reuse map)
+            const enc2 = encodeSubseq(cand);
+            if (enc2 && enc2.key === enc.key) {
+              // ensure segment mostly uncovered
+              let uncovered = 0; for (let k=0;k<len;k++) if (!coverage[v][j+k]) uncovered++;
+              if (uncovered/len > 0.5) count++;
+              if (count>=2) break;
+            }
+          }
+          if (count>=2) {
+            const motif = buildMotif(enc, { voice:v, start:i });
+            const motifId = motifs.length; motifs.push(motif); motifMap.set(enc.key, motifId); subAddedKeys.add(enc.key);
+            // mark coverage for this first occurrence only (others will be used during application)
+            for (let k=0;k<len;k++) coverage[v][i+k] = true;
           }
         }
       }
-    } catch (e) {
-      midi_rels = null;
     }
-    motifs.push({ deg_rels, accs, deltas, durs, vels, midi_rels });
-    motifMap.set(key_str, id++);
   }
-
+  // For application we also need a mapping of key->occurrences similar to old patternMap (reuse occurrenceBucket)
+  const patternMap = new Map();
+  for (const entry of repeated) patternMap.set(entry.meta.key, entry.occs);
+  // Add sub motifs occurrences (re-scan minimally for those keys)
+  for (const keyStr of subAddedKeys) {
+    // naive re-scan across voices
+    const parts = keyStr.split('|')[0].split(',');
+    const len = parts.length;
+    const occs = [];
+    for (let v=0; v<encodedVoices.length; v++) {
+      const voice = encodedVoices[v];
+      for (let i=0;i<=voice.length-len;i++) {
+        const enc = encodeSubseq(voice.slice(i,i+len));
+        if (enc && enc.key === keyStr) occs.push({ voice:v, start:i, base_pitch: voice[i].pitch });
+      }
+    }
+    patternMap.set(keyStr, occs);
+  }
   return { motifs, motifMap, patternMap };
 }
 
 function applyMotifs(encodedVoices, motifs, motifMap, patternMap) {
-  function getLenFromKey(key) {
-    return key.split('|')[0].split(',').length;
-  }
-
-  const candidates = Array.from(patternMap.entries()).filter(([k, v]) => v.length >= 2);
-
-  const covered = encodedVoices.map(() => new Set());
-  const replacements = encodedVoices.map(() => []);
-
+  // Build candidate list referencing existing occurrences; prefer longer motifs first.
+  function motifLenFromKey(k){ return k.split('|')[0].split(',').length; }
+  const candidates = Array.from(patternMap.entries()).filter(([k,v])=> v.length>=2).sort((a,b)=> motifLenFromKey(b[0]) - motifLenFromKey(a[0]));
+  const covered = encodedVoices.map(()=> new Set());
+  const replacements = encodedVoices.map(()=> []);
   for (const [key, occs] of candidates) {
-    const len = getLenFromKey(key);
-    const mid = motifMap.get(key);
-    if (mid === undefined) continue;
-
+    const motifId = motifMap.get(key);
+    if (motifId == null) continue;
+    const len = motifLenFromKey(key);
     for (const occ of occs) {
-      let isCovered = false;
-      for (let j = occ.start; j < occ.start + len; j++) {
-        if (covered[occ.voice].has(j)) {
-          isCovered = true;
-          break;
-        }
-      }
-      if (!isCovered) {
-        for (let j = occ.start; j < occ.start + len; j++) {
-          covered[occ.voice].add(j);
-        }
-        const base_pitch = occ.base_pitch;
-        const base_midi = tonal.Note.midi(base_pitch);
-        replacements[occ.voice].push({
-          start: occ.start,
-          len: len,
-          motif_id: mid,
-          base_pitch,
-          base_midi,
-          delta: encodedVoices[occ.voice][occ.start].delta
-        });
-      }
+      // ensure base_pitch captured
+      const voiceArr = encodedVoices[occ.voice];
+      const seq = voiceArr.slice(occ.start, occ.start+len);
+      if (seq.length!==len) continue;
+      let blocked=false; for (let i=0;i<len;i++) if (covered[occ.voice].has(occ.start+i)) { blocked=true; break; }
+      if (blocked) continue;
+      for (let i=0;i<len;i++) covered[occ.voice].add(occ.start+i);
+      const base_pitch = seq[0].pitch; const base_midi = tonal.Note.midi(base_pitch);
+      replacements[occ.voice].push({ start: occ.start, len, motif_id: motifId, base_pitch, base_midi, delta: seq[0].delta });
     }
   }
-
-  const newEncodedVoices = [];
-  for (let v = 0; v < encodedVoices.length; v++) {
-    const repls = replacements[v].sort((a, b) => a.start - b.start);
-    const newVoice = [];
-    let pos = 0;
-    for (const repl of repls) {
-      for (let j = pos; j < repl.start; j++) {
-        newVoice.push(encodedVoices[v][j]);
-      }
-      newVoice.push({
-        delta: repl.delta,
-        motif_id: repl.motif_id,
-        base_pitch: repl.base_pitch,
-        base_midi: repl.base_midi
-      });
-      pos = repl.start + repl.len;
+  const newVoices=[];
+  for (let v=0; v<encodedVoices.length; v++) {
+    const repls = replacements[v].sort((a,b)=> a.start-b.start);
+    const newV=[]; let pos=0;
+    for (const r of repls) {
+      for (let j=pos;j<r.start;j++) newV.push(encodedVoices[v][j]);
+      newV.push({ delta: r.delta, motif_id: r.motif_id, base_pitch: r.base_pitch, base_midi: r.base_midi });
+      pos = r.start + r.len;
     }
-    for (let j = pos; j < encodedVoices[v].length; j++) {
-      newVoice.push(encodedVoices[v][j]);
-    }
-    newEncodedVoices.push(newVoice);
+    for (let j=pos;j<encodedVoices[v].length;j++) newV.push(encodedVoices[v][j]);
+    newVoices.push(newV);
   }
-  return newEncodedVoices;
+  return newVoices;
 }
 
 // Helper: reconstruct RAW voices (arrays of note objects) from a recovered voiceSplitMeta
