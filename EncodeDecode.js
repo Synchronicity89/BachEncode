@@ -17,7 +17,9 @@
 const fs = require('fs');
 const path = require('path');
 const midiParser = require('midi-parser-js');
-const MidiWriter = require('midi-writer-js');
+// Removed dependency on midi-writer-js for precise PPQ + velocity preservation.
+// We'll implement a minimal Standard MIDI File writer below to avoid hidden
+// quantization or velocity scaling.
 const tonal = require('@tonaljs/tonal');
 
 // NOTE: Retrograde/time-dilation experimentation postponed until after zero-loss baseline achieved.
@@ -58,6 +60,7 @@ function extractTempoAndPPQAndNotes(midi) {
   let key_sig = null;
   const notes = [];
   const perTrackNotes = []; // For track-preserving mode
+  const trackNames = [];    // Track names (aligned with original track indices)
   const activeNotes = new Map();
 
   // Collect metas and notes from all tracks
@@ -82,7 +85,8 @@ function extractTempoAndPPQAndNotes(midi) {
     const maxEventsToLog = Math.min(events.length, 5);
     debugOutput.push(`\nShowing first ${maxEventsToLog} events:`);
 
-    const localNotes = [];
+  const localNotes = [];
+  let trackName = null;
     for (let i = 0; i < events.length; i++) {
       const event = events[i];
 
@@ -119,6 +123,18 @@ function extractTempoAndPPQAndNotes(midi) {
         console.log('Found key signature: sf=' + sf + ', mode=' + key_sig.mode);
       }
 
+      // Track name meta (type 255, metaType 3)
+      if (event.type === 255 && event.metaType === 3 && trackName == null) {
+        // event.data may be an array of char codes or a string
+        if (Array.isArray(event.data)) {
+          trackName = event.data.map(c => String.fromCharCode(c)).join('').replace(/\0+$/, '');
+        } else if (typeof event.data === 'string') {
+          trackName = event.data.replace(/\0+$/, '');
+        } else {
+          trackName = 'Track '+trackIndex;
+        }
+      }
+
       // Handle MIDI note events - this parser uses type 9 for note on, type 8 for note off
       if (event.type === 9 && event.data && event.data.length >= 2 && event.data[1] > 0) {
         // Note On (type 9 with velocity > 0)
@@ -148,7 +164,8 @@ function extractTempoAndPPQAndNotes(midi) {
         }
       }
     }
-    perTrackNotes.push(localNotes);
+  perTrackNotes.push(localNotes);
+  trackNames[trackIndex] = trackName;
 
     if (events.length > maxEventsToLog) {
       debugOutput.push(`... and ${events.length - maxEventsToLog} more events`);
@@ -170,7 +187,7 @@ function extractTempoAndPPQAndNotes(midi) {
   fs.writeFileSync('debug-output.txt', debugOutput.join('\n'));
   console.log(`Extraction complete: ${notes.length} notes found. Debug output written to debug-output.txt`);
 
-  return { ppq, tempo, notes, key_sig, perTrackNotes };
+  return { ppq, tempo, notes, key_sig, perTrackNotes, trackNames };
 }
 
 function findBestKey(notes, key_sig) {
@@ -437,26 +454,38 @@ function applyMotifs(encodedVoices, motifs, motifMap, patternMap) {
 
 function compressMidiToJson(inputMidi, outputJson) {
   const midi = parseMidi(inputMidi);
-  const preserveTracks = process.env.PRESERVE_TRACKS === '1' || process.argv.includes('--preserve-tracks');
-  const { ppq, tempo, notes, key_sig, perTrackNotes } = extractTempoAndPPQAndNotes(midi);
+  const argv = process.argv.slice(2); // after node script
+  const motiflessFlags = ['--no-motifs','--motifless','--force-motifless'];
+  const disableMotifsExplicit = motiflessFlags.some(f => argv.includes(f)) || process.env.NO_MOTIFS === '1';
+  const preserveTracksFlag = argv.includes('--preserve-tracks') || process.env.PRESERVE_TRACKS === '1';
+
+  const { ppq, tempo, notes, key_sig, perTrackNotes, trackNames } = extractTempoAndPPQAndNotes(midi);
   const key = findBestKey(notes, key_sig);
   const tonic_name = tonal.Note.pitchClass(tonal.Note.fromMidi(key.tonic_pc + 60, true));
   let voices;
   let voiceMeta = [];
+  // Auto-enable track preservation if file has >1 tracks with notes (one logical voice per track assumption)
+  const autoPreserve = perTrackNotes.length > 1 && perTrackNotes.some(t => t.length > 0);
+  const preserveTracks = preserveTracksFlag || autoPreserve;
+  let voiceToTrack = [];
   if (preserveTracks && perTrackNotes.length > 0 && perTrackNotes.some(t => t.length > 0)) {
     // Simple per-track mapping (original 1-diff snapshot behavior), no overlap validation or splitting.
-    voices = perTrackNotes
-      .filter(t => t.length > 0)
-      .map((arr, idx) => {
-        voiceMeta.push({ trackIndex: idx, noteCount: arr.length });
-        return arr.slice().sort((a,b)=> a.start - b.start || a.pitch - b.pitch);
-      });
+    voices = [];
+    for (let idx=0; idx<perTrackNotes.length; idx++) {
+      const arr = perTrackNotes[idx];
+      if (arr.length === 0) continue; // skip empty tracks for voices array (but keep mapping metadata)
+      const sorted = arr.slice().sort((a,b)=> a.start - b.start || a.pitch - b.pitch);
+      voiceMeta.push({ trackIndex: idx, noteCount: sorted.length });
+      voiceToTrack.push(idx);
+      voices.push(sorted);
+    }
   } else {
     voices = separateVoices(notes);
     voiceMeta = voices.map((v,i)=>({ heuristic:true, index:i, noteCount:v.length }));
+    voiceToTrack = voices.map((_,i)=> i);
   }
   let encodedVoices = encodeVoices(voices);
-  const disableMotifs = process.env.NO_MOTIFS === '1' || process.argv.includes('--no-motifs');
+  const disableMotifs = disableMotifsExplicit || true; // Force motifless for now per user directive
   let motifs = [];
   if (!disableMotifs) {
     const motifResults = findMotifs(encodedVoices, key);
@@ -480,9 +509,19 @@ function compressMidiToJson(inputMidi, outputJson) {
     }
     motifs = newMotifs;
   }
-
-  const compressed = { ppq, tempo, key: { tonic: tonic_name, mode: key.mode }, motifs, voices: encodedVoices, voiceMeta };
-  if (disableMotifs) compressed.motifsDisabled = true;
+  const compressed = {
+    ppq,
+    tempo,
+    key: { tonic: tonic_name, mode: key.mode },
+    motifs: disableMotifs ? [] : motifs,
+    voices: encodedVoices,
+    voiceMeta,
+    motifsDisabled: true,
+    originalTrackCount: perTrackNotes.length,
+    trackNames,
+    voiceToTrack,
+    keySignature: key_sig ? { sf: key_sig.sf, mode: key_sig.mode } : null
+  };
   
   // Ensure output directory exists
   const outputDir = path.dirname(outputJson);
@@ -594,38 +633,104 @@ function decodeSingleVoice(encodedVoice, ppq, motifs = [], key = { tonic: 'C', m
   return notes;
 }
 
+// ===== Minimal MIDI Writer (Type 1) for precise reproduction =====
+function encodeVariableLength(value) {
+  let buffer = value & 0x7F;
+  const bytes = [];
+  while ((value >>= 7)) {
+    buffer <<= 8;
+    buffer |= ((value & 0x7F) | 0x80);
+  }
+  while (true) {
+    bytes.push(buffer & 0xFF);
+    if (buffer & 0x80) buffer >>= 8; else break;
+  }
+  return bytes;
+}
+
+function buildTrackChunk(events) {
+  // events: array of { tick, data: [bytes...] }
+  events.sort((a,b)=> a.tick - b.tick);
+  let lastTick = 0;
+  const bytes = [];
+  for (const ev of events) {
+    const delta = ev.tick - lastTick;
+    lastTick = ev.tick;
+    bytes.push(...encodeVariableLength(delta));
+    bytes.push(...ev.data);
+  }
+  // End of track meta
+  bytes.push(0x00, 0xFF, 0x2F, 0x00);
+  const header = Buffer.from('MTrk');
+  const lenBuf = Buffer.alloc(4);
+  lenBuf.writeUInt32BE(bytes.length,0);
+  return Buffer.concat([header, lenBuf, Buffer.from(bytes)]);
+}
+
+function buildMidiFile({ ppq, tempo, tracks, keySignature = null }) {
+  const header = Buffer.from('MThd');
+  const hdrLen = Buffer.alloc(4); hdrLen.writeUInt32BE(6,0);
+  const format = Buffer.alloc(2); format.writeUInt16BE(tracks.length > 1 ? 1 : 0,0);
+  const nTracks = Buffer.alloc(2); nTracks.writeUInt16BE(tracks.length,0);
+  const division = Buffer.alloc(2); division.writeUInt16BE(ppq,0);
+  const headerChunk = Buffer.concat([header, hdrLen, format, nTracks, division]);
+
+  const microPerQuarter = Math.round(60000000 / tempo);
+
+  const trackChunks = tracks.map((t, idx) => {
+    const events = [];
+    // Track name
+    if (t.name) {
+      const nameBytes = Buffer.from(t.name, 'ascii');
+      events.push({ tick:0, data: [0xFF, 0x03, nameBytes.length, ...nameBytes] });
+    }
+    if (idx === 0) {
+      // Tempo event
+      const mpq = [ (microPerQuarter>>16)&0xFF, (microPerQuarter>>8)&0xFF, microPerQuarter &0xFF ];
+      events.push({ tick:0, data: [0xFF, 0x51, 0x03, ...mpq] });
+      if (keySignature) {
+        const sf = keySignature.sf & 0xFF; // signed byte in two's complement
+        const mode = (keySignature.mode === 'minor' || keySignature.mode === 1) ? 1 : 0;
+        events.push({ tick:0, data: [0xFF, 0x59, 0x02, sf, mode] });
+      }
+    }
+    for (const n of t.notes) {
+      events.push({ tick: n.start, data: [0x90, n.pitch & 0x7F, Math.max(0, Math.min(127, n.vel || 64))] });
+      events.push({ tick: n.start + n.dur, data: [0x90, n.pitch & 0x7F, 0x00] });
+    }
+    return buildTrackChunk(events);
+  });
+
+  return Buffer.concat([headerChunk, ...trackChunks]);
+}
+
 function decompressJsonToMidi(inputJson, outputMidi) {
   const compressed = JSON.parse(fs.readFileSync(inputJson, 'utf8'));
-  const { ppq, tempo, motifs = [], voices, key = { tonic: 'C', mode: 'major' } } = compressed;
-  // Multi-track export (one MIDI track per logical voice). Layering removed; assumes no overlaps per voice.
-  const tracks = [];
-  for (let v = 0; v < voices.length; v++) {
-    const encodedVoice = voices[v];
-    const voiceNotes = decodeSingleVoice(encodedVoice, ppq, motifs, key);
-    if (v === 0 && voiceNotes.length) {
-      console.log('[Decompress Debug] First voice first note decoded start/dur:', voiceNotes[0].start, voiceNotes[0].dur);
+  const { ppq, tempo, motifs = [], voices, key = { tonic: 'C', mode: 'major' }, originalTrackCount, voiceToTrack = [], trackNames = [], keySignature = null } = compressed;
+
+  // Decode each voice to raw notes
+  const decodedVoiceNotes = voices.map(v => decodeSingleVoice(v, ppq, motifs, key));
+  const trackTotal = originalTrackCount || voices.length;
+  const tracks = Array.from({ length: trackTotal }, (_,i)=> ({ name: trackNames[i] || undefined, notes: [] }));
+  // Map voices back
+  if (voiceToTrack.length === decodedVoiceNotes.length) {
+    for (let i=0;i<decodedVoiceNotes.length;i++) {
+      const tIndex = voiceToTrack[i] ?? i;
+      if (!tracks[tIndex]) continue; // safety
+      tracks[tIndex].notes.push(...decodedVoiceNotes[i]);
     }
-    const track = new MidiWriter.Track();
-    track.addTrackName(`Voice ${v}`);
-    if (v === 0) {
-      track.addEvent(new MidiWriter.TempoEvent({ bpm: tempo }));
+  } else {
+    // Fallback: one voice per sequential track
+    for (let i=0;i<decodedVoiceNotes.length;i++) {
+      tracks[i] && tracks[i].notes.push(...decodedVoiceNotes[i]);
     }
-    for (const note of voiceNotes) {
-      track.addEvent(new MidiWriter.NoteEvent({
-        pitch: [note.pitch],
-        duration: 'T' + note.dur,
-        velocity: note.vel,
-        startTick: note.start,
-      }));
-    }
-    tracks.push(track);
   }
 
-  const write = new MidiWriter.Writer(tracks);
+  const midiBuffer = buildMidiFile({ ppq, tempo, tracks, keySignature });
   const outputDir = path.dirname(outputMidi);
   if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
-  fs.writeFileSync(outputMidi, Buffer.from(write.buildFile()));
-  console.log('MIDI file written successfully');
+  fs.writeFileSync(outputMidi, midiBuffer);
+  console.log('MIDI file written successfully (custom writer)');
 }
 
 function main() {
@@ -664,7 +769,11 @@ function main() {
 module.exports = {
   compressMidiToJson,
   decompressJsonToMidi,
-  decodeVoices
+  decodeVoices,
+  // Expose internals for advanced key analysis / future integration tests
+  parseMidi,
+  extractTempoAndPPQAndNotes,
+  separateVoices
 };
 
 if (require.main === module) {
