@@ -412,7 +412,23 @@ function findMotifs(encodedVoices, key) {
       deltas.push(rhythm_nums[k]);
       durs.push(rhythm_nums[k + 1]);
     }
-    motifs.push({ deg_rels, accs, deltas, durs, vels });
+    // Compute relative MIDI intervals (midi_rels) from first occurrence to preserve exact octave when expanding.
+    let midi_rels = null;
+    try {
+      if (occs && occs.length > 0) {
+        const sample = occs[0];
+        const seq = encodedVoices[sample.voice].slice(sample.start, sample.start + deg_rels.length);
+        if (seq.length === deg_rels.length) {
+          const baseMidi = tonal.Note.midi(seq[0].pitch);
+            if (baseMidi !== null) {
+            midi_rels = seq.map(n => tonal.Note.midi(n.pitch) - baseMidi);
+          }
+        }
+      }
+    } catch (e) {
+      midi_rels = null;
+    }
+    motifs.push({ deg_rels, accs, deltas, durs, vels, midi_rels });
     motifMap.set(key_str, id++);
   }
 
@@ -446,11 +462,14 @@ function applyMotifs(encodedVoices, motifs, motifMap, patternMap) {
         for (let j = occ.start; j < occ.start + len; j++) {
           covered[occ.voice].add(j);
         }
+        const base_pitch = occ.base_pitch;
+        const base_midi = tonal.Note.midi(base_pitch);
         replacements[occ.voice].push({
           start: occ.start,
           len: len,
           motif_id: mid,
-          base_pitch: occ.base_pitch,
+          base_pitch,
+          base_midi,
           delta: encodedVoices[occ.voice][occ.start].delta
         });
       }
@@ -469,7 +488,8 @@ function applyMotifs(encodedVoices, motifs, motifMap, patternMap) {
       newVoice.push({
         delta: repl.delta,
         motif_id: repl.motif_id,
-        base_pitch: repl.base_pitch
+        base_pitch: repl.base_pitch,
+        base_midi: repl.base_midi
       });
       pos = repl.start + repl.len;
     }
@@ -600,32 +620,30 @@ function decodeVoices(encodedVoices, ppq, motifs = [], key = { tonic: 'C', mode:
     let currentTick = 0;
     for (const item of voice) {
       if (item.motif_id !== undefined) {
-        // Handle motif
         currentTick += item.delta;
         const motif = motifs[item.motif_id];
         if (motif) {
-          const base_midi = tonal.Note.midi(item.base_pitch);
-          const base_diatonic = pitchToDiatonic(base_midi, tonic_pc, mode);
+          const base_midi = item.base_midi != null ? item.base_midi : tonal.Note.midi(item.base_pitch);
           let subTick = currentTick;
           for (let j = 0; j < motif.deg_rels.length; j++) {
-            const total_deg = base_diatonic.degree + motif.deg_rels[j];
-            const deg_mod = ((total_deg % 7) + 7) % 7;
-            const oct_add = Math.floor(total_deg / 7);
-            let exp_pc = (tonic_pc + scale_offsets[deg_mod]) % 12;
-            let pc = (exp_pc + motif.accs[j]) % 12;
-            if (pc < 0) pc += 12;
-            const oct = base_diatonic.oct + oct_add;
-            const p = pc + oct * 12;
-            notes.push({
-              start: subTick,
-              dur: motif.durs[j],
-              pitch: p,
-              vel: motif.vels[j]
-            });
-            subTick += motif.durs[j];
-            if (j < motif.deg_rels.length - 1) {
-              subTick += motif.deltas[j];
+            let pitchMidi;
+            if (motif.midi_rels && motif.midi_rels.length === motif.deg_rels.length && base_midi != null) {
+              pitchMidi = base_midi + motif.midi_rels[j];
+            } else {
+              // Fallback to diatonic reconstruction
+              const base_diatonic = pitchToDiatonic(base_midi, tonic_pc, mode);
+              const total_deg = base_diatonic.degree + motif.deg_rels[j];
+              const deg_mod = ((total_deg % 7) + 7) % 7;
+              const oct_add = Math.floor(total_deg / 7);
+              let exp_pc = (tonic_pc + scale_offsets[deg_mod]) % 12;
+              let pc = (exp_pc + motif.accs[j]) % 12;
+              if (pc < 0) pc += 12;
+              const oct = base_diatonic.oct + oct_add;
+              pitchMidi = pc + oct * 12;
             }
+            notes.push({ start: subTick, dur: motif.durs[j], pitch: pitchMidi, vel: motif.vels[j] });
+            subTick += motif.durs[j];
+            if (j < motif.deg_rels.length - 1) subTick += motif.deltas[j];
           }
           currentTick = subTick;
         }
@@ -662,19 +680,24 @@ function decodeSingleVoice(encodedVoice, ppq, motifs = [], key = { tonic: 'C', m
       currentTick += item.delta;
       const motif = motifs[item.motif_id];
       if (motif) {
-        const base_midi = tonal.Note.midi(item.base_pitch);
-        const base_diatonic = pitchToDiatonic(base_midi, tonic_pc, mode);
+        const base_midi = item.base_midi != null ? item.base_midi : tonal.Note.midi(item.base_pitch);
         let subTick = currentTick;
         for (let j = 0; j < motif.deg_rels.length; j++) {
-          const total_deg = base_diatonic.degree + motif.deg_rels[j];
-          const deg_mod = ((total_deg % 7) + 7) % 7;
-          const oct_add = Math.floor(total_deg / 7);
-          let exp_pc = (tonic_pc + scale_offsets[deg_mod]) % 12;
-          let pc = (exp_pc + motif.accs[j]) % 12;
-          if (pc < 0) pc += 12;
-          const oct = base_diatonic.oct + oct_add;
-          const p = pc + oct * 12;
-          notes.push({ start: subTick, dur: motif.durs[j], pitch: p, vel: motif.vels[j] });
+          let pitchMidi;
+          if (motif.midi_rels && motif.midi_rels.length === motif.deg_rels.length && base_midi != null) {
+            pitchMidi = base_midi + motif.midi_rels[j];
+          } else {
+            const base_diatonic = pitchToDiatonic(base_midi, tonic_pc, mode);
+            const total_deg = base_diatonic.degree + motif.deg_rels[j];
+            const deg_mod = ((total_deg % 7) + 7) % 7;
+            const oct_add = Math.floor(total_deg / 7);
+            let exp_pc = (tonic_pc + scale_offsets[deg_mod]) % 12;
+            let pc = (exp_pc + motif.accs[j]) % 12;
+            if (pc < 0) pc += 12;
+            const oct = base_diatonic.oct + oct_add;
+            pitchMidi = pc + oct * 12;
+          }
+          notes.push({ start: subTick, dur: motif.durs[j], pitch: pitchMidi, vel: motif.vels[j] });
           subTick += motif.durs[j];
           if (j < motif.deg_rels.length - 1) subTick += motif.deltas[j];
         }
@@ -748,7 +771,10 @@ function buildMidiFile({ ppq, tempo, tracks, keySignature = null }) {
       const mpq = [ (microPerQuarter>>16)&0xFF, (microPerQuarter>>8)&0xFF, microPerQuarter &0xFF ];
       events.push({ tick:0, data: [0xFF, 0x51, 0x03, ...mpq] });
       if (keySignature) {
-        const sf = keySignature.sf & 0xFF; // signed byte in two's complement
+        let sfClamped = keySignature.sf;
+        if (sfClamped > 7) sfClamped = 7; else if (sfClamped < -7) sfClamped = -7;
+        // Convert to signed byte two's complement representation
+        const sf = sfClamped < 0 ? 256 + sfClamped : sfClamped;
         const mode = (keySignature.mode === 'minor' || keySignature.mode === 1) ? 1 : 0;
         events.push({ tick:0, data: [0xFF, 0x59, 0x02, sf, mode] });
       }
