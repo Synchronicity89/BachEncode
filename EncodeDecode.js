@@ -71,6 +71,9 @@ function extractTempoAndPPQAndNotes(midi) {
   debugOutput.push('Using tracks array length: ' + tracks.length);
   console.log('Processing', tracks.length, 'tracks');
 
+  // Potential embedded voice split metadata (single-track reconstruction aid)
+  const recoveredVoiceSplitMetaParts = [];
+
   for (let trackIndex = 0; trackIndex < tracks.length; trackIndex++) {
     const track = tracks[trackIndex];
     debugOutput.push(`\n=== TRACK ${trackIndex} ===`);
@@ -135,6 +138,20 @@ function extractTempoAndPPQAndNotes(midi) {
         }
       }
 
+      // Embedded text meta events (metaType 1) for voiceSplitMeta recovery
+      if (event.type === 255 && event.metaType === 1) {
+        let txt;
+        if (Array.isArray(event.data)) {
+          txt = event.data.map(c => String.fromCharCode(c)).join('').replace(/\0+$/, '');
+        } else if (typeof event.data === 'string') {
+          txt = event.data.replace(/\0+$/, '');
+        }
+        if (txt && txt.startsWith('VSPLIT:')) {
+            // Everything after prefix is base64 JSON of voiceSplitMeta
+            recoveredVoiceSplitMetaParts.push({ order: recoveredVoiceSplitMetaParts.length, data: txt.slice(7) });
+        }
+      }
+
       // Handle MIDI note events - this parser uses type 9 for note on, type 8 for note off
       if (event.type === 9 && event.data && event.data.length >= 2 && event.data[1] > 0) {
         // Note On (type 9 with velocity > 0)
@@ -187,7 +204,19 @@ function extractTempoAndPPQAndNotes(midi) {
   fs.writeFileSync('debug-output.txt', debugOutput.join('\n'));
   console.log(`Extraction complete: ${notes.length} notes found. Debug output written to debug-output.txt`);
 
-  return { ppq, tempo, notes, key_sig, perTrackNotes, trackNames };
+  let recoveredVoiceSplitMeta = null;
+  if (recoveredVoiceSplitMetaParts.length > 0) {
+    // Single part expected; if multiple, concatenate
+    try {
+      const b64 = recoveredVoiceSplitMetaParts.sort((a,b)=> a.order - b.order).map(p=>p.data).join('');
+      const json = Buffer.from(b64, 'base64').toString('utf8');
+      recoveredVoiceSplitMeta = JSON.parse(json);
+      debugOutput.push('Recovered voiceSplitMeta from embedded meta event. Voices: '+ (recoveredVoiceSplitMeta.length || 0));
+    } catch (e) {
+      debugOutput.push('Failed to parse embedded voiceSplitMeta: '+ e.message);
+    }
+  }
+  return { ppq, tempo, notes, key_sig, perTrackNotes, trackNames, recoveredVoiceSplitMeta };
 }
 
 function findBestKey(notes, key_sig) {
@@ -452,6 +481,16 @@ function applyMotifs(encodedVoices, motifs, motifMap, patternMap) {
   return newEncodedVoices;
 }
 
+// Helper: reconstruct RAW voices (arrays of note objects) from a recovered voiceSplitMeta
+function reconstructRawVoicesFromSplitMeta(allNotes, voiceSplitMeta) {
+  if (!voiceSplitMeta || !Array.isArray(voiceSplitMeta) || voiceSplitMeta.length === 0) return null;
+  const ordered = allNotes.slice().sort((a,b)=> a.start - b.start || a.pitch - b.pitch);
+  return voiceSplitMeta.map(indexList => {
+    const voiceNotes = indexList.map(i => ordered[i]).filter(Boolean).sort((a,b)=> a.start - b.start || a.pitch - b.pitch);
+    return voiceNotes;
+  });
+}
+
 function compressMidiToJson(inputMidi, outputJson) {
   const midi = parseMidi(inputMidi);
   const argv = process.argv.slice(2); // after node script
@@ -459,7 +498,7 @@ function compressMidiToJson(inputMidi, outputJson) {
   const disableMotifsExplicit = motiflessFlags.some(f => argv.includes(f)) || process.env.NO_MOTIFS === '1';
   const preserveTracksFlag = argv.includes('--preserve-tracks') || process.env.PRESERVE_TRACKS === '1';
 
-  const { ppq, tempo, notes, key_sig, perTrackNotes, trackNames } = extractTempoAndPPQAndNotes(midi);
+  const { ppq, tempo, notes, key_sig, perTrackNotes, trackNames, recoveredVoiceSplitMeta } = extractTempoAndPPQAndNotes(midi);
   const key = findBestKey(notes, key_sig);
   const tonic_name = tonal.Note.pitchClass(tonal.Note.fromMidi(key.tonic_pc + 60, true));
   let voices;
@@ -484,8 +523,18 @@ function compressMidiToJson(inputMidi, outputJson) {
     voiceMeta = voices.map((v,i)=>({ heuristic:true, index:i, noteCount:v.length }));
     voiceToTrack = voices.map((_,i)=> i);
   }
+
+  // If we recovered a voiceSplitMeta from an earlier compression (single-track case), override heuristic segmentation
+  if (recoveredVoiceSplitMeta && perTrackNotes.length === 1) {
+    const reconstructed = reconstructRawVoicesFromSplitMeta(notes, recoveredVoiceSplitMeta);
+    if (reconstructed) {
+      voices = reconstructed;
+      voiceMeta = voices.map((v,i)=> ({ restored:true, index:i, noteCount:v.length }));
+      voiceToTrack = voices.map((_,i)=> i);
+    }
+  }
   let encodedVoices = encodeVoices(voices);
-  const disableMotifs = disableMotifsExplicit || true; // Force motifless for now per user directive
+  const disableMotifs = disableMotifsExplicit; // Honor explicit disabling only
   let motifs = [];
   if (!disableMotifs) {
     const motifResults = findMotifs(encodedVoices, key);
@@ -509,18 +558,28 @@ function compressMidiToJson(inputMidi, outputJson) {
     }
     motifs = newMotifs;
   }
+  // Persist voice segmentation metadata ONLY if original track count was 1 but we produced >1 voices
+  // so we can reconstruct the same segmentation on roundtrip.
+  let voiceSplitMeta = null;
+  if ((perTrackNotes.length === 1) && voices.length > 1) {
+    // Build global ordering from concatenation of all voice notes so indices are stable
+    const globalNotes = voices.flat().slice().sort((a,b)=> a.start - b.start || a.pitch - b.pitch);
+    const indexMap = new Map(globalNotes.map((n,i)=>[n,i]));
+    voiceSplitMeta = voices.map(v => v.map(n => indexMap.get(n)).filter(i => i !== undefined));
+  }
   const compressed = {
     ppq,
     tempo,
     key: { tonic: tonic_name, mode: key.mode },
-    motifs: disableMotifs ? [] : motifs,
+  motifs: disableMotifs ? [] : motifs,
     voices: encodedVoices,
     voiceMeta,
-    motifsDisabled: true,
+  motifsDisabled: !!disableMotifs,
     originalTrackCount: perTrackNotes.length,
     trackNames,
     voiceToTrack,
-    keySignature: key_sig ? { sf: key_sig.sf, mode: key_sig.mode } : null
+    keySignature: key_sig ? { sf: key_sig.sf, mode: key_sig.mode } : null,
+    voiceSplitMeta
   };
   
   // Ensure output directory exists
@@ -694,6 +753,22 @@ function buildMidiFile({ ppq, tempo, tracks, keySignature = null }) {
         events.push({ tick:0, data: [0xFF, 0x59, 0x02, sf, mode] });
       }
     }
+    if (t.embeddedVoiceSplitMeta) {
+      try {
+        const jsonStr = JSON.stringify(t.embeddedVoiceSplitMeta);
+        const b64 = Buffer.from(jsonStr, 'utf8').toString('base64');
+        const chunkSize = 100; // keep <128 so single-byte length works
+        for (let off = 0; off < b64.length; off += chunkSize) {
+          const chunk = b64.slice(off, off + chunkSize);
+            // Prefix first chunk with VSPLIT:, continuation chunks with VSPLIT:+ (marker retained but we reconstruct by concatenating)
+          const prefix = 'VSPLIT:'; // same prefix for simplicity
+          const txtBuf = Buffer.from(prefix + chunk, 'ascii');
+          events.push({ tick:0, data: [0xFF, 0x01, txtBuf.length, ...txtBuf] });
+        }
+      } catch (e) {
+        // swallow errors silently; embedding is best-effort
+      }
+    }
     for (const n of t.notes) {
       events.push({ tick: n.start, data: [0x90, n.pitch & 0x7F, Math.max(0, Math.min(127, n.vel || 64))] });
       events.push({ tick: n.start + n.dur, data: [0x90, n.pitch & 0x7F, 0x00] });
@@ -706,24 +781,35 @@ function buildMidiFile({ ppq, tempo, tracks, keySignature = null }) {
 
 function decompressJsonToMidi(inputJson, outputMidi) {
   const compressed = JSON.parse(fs.readFileSync(inputJson, 'utf8'));
-  const { ppq, tempo, motifs = [], voices, key = { tonic: 'C', mode: 'major' }, originalTrackCount, voiceToTrack = [], trackNames = [], keySignature = null } = compressed;
+  const { ppq, tempo, motifs = [], voices, key = { tonic: 'C', mode: 'major' }, originalTrackCount, voiceToTrack = [], trackNames = [], keySignature = null, voiceSplitMeta = null } = compressed;
 
   // Decode each voice to raw notes
   const decodedVoiceNotes = voices.map(v => decodeSingleVoice(v, ppq, motifs, key));
-  const trackTotal = originalTrackCount || voices.length;
+  let trackTotal = originalTrackCount || voices.length;
+  // If original had 1 track but multiple voices AND we stored voiceSplitMeta, we will still emit a single track
+  // (to preserve originalTrackCount) but keep an ordered concatenation of voice notes for re-splitting later.
   const tracks = Array.from({ length: trackTotal }, (_,i)=> ({ name: trackNames[i] || undefined, notes: [] }));
-  // Map voices back
-  if (voiceToTrack.length === decodedVoiceNotes.length) {
-    for (let i=0;i<decodedVoiceNotes.length;i++) {
-      const tIndex = voiceToTrack[i] ?? i;
-      if (!tracks[tIndex]) continue; // safety
-      tracks[tIndex].notes.push(...decodedVoiceNotes[i]);
-    }
+  if (trackTotal === 1) {
+    // Merge all voices into single track preserving chronological order
+    const merged = decodedVoiceNotes.flat().sort((a,b)=> a.start - b.start || a.pitch - b.pitch);
+    tracks[0].notes.push(...merged);
   } else {
-    // Fallback: one voice per sequential track
-    for (let i=0;i<decodedVoiceNotes.length;i++) {
-      tracks[i] && tracks[i].notes.push(...decodedVoiceNotes[i]);
+    if (voiceToTrack.length === decodedVoiceNotes.length) {
+      for (let i=0;i<decodedVoiceNotes.length;i++) {
+        const tIndex = voiceToTrack[i] ?? i;
+        if (!tracks[tIndex]) continue;
+        tracks[tIndex].notes.push(...decodedVoiceNotes[i]);
+      }
+    } else {
+      for (let i=0;i<decodedVoiceNotes.length;i++) {
+        tracks[i] && tracks[i].notes.push(...decodedVoiceNotes[i]);
+      }
     }
+  }
+
+  // Embed voiceSplitMeta for single-track multi-voice reconstruction on future recompression
+  if (voiceSplitMeta && originalTrackCount === 1 && tracks[0]) {
+    tracks[0].embeddedVoiceSplitMeta = voiceSplitMeta;
   }
 
   const midiBuffer = buildMidiFile({ ppq, tempo, tracks, keySignature });
@@ -773,9 +859,31 @@ module.exports = {
   // Expose internals for advanced key analysis / future integration tests
   parseMidi,
   extractTempoAndPPQAndNotes,
-  separateVoices
+  separateVoices,
+  reconstructVoicesFromSplitMeta
 };
 
 if (require.main === module) {
   main();
+}
+
+// Helper: given decoded single-track notes and a voiceSplitMeta array of index arrays (global note indices),
+// reconstruct encoded voices deterministically for later recompression parity.
+function reconstructVoicesFromSplitMeta(allNotes, voiceSplitMeta) {
+  if (!voiceSplitMeta || !Array.isArray(voiceSplitMeta) || voiceSplitMeta.length === 0) return null;
+  // Sort allNotes by start then pitch to build same index ordering used in compression when capturing voiceSplitMeta
+  const ordered = allNotes.slice().sort((a,b)=> a.start - b.start || a.pitch - b.pitch);
+  // Build encoded voices out of those note groups preserving original relative timing (delta) semantics
+  return voiceSplitMeta.map(indexList => {
+    const voiceNotes = indexList.map(i => ordered[i]).filter(Boolean).sort((a,b)=> a.start - b.start || a.pitch - b.pitch);
+    // Re-encode into delta/pitch/dur/vel objects
+    const encoded = [];
+    let prevEnd = 0;
+    for (const n of voiceNotes) {
+      const delta = n.start - prevEnd;
+      encoded.push({ delta, pitch: tonal.Note.fromMidi(n.pitch, true), dur: n.dur, vel: n.vel });
+      prevEnd = n.start + n.dur;
+    }
+    return encoded;
+  });
 }
