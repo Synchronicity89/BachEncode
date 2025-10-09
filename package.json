@@ -1,6 +1,6 @@
 {
   "name": "bach-encode",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A MIDI compression/decompression tool that converts between MIDI files and JSON format with voice separation",
   "main": "EncodeDecode.js",
   "scripts": {
