@@ -25,9 +25,9 @@ describe('BWV785 Layering Disabled Degradation Control Test', () => {
     return null;
   }
 
-  function run(cmd, env) {
+  function run(cmd) {
     try {
-      return execSync(cmd, { cwd: projectRoot, stdio: 'pipe', env: { ...process.env, ...env } }).toString();
+      return execSync(cmd, { cwd: projectRoot, stdio: 'pipe' }).toString();
     } catch (e) {
       throw new Error(`Command failed: ${cmd}\nSTDOUT: ${e.stdout?.toString()}\nSTDERR: ${e.stderr?.toString()}`);
     }
@@ -45,15 +45,15 @@ describe('BWV785 Layering Disabled Degradation Control Test', () => {
     const secondJson = path.join(outDir, 'recompressed.json');
 
     // Compress with track preservation & motifless & layering disabled
-    run(`node EncodeDecode.js compress "${midiInfo.path}" "${firstJson}" --force-motifless --preserve-tracks`, { NO_MOTIFS: '1', PRESERVE_TRACKS: '1', DISABLE_LAYERING: '1' });
+  run(`node EncodeDecode.js compress "${midiInfo.path}" "${firstJson}" --force-motifless --preserve-tracks --disable-layering`);
     if (!fs.existsSync(firstJson)) throw new Error('original.json not created');
 
     // Decompress with layering disabled
-    run(`node EncodeDecode.js decompress "${firstJson}" "${rtMidi}" --disable-layering`, { DISABLE_LAYERING: '1' });
+  run(`node EncodeDecode.js decompress "${firstJson}" "${rtMidi}" --disable-layering`);
     if (!fs.existsSync(rtMidi)) throw new Error('roundtrip.mid not created');
 
     // Recompress again with layering disabled
-    run(`node EncodeDecode.js compress "${rtMidi}" "${secondJson}" --force-motifless --preserve-tracks`, { NO_MOTIFS: '1', PRESERVE_TRACKS: '1', DISABLE_LAYERING: '1' });
+  run(`node EncodeDecode.js compress "${rtMidi}" "${secondJson}" --force-motifless --preserve-tracks --disable-layering`);
     if (!fs.existsSync(secondJson)) throw new Error('recompressed.json not created');
 
     const a = JSON.parse(fs.readFileSync(firstJson, 'utf8'));

@@ -1,0 +1,8727 @@
+{
+  "ppq": 128,
+  "tempo": 120,
+  "key": {
+    "tonic": "F",
+    "mode": "major",
+    "originalDetectedTonicPc": 10,
+    "locked": false
+  },
+  "keySignatureExpanded": {
+    "sf": -1,
+    "major": {
+      "tonic": "F"
+    },
+    "relativeMinor": {
+      "tonic": "D"
+    }
+  },
+  "originalKeySignature": null,
+  "originalKeySignatureExpanded": null,
+  "motifs": [
+    {
+      "deg_rels": [
+        0,
+        -7,
+        2,
+        -6,
+        3,
+        -5,
+        4,
+        -6,
+        3,
+        -7,
+        2,
+        -4
+      ],
+      "accs": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        0,
+        -36,
+        1,
+        -36,
+        1,
+        -36,
+        0,
+        -36,
+        1,
+        -73,
+        1
+      ],
+      "durs": [
+        73,
+        36,
+        36,
+        36,
+        36,
+        36,
+        36,
+        36,
+        36,
+        73,
+        73,
+        73
+      ],
+      "vels": [
+        127,
+        127,
+        127,
+        127,
+        127,
+        127,
+        127,
+        127,
+        127,
+        127,
+        127,
+        127
+      ],
+      "midi_rels": [
+        0,
+        -12,
+        3,
+        -10,
+        5,
+        -9,
+        7,
+        -10,
+        5,
+        -12,
+        3,
+        -7
+      ],
+      "sample_base_midi": 67
+    },
+    {
+      "deg_rels": [
+        0,
+        -8,
+        1,
+        -7,
+        2,
+        -8,
+        1
+      ],
+      "accs": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        1,
+        -36,
+        1,
+        -36,
+        0,
+        -36
+      ],
+      "durs": [
+        36,
+        36,
+        36,
+        36,
+        36,
+        36,
+        36
+      ],
+      "vels": [
+        127,
+        127,
+        127,
+        127,
+        127,
+        127,
+        127
+      ],
+      "midi_rels": [
+        0,
+        -13,
+        2,
+        -12,
+        4,
+        -13,
+        2
+      ],
+      "sample_base_midi": 70
+    },
+    {
+      "deg_rels": [
+        0,
+        -4,
+        -13,
+        -12,
+        -11,
+        -12,
+        -13
+      ],
+      "accs": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        1,
+        -217,
+        1,
+        1,
+        0,
+        1
+      ],
+      "durs": [
+        73,
+        291,
+        36,
+        36,
+        36,
+        36,
+        73
+      ],
+      "vels": [
+        127,
+        127,
+        127,
+        127,
+        127,
+        127,
+        127
+      ],
+      "midi_rels": [
+        0,
+        -7,
+        -22,
+        -21,
+        -19,
+        -21,
+        -22
+      ],
+      "sample_base_midi": 79
+    },
+    {
+      "deg_rels": [
+        0,
+        9,
+        -1,
+        8,
+        2,
+        11,
+        -3
+      ],
+      "accs": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        -36,
+        1,
+        -73,
+        1,
+        -73,
+        0
+      ],
+      "durs": [
+        36,
+        36,
+        73,
+        73,
+        73,
+        73,
+        36
+      ],
+      "vels": [
+        127,
+        127,
+        127,
+        127,
+        127,
+        127,
+        127
+      ],
+      "midi_rels": [
+        0,
+        16,
+        -1,
+        14,
+        4,
+        19,
+        -5
+      ],
+      "sample_base_midi": 58
+    },
+    {
+      "deg_rels": [
+        0,
+        -9,
+        -8,
+        -7,
+        -8,
+        -9
+      ],
+      "accs": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        -217,
+        1,
+        1,
+        0,
+        1
+      ],
+      "durs": [
+        291,
+        36,
+        36,
+        36,
+        36,
+        73
+      ],
+      "vels": [
+        127,
+        127,
+        127,
+        127,
+        127,
+        127
+      ],
+      "midi_rels": [
+        0,
+        -16,
+        -14,
+        -12,
+        -14,
+        -16
+      ],
+      "sample_base_midi": 74
+    },
+    {
+      "deg_rels": [
+        0,
+        18,
+        1,
+        2,
+        1,
+        0
+      ],
+      "accs": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        -36,
+        -85,
+        0,
+        1,
+        1
+      ],
+      "durs": [
+        36,
+        122,
+        36,
+        36,
+        36,
+        73
+      ],
+      "vels": [
+        127,
+        127,
+        127,
+        127,
+        127,
+        127
+      ],
+      "midi_rels": [
+        0,
+        31,
+        2,
+        4,
+        2,
+        0
+      ],
+      "sample_base_midi": 41
+    },
+    {
+      "deg_rels": [
+        0,
+        1,
+        2,
+        1,
+        0
+      ],
+      "accs": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        1,
+        1,
+        0,
+        1
+      ],
+      "durs": [
+        36,
+        36,
+        36,
+        36,
+        73
+      ],
+      "vels": [
+        127,
+        127,
+        127,
+        127,
+        127
+      ],
+      "midi_rels": [
+        0,
+        2,
+        4,
+        2,
+        0
+      ],
+      "sample_base_midi": 65
+    },
+    {
+      "deg_rels": [
+        0,
+        9,
+        1,
+        10,
+        2
+      ],
+      "accs": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        -36,
+        1,
+        -36,
+        1
+      ],
+      "durs": [
+        36,
+        36,
+        36,
+        36,
+        36
+      ],
+      "vels": [
+        127,
+        127,
+        127,
+        127,
+        127
+      ],
+      "midi_rels": [
+        0,
+        15,
+        1,
+        17,
+        3
+      ],
+      "sample_base_midi": 57
+    },
+    {
+      "deg_rels": [
+        0,
+        -2,
+        -1,
+        0,
+        -1
+      ],
+      "accs": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        0,
+        1,
+        0,
+        1
+      ],
+      "durs": [
+        73,
+        36,
+        36,
+        36,
+        36
+      ],
+      "vels": [
+        127,
+        127,
+        127,
+        127,
+        127
+      ],
+      "midi_rels": [
+        0,
+        -4,
+        -2,
+        0,
+        -2
+      ],
+      "sample_base_midi": 69
+    },
+    {
+      "deg_rels": [
+        0,
+        9,
+        1,
+        10
+      ],
+      "accs": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        -36,
+        1,
+        -36
+      ],
+      "durs": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "vels": [
+        127,
+        127,
+        127,
+        127
+      ],
+      "midi_rels": [
+        0,
+        15,
+        1,
+        17
+      ],
+      "sample_base_midi": 57
+    },
+    {
+      "deg_rels": [
+        0,
+        9,
+        -1,
+        8
+      ],
+      "accs": [
+        -1,
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        -36,
+        1,
+        -36
+      ],
+      "durs": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "vels": [
+        127,
+        127,
+        127,
+        127
+      ],
+      "midi_rels": [
+        0,
+        16,
+        -1,
+        14
+      ],
+      "sample_base_midi": 63
+    },
+    {
+      "deg_rels": [
+        0,
+        9,
+        -1,
+        8
+      ],
+      "accs": [
+        0,
+        -1,
+        0,
+        0
+      ],
+      "deltas": [
+        -36,
+        1,
+        -36
+      ],
+      "durs": [
+        36,
+        36,
+        36,
+        36
+      ],
+      "vels": [
+        127,
+        127,
+        127,
+        127
+      ],
+      "midi_rels": [
+        0,
+        15,
+        -2,
+        14
+      ],
+      "sample_base_midi": 60
+    },
+    {
+      "deg_rels": [
+        0,
+        -7,
+        -2,
+        -9
+      ],
+      "accs": [
+        0,
+        0,
+        0,
+        1
+      ],
+      "deltas": [
+        1,
+        -36,
+        -36
+      ],
+      "durs": [
+        73,
+        36,
+        73,
+        36
+      ],
+      "vels": [
+        127,
+        127,
+        127,
+        127
+      ],
+      "midi_rels": [
+        0,
+        -12,
+        -3,
+        -14
+      ],
+      "sample_base_midi": 70
+    },
+    {
+      "deg_rels": [
+        0,
+        -1,
+        0,
+        1
+      ],
+      "accs": [
+        -1,
+        0,
+        -1,
+        0
+      ],
+      "deltas": [
+        1,
+        1,
+        0
+      ],
+      "durs": [
+        36,
+        36,
+        36,
+        73
+      ],
+      "vels": [
+        127,
+        127,
+        127,
+        127
+      ],
+      "midi_rels": [
+        0,
+        -1,
+        0,
+        2
+      ],
+      "sample_base_midi": 75
+    },
+    {
+      "deg_rels": [
+        0,
+        -1,
+        3,
+        1
+      ],
+      "accs": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        0,
+        1,
+        1
+      ],
+      "durs": [
+        36,
+        73,
+        73,
+        73
+      ],
+      "vels": [
+        127,
+        127,
+        127,
+        127
+      ],
+      "midi_rels": [
+        0,
+        -2,
+        5,
+        2
+      ],
+      "sample_base_midi": 50
+    },
+    {
+      "deg_rels": [
+        0,
+        0,
+        -10,
+        2
+      ],
+      "accs": [
+        0,
+        1,
+        0,
+        0
+      ],
+      "deltas": [
+        1,
+        1,
+        -73
+      ],
+      "durs": [
+        36,
+        36,
+        73,
+        73
+      ],
+      "vels": [
+        127,
+        127,
+        127,
+        127
+      ],
+      "midi_rels": [
+        0,
+        1,
+        -17,
+        3
+      ],
+      "sample_base_midi": 79
+    },
+    {
+      "deg_rels": [
+        0,
+        9,
+        1,
+        10
+      ],
+      "accs": [
+        0,
+        0,
+        -1,
+        0
+      ],
+      "deltas": [
+        -36,
+        1,
+        -73
+      ],
+      "durs": [
+        36,
+        36,
+        73,
+        73
+      ],
+      "vels": [
+        127,
+        127,
+        127,
+        127
+      ],
+      "midi_rels": [
+        0,
+        15,
+        1,
+        17
+      ],
+      "sample_base_midi": 62
+    },
+    {
+      "deg_rels": [
+        0,
+        9,
+        1,
+        10
+      ],
+      "accs": [
+        0,
+        0,
+        0,
+        -1
+      ],
+      "deltas": [
+        -36,
+        1,
+        -73
+      ],
+      "durs": [
+        36,
+        36,
+        73,
+        73
+      ],
+      "vels": [
+        127,
+        127,
+        127,
+        127
+      ],
+      "midi_rels": [
+        0,
+        16,
+        2,
+        17
+      ],
+      "sample_base_midi": 58
+    },
+    {
+      "deg_rels": [
+        0,
+        9,
+        2,
+        7
+      ],
+      "accs": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        -73,
+        1,
+        -36
+      ],
+      "durs": [
+        73,
+        73,
+        36,
+        73
+      ],
+      "vels": [
+        127,
+        127,
+        127,
+        127
+      ],
+      "midi_rels": [
+        0,
+        15,
+        3,
+        12
+      ],
+      "sample_base_midi": 62
+    },
+    {
+      "deg_rels": [
+        0,
+        -1,
+        -2
+      ],
+      "accs": [
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        1,
+        1
+      ],
+      "durs": [
+        36,
+        36,
+        73
+      ],
+      "vels": [
+        127,
+        127,
+        127
+      ],
+      "midi_rels": [
+        0,
+        -2,
+        -4
+      ],
+      "sample_base_midi": 74
+    },
+    {
+      "deg_rels": [
+        0,
+        9,
+        -1
+      ],
+      "accs": [
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        -36,
+        -36
+      ],
+      "durs": [
+        36,
+        73,
+        36
+      ],
+      "vels": [
+        127,
+        127,
+        127
+      ],
+      "midi_rels": [
+        0,
+        16,
+        -1
+      ],
+      "sample_base_midi": 58
+    },
+    {
+      "deg_rels": [
+        0,
+        1,
+        2
+      ],
+      "accs": [
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        1,
+        0
+      ],
+      "durs": [
+        36,
+        36,
+        73
+      ],
+      "vels": [
+        127,
+        127,
+        127
+      ],
+      "midi_rels": [
+        0,
+        1,
+        3
+      ],
+      "sample_base_midi": 69
+    },
+    {
+      "deg_rels": [
+        0,
+        1,
+        2
+      ],
+      "accs": [
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        1,
+        1
+      ],
+      "durs": [
+        36,
+        36,
+        36
+      ],
+      "vels": [
+        127,
+        127,
+        127
+      ],
+      "midi_rels": [
+        0,
+        2,
+        4
+      ],
+      "sample_base_midi": 53
+    },
+    {
+      "deg_rels": [
+        0,
+        -1,
+        3
+      ],
+      "accs": [
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        1,
+        1
+      ],
+      "durs": [
+        36,
+        73,
+        73
+      ],
+      "vels": [
+        127,
+        127,
+        127
+      ],
+      "midi_rels": [
+        0,
+        -2,
+        5
+      ],
+      "sample_base_midi": 55
+    },
+    {
+      "deg_rels": [
+        0,
+        4,
+        14
+      ],
+      "accs": [
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        1,
+        -73
+      ],
+      "durs": [
+        73,
+        73,
+        147
+      ],
+      "vels": [
+        127,
+        127,
+        127
+      ],
+      "midi_rels": [
+        0,
+        7,
+        24
+      ],
+      "sample_base_midi": 46
+    },
+    {
+      "deg_rels": [
+        0,
+        -10,
+        -1
+      ],
+      "accs": [
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        1,
+        -142
+      ],
+      "durs": [
+        36,
+        142,
+        36
+      ],
+      "vels": [
+        127,
+        127,
+        127
+      ],
+      "midi_rels": [
+        0,
+        -17,
+        -2
+      ],
+      "sample_base_midi": 74
+    },
+    {
+      "deg_rels": [
+        0,
+        -1,
+        -2
+      ],
+      "accs": [
+        -1,
+        0,
+        0
+      ],
+      "deltas": [
+        0,
+        1
+      ],
+      "durs": [
+        36,
+        36,
+        73
+      ],
+      "vels": [
+        127,
+        127,
+        127
+      ],
+      "midi_rels": [
+        0,
+        -1,
+        -3
+      ],
+      "sample_base_midi": 63
+    },
+    {
+      "deg_rels": [
+        0,
+        -9,
+        7
+      ],
+      "accs": [
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        1,
+        -73
+      ],
+      "durs": [
+        73,
+        73,
+        36
+      ],
+      "vels": [
+        127,
+        127,
+        127
+      ],
+      "midi_rels": [
+        0,
+        -15,
+        12
+      ],
+      "sample_base_midi": 60
+    },
+    {
+      "deg_rels": [
+        0,
+        -1,
+        -5
+      ],
+      "accs": [
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        1,
+        1
+      ],
+      "durs": [
+        36,
+        36,
+        73
+      ],
+      "vels": [
+        127,
+        127,
+        127
+      ],
+      "midi_rels": [
+        0,
+        -2,
+        -9
+      ],
+      "sample_base_midi": 74
+    },
+    {
+      "deg_rels": [
+        0,
+        -7,
+        2
+      ],
+      "accs": [
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        1,
+        -73
+      ],
+      "durs": [
+        73,
+        73,
+        36
+      ],
+      "vels": [
+        127,
+        127,
+        127
+      ],
+      "midi_rels": [
+        0,
+        -12,
+        3
+      ],
+      "sample_base_midi": 74
+    },
+    {
+      "deg_rels": [
+        0,
+        -13,
+        -4
+      ],
+      "accs": [
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        0,
+        -73
+      ],
+      "durs": [
+        73,
+        73,
+        73
+      ],
+      "vels": [
+        127,
+        127,
+        127
+      ],
+      "midi_rels": [
+        0,
+        -22,
+        -7
+      ],
+      "sample_base_midi": 77
+    }
+  ],
+  "voices": [
+    [
+      {
+        "delta": 0,
+        "pitch": "Bb3",
+        "dur": 215,
+        "vel": 127,
+        "midi": 58,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -141,
+        "pitch": "Bb4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 70,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "C5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 72,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "Bb2",
+        "dur": 142,
+        "vel": 127,
+        "midi": 46,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": -142,
+        "motif_id": 19,
+        "base_pitch": "D5",
+        "base_midi": 74,
+        "origSegment": [
+          {
+            "delta": -142,
+            "pitch": "D5",
+            "dur": 36,
+            "vel": 127,
+            "midi": 74
+          },
+          {
+            "delta": 1,
+            "pitch": "C5",
+            "dur": 36,
+            "vel": 127,
+            "midi": 72
+          },
+          {
+            "delta": 1,
+            "pitch": "Bb4",
+            "dur": 73,
+            "vel": 127,
+            "midi": 70
+          }
+        ],
+        "refKey": {
+          "tonic": "Bb",
+          "mode": "major",
+          "exact": false,
+          "accSum": null,
+          "candidateCount": 0,
+          "baseShift": 0,
+          "octaveErrors": 1,
+          "semitoneErrors": 0,
+          "absErrorSum": 12,
+          "totalErrorCount": 1,
+          "diffHist": {
+            "0": 2,
+            "12": 1
+          },
+          "approx": true
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "D3",
+        "dur": 142,
+        "vel": 127,
+        "midi": 50,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -142,
+        "pitch": "F5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 77,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "D5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 74,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "F3",
+        "dur": 142,
+        "vel": 127,
+        "midi": 53,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -142,
+        "pitch": "Bb5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 82,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "F5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 77,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "motif_id": 20,
+        "base_pitch": "Bb3",
+        "base_midi": 58,
+        "origSegment": [
+          {
+            "delta": 1,
+            "pitch": "Bb3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 58
+          },
+          {
+            "delta": -36,
+            "pitch": "D5",
+            "dur": 73,
+            "vel": 127,
+            "midi": 74
+          },
+          {
+            "delta": -36,
+            "pitch": "A3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 57
+          }
+        ],
+        "refKey": {
+          "tonic": "F",
+          "mode": "major",
+          "exact": false,
+          "accSum": null,
+          "candidateCount": 0,
+          "baseShift": 0,
+          "octaveErrors": 1,
+          "semitoneErrors": 0,
+          "absErrorSum": 12,
+          "totalErrorCount": 1,
+          "diffHist": {
+            "0": 2,
+            "-12": 1
+          },
+          "approx": true
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "Bb3",
+        "dur": 514,
+        "vel": 127,
+        "midi": 58,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -514,
+        "pitch": "F5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 77,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Eb5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 75,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "D5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 74,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "Eb5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 75,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "F5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 77,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Bb4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 70,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "D5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 74,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "F4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 65,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Ab4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 68,
+        "diatonic": {
+          "degree": 1,
+          "acc": 1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "G4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 67,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Eb4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 63,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "F4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 65,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "Bb2",
+        "dur": 142,
+        "vel": 127,
+        "midi": 46,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": -142,
+        "pitch": "G4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 67,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "F4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 65,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Eb4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 63,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "Eb3",
+        "dur": 142,
+        "vel": 127,
+        "midi": 51,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -142,
+        "pitch": "Bb4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 70,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "G4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 67,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "G3",
+        "dur": 142,
+        "vel": 127,
+        "midi": 55,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -142,
+        "pitch": "Eb5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 75,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "motif_id": 12,
+        "base_pitch": "Bb4",
+        "base_midi": 70,
+        "origSegment": [
+          {
+            "delta": 0,
+            "pitch": "Bb4",
+            "dur": 73,
+            "vel": 127,
+            "midi": 70
+          },
+          {
+            "delta": 1,
+            "pitch": "Bb3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 58
+          },
+          {
+            "delta": -36,
+            "pitch": "G4",
+            "dur": 73,
+            "vel": 127,
+            "midi": 67
+          },
+          {
+            "delta": -36,
+            "pitch": "Ab3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 56
+          }
+        ],
+        "refKey": {
+          "tonic": "F",
+          "mode": "minor",
+          "accSum": 0,
+          "exact": true,
+          "candidateCount": 3,
+          "baseShift": 0
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "Bb3",
+        "dur": 441,
+        "vel": 127,
+        "midi": 58,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -441,
+        "pitch": "Bb4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 70,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Ab4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 68,
+        "diatonic": {
+          "degree": 1,
+          "acc": 1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "G4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 67,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "Ab4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 68,
+        "diatonic": {
+          "degree": 1,
+          "acc": 1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Bb4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 70,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Eb4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 63,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "G4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 67,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "C4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 60,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Eb4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 63,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "A3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 57,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "C4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 60,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "D4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 62,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "Bb2",
+        "dur": 140,
+        "vel": 127,
+        "midi": 46,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": -140,
+        "pitch": "Eb4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 63,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "D4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 62,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "C4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 60,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "C3",
+        "dur": 141,
+        "vel": 127,
+        "midi": 48,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -141,
+        "pitch": "A4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 69,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "F4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 65,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Eb3",
+        "dur": 141,
+        "vel": 127,
+        "midi": 51,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -141,
+        "pitch": "C5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 72,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "A4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 69,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "A3",
+        "dur": 36,
+        "vel": 127,
+        "midi": 57,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "Eb5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 75,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "G3",
+        "dur": 36,
+        "vel": 127,
+        "midi": 55,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "A3",
+        "dur": 214,
+        "vel": 127,
+        "midi": 57,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -214,
+        "motif_id": 6,
+        "base_pitch": "F4",
+        "base_midi": 65,
+        "origSegment": [
+          {
+            "delta": -214,
+            "pitch": "F4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 65
+          },
+          {
+            "delta": 1,
+            "pitch": "G4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 67
+          },
+          {
+            "delta": 1,
+            "pitch": "A4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 69
+          },
+          {
+            "delta": 0,
+            "pitch": "G4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 67
+          },
+          {
+            "delta": 1,
+            "pitch": "F4",
+            "dur": 73,
+            "vel": 127,
+            "midi": 65
+          }
+        ],
+        "refKey": {
+          "tonic": "F",
+          "mode": "major",
+          "accSum": 0,
+          "exact": true,
+          "candidateCount": 3,
+          "baseShift": 0
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "C5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 72,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "A4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 69,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "F5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 77,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "C5",
+        "dur": 71,
+        "vel": 127,
+        "midi": 72,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 2,
+        "motif_id": 4,
+        "base_pitch": "D5",
+        "base_midi": 74,
+        "origSegment": [
+          {
+            "delta": 2,
+            "pitch": "D5",
+            "dur": 291,
+            "vel": 127,
+            "midi": 74
+          },
+          {
+            "delta": -217,
+            "pitch": "Bb3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 58
+          },
+          {
+            "delta": 1,
+            "pitch": "C4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 60
+          },
+          {
+            "delta": 1,
+            "pitch": "D4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 62
+          },
+          {
+            "delta": 0,
+            "pitch": "C4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 60
+          },
+          {
+            "delta": 1,
+            "pitch": "Bb3",
+            "dur": 73,
+            "vel": 127,
+            "midi": 58
+          }
+        ],
+        "refKey": {
+          "tonic": "Bb",
+          "mode": "major",
+          "exact": false,
+          "accSum": null,
+          "candidateCount": 0,
+          "baseShift": 0,
+          "octaveErrors": 2,
+          "semitoneErrors": 0,
+          "absErrorSum": 24,
+          "totalErrorCount": 2,
+          "diffHist": {
+            "0": 4,
+            "12": 2
+          },
+          "approx": true
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Eb4",
+        "dur": 230,
+        "vel": 127,
+        "midi": 63,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -156,
+        "pitch": "G5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 79,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "F5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 77,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Eb5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 75,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "F5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 77,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "motif_id": 2,
+        "base_pitch": "G5",
+        "base_midi": 79,
+        "origSegment": [
+          {
+            "delta": 0,
+            "pitch": "G5",
+            "dur": 73,
+            "vel": 127,
+            "midi": 79
+          },
+          {
+            "delta": 1,
+            "pitch": "C5",
+            "dur": 291,
+            "vel": 127,
+            "midi": 72
+          },
+          {
+            "delta": -217,
+            "pitch": "A3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 57
+          },
+          {
+            "delta": 1,
+            "pitch": "Bb3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 58
+          },
+          {
+            "delta": 1,
+            "pitch": "C4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 60
+          },
+          {
+            "delta": 0,
+            "pitch": "Bb3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 58
+          },
+          {
+            "delta": 1,
+            "pitch": "A3",
+            "dur": 73,
+            "vel": 127,
+            "midi": 57
+          }
+        ],
+        "refKey": {
+          "tonic": "F",
+          "mode": "major",
+          "exact": false,
+          "accSum": null,
+          "candidateCount": 0,
+          "baseShift": 0,
+          "octaveErrors": 2,
+          "semitoneErrors": 0,
+          "absErrorSum": 24,
+          "totalErrorCount": 2,
+          "diffHist": {
+            "0": 5,
+            "-12": 2
+          },
+          "approx": true
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "D4",
+        "dur": 230,
+        "vel": 127,
+        "midi": 62,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -156,
+        "pitch": "F5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 77,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "Eb5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 75,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "D5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 74,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Eb5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 75,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "motif_id": 2,
+        "base_pitch": "F5",
+        "base_midi": 77,
+        "origSegment": [
+          {
+            "delta": 0,
+            "pitch": "F5",
+            "dur": 73,
+            "vel": 127,
+            "midi": 77
+          },
+          {
+            "delta": 1,
+            "pitch": "Bb4",
+            "dur": 291,
+            "vel": 127,
+            "midi": 70
+          },
+          {
+            "delta": -217,
+            "pitch": "G3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 55
+          },
+          {
+            "delta": 1,
+            "pitch": "A3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 57
+          },
+          {
+            "delta": 1,
+            "pitch": "Bb3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 58
+          },
+          {
+            "delta": 0,
+            "pitch": "A3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 57
+          },
+          {
+            "delta": 1,
+            "pitch": "G3",
+            "dur": 73,
+            "vel": 127,
+            "midi": 55
+          }
+        ],
+        "refKey": {
+          "tonic": "F",
+          "mode": "major",
+          "accSum": 0,
+          "exact": true,
+          "candidateCount": 2,
+          "baseShift": 0
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "C4",
+        "dur": 85,
+        "vel": 127,
+        "midi": 60,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -11,
+        "pitch": "C3",
+        "dur": 36,
+        "vel": 127,
+        "midi": 48,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "Eb5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 75,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "D3",
+        "dur": 36,
+        "vel": 127,
+        "midi": 50,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "D5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 74,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Eb3",
+        "dur": 36,
+        "vel": 127,
+        "midi": 51,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "C5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 72,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "D3",
+        "dur": 36,
+        "vel": 127,
+        "midi": 50,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "D5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 74,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "C3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 48,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "Eb5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 75,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "F3",
+        "dur": 214,
+        "vel": 127,
+        "midi": 53,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -214,
+        "pitch": "A4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 69,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "C5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 72,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "Bb4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 70,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "F2",
+        "dur": 146,
+        "vel": 127,
+        "midi": 41,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": -146,
+        "motif_id": 21,
+        "base_pitch": "A4",
+        "base_midi": 69,
+        "origSegment": [
+          {
+            "delta": -146,
+            "pitch": "A4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 69
+          },
+          {
+            "delta": 1,
+            "pitch": "Bb4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 70
+          },
+          {
+            "delta": 0,
+            "pitch": "C5",
+            "dur": 73,
+            "vel": 127,
+            "midi": 72
+          }
+        ],
+        "refKey": {
+          "tonic": "F",
+          "mode": "major",
+          "exact": false,
+          "accSum": null,
+          "candidateCount": 0,
+          "baseShift": 0,
+          "octaveErrors": 1,
+          "semitoneErrors": 0,
+          "absErrorSum": 12,
+          "totalErrorCount": 1,
+          "diffHist": {
+            "0": 2,
+            "-12": 1
+          },
+          "approx": true
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "F4",
+        "dur": 215,
+        "vel": 127,
+        "midi": 65,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -141,
+        "pitch": "C4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 60,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "A3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 57,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "F3",
+        "dur": 111,
+        "vel": 127,
+        "midi": 53,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -37,
+        "pitch": "F5",
+        "dur": 291,
+        "vel": 127,
+        "midi": 77,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": -217,
+        "motif_id": 22,
+        "base_pitch": "F3",
+        "base_midi": 53,
+        "origSegment": [
+          {
+            "delta": -217,
+            "pitch": "F3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 53
+          },
+          {
+            "delta": 1,
+            "pitch": "G3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 55
+          },
+          {
+            "delta": 1,
+            "pitch": "A3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 57
+          }
+        ],
+        "refKey": {
+          "tonic": "F",
+          "mode": "major",
+          "accSum": 0,
+          "exact": true,
+          "candidateCount": 3,
+          "baseShift": 0
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "F4",
+        "dur": 146,
+        "vel": 127,
+        "midi": 65,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -110,
+        "motif_id": 23,
+        "base_pitch": "G3",
+        "base_midi": 55,
+        "origSegment": [
+          {
+            "delta": -110,
+            "pitch": "G3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 55
+          },
+          {
+            "delta": 1,
+            "pitch": "F3",
+            "dur": 73,
+            "vel": 127,
+            "midi": 53
+          },
+          {
+            "delta": 1,
+            "pitch": "C4",
+            "dur": 73,
+            "vel": 127,
+            "midi": 60
+          }
+        ],
+        "refKey": {
+          "tonic": "Eb",
+          "mode": "major",
+          "exact": false,
+          "accSum": null,
+          "candidateCount": 0,
+          "baseShift": 0,
+          "octaveErrors": 1,
+          "semitoneErrors": 0,
+          "absErrorSum": 12,
+          "totalErrorCount": 1,
+          "diffHist": {
+            "0": 2,
+            "-12": 1
+          },
+          "approx": true
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "A4",
+        "dur": 147,
+        "vel": 127,
+        "midi": 69,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -74,
+        "pitch": "A3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 57,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "F4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 65,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "C5",
+        "dur": 147,
+        "vel": 127,
+        "midi": 72,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "C4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 60,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "A3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 57,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "F5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 77,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "E5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 76,
+        "diatonic": {
+          "degree": -1,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "C4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 60,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "F5",
+        "dur": 514,
+        "vel": 127,
+        "midi": 77,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": -478,
+        "pitch": "Bb3",
+        "dur": 36,
+        "vel": 127,
+        "midi": 58,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 1,
+        "motif_id": 21,
+        "base_pitch": "A3",
+        "base_midi": 57,
+        "origSegment": [
+          {
+            "delta": 1,
+            "pitch": "A3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 57
+          },
+          {
+            "delta": 1,
+            "pitch": "Bb3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 58
+          },
+          {
+            "delta": 0,
+            "pitch": "C4",
+            "dur": 73,
+            "vel": 127,
+            "midi": 60
+          }
+        ],
+        "refKey": {
+          "tonic": "F",
+          "mode": "major",
+          "exact": false,
+          "accSum": null,
+          "candidateCount": 0,
+          "baseShift": 0,
+          "octaveErrors": 1,
+          "semitoneErrors": 0,
+          "absErrorSum": 12,
+          "totalErrorCount": 1,
+          "diffHist": {
+            "0": 2,
+            "-12": 1
+          },
+          "approx": true
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "F3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 53,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "A3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 57,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "C3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 48,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Eb3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 51,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "D3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 50,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 0,
+        "motif_id": 22,
+        "base_pitch": "Bb2",
+        "base_midi": 46,
+        "origSegment": [
+          {
+            "delta": 0,
+            "pitch": "Bb2",
+            "dur": 36,
+            "vel": 127,
+            "midi": 46
+          },
+          {
+            "delta": 1,
+            "pitch": "C3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 48
+          },
+          {
+            "delta": 1,
+            "pitch": "D3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 50
+          }
+        ],
+        "refKey": {
+          "tonic": "F",
+          "mode": "major",
+          "exact": false,
+          "accSum": null,
+          "candidateCount": 0,
+          "baseShift": 0,
+          "octaveErrors": 2,
+          "semitoneErrors": 0,
+          "absErrorSum": 24,
+          "totalErrorCount": 2,
+          "diffHist": {
+            "0": 1,
+            "-12": 2
+          },
+          "approx": true
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "F4",
+        "dur": 146,
+        "vel": 127,
+        "midi": 65,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -110,
+        "motif_id": 23,
+        "base_pitch": "C3",
+        "base_midi": 48,
+        "origSegment": [
+          {
+            "delta": -110,
+            "pitch": "C3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 48
+          },
+          {
+            "delta": 1,
+            "pitch": "Bb2",
+            "dur": 73,
+            "vel": 127,
+            "midi": 46
+          },
+          {
+            "delta": 1,
+            "pitch": "F3",
+            "dur": 73,
+            "vel": 127,
+            "midi": 53
+          }
+        ],
+        "refKey": {
+          "tonic": "Db",
+          "mode": "major",
+          "exact": false,
+          "accSum": null,
+          "candidateCount": 0,
+          "baseShift": 0,
+          "octaveErrors": 1,
+          "semitoneErrors": 0,
+          "absErrorSum": 12,
+          "totalErrorCount": 1,
+          "diffHist": {
+            "0": 2,
+            "-12": 1
+          },
+          "approx": true
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "Bb4",
+        "dur": 147,
+        "vel": 127,
+        "midi": 70,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -74,
+        "pitch": "D3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 50,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Bb3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 58,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "D5",
+        "dur": 147,
+        "vel": 127,
+        "midi": 74,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "F3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 53,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "D3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 50,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "F5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 77,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Eb5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 75,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "F3",
+        "dur": 36,
+        "vel": 127,
+        "midi": 53,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "F5",
+        "dur": 291,
+        "vel": 127,
+        "midi": 77,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": -255,
+        "motif_id": 13,
+        "base_pitch": "Eb3",
+        "base_midi": 51,
+        "origSegment": [
+          {
+            "delta": -255,
+            "pitch": "Eb3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 51
+          },
+          {
+            "delta": 1,
+            "pitch": "D3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 50
+          },
+          {
+            "delta": 1,
+            "pitch": "Eb3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 51
+          },
+          {
+            "delta": 0,
+            "pitch": "F3",
+            "dur": 73,
+            "vel": 127,
+            "midi": 53
+          }
+        ],
+        "refKey": {
+          "tonic": "C",
+          "mode": "major",
+          "accSum": 2,
+          "exact": true,
+          "candidateCount": 2,
+          "baseShift": 1
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Bb2",
+        "dur": 73,
+        "vel": 127,
+        "midi": 46,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "D3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 50,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "G2",
+        "dur": 73,
+        "vel": 127,
+        "midi": 43,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Bb2",
+        "dur": 73,
+        "vel": 127,
+        "midi": 46,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "E2",
+        "dur": 73,
+        "vel": 127,
+        "midi": 40,
+        "diatonic": {
+          "degree": -1,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": 0,
+        "motif_id": 22,
+        "base_pitch": "G2",
+        "base_midi": 43,
+        "origSegment": [
+          {
+            "delta": 0,
+            "pitch": "G2",
+            "dur": 36,
+            "vel": 127,
+            "midi": 43
+          },
+          {
+            "delta": 1,
+            "pitch": "A2",
+            "dur": 36,
+            "vel": 127,
+            "midi": 45
+          },
+          {
+            "delta": 1,
+            "pitch": "Bb2",
+            "dur": 36,
+            "vel": 127,
+            "midi": 46
+          }
+        ],
+        "refKey": {
+          "tonic": "F",
+          "mode": "major",
+          "accSum": 0,
+          "exact": true,
+          "candidateCount": 3,
+          "baseShift": 0
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "G4",
+        "dur": 146,
+        "vel": 127,
+        "midi": 67,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -110,
+        "pitch": "A2",
+        "dur": 36,
+        "vel": 127,
+        "midi": 45,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "G2",
+        "dur": 73,
+        "vel": 127,
+        "midi": 43,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "E3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 52,
+        "diatonic": {
+          "degree": -1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "Bb4",
+        "dur": 147,
+        "vel": 127,
+        "midi": 70,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -74,
+        "motif_id": 24,
+        "base_pitch": "C3",
+        "base_midi": 48,
+        "origSegment": [
+          {
+            "delta": -74,
+            "pitch": "C3",
+            "dur": 73,
+            "vel": 127,
+            "midi": 48
+          },
+          {
+            "delta": 1,
+            "pitch": "G3",
+            "dur": 73,
+            "vel": 127,
+            "midi": 55
+          },
+          {
+            "delta": -73,
+            "pitch": "C5",
+            "dur": 147,
+            "vel": 127,
+            "midi": 72
+          }
+        ],
+        "refKey": {
+          "tonic": "C",
+          "mode": "major",
+          "accSum": 0,
+          "exact": true,
+          "candidateCount": 4,
+          "baseShift": 0
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "E3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 52,
+        "diatonic": {
+          "degree": -1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "Bb3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 58,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "E5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 76,
+        "diatonic": {
+          "degree": -1,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "D5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 74,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "C3",
+        "dur": 36,
+        "vel": 127,
+        "midi": 48,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "E5",
+        "dur": 214,
+        "vel": 127,
+        "midi": 76,
+        "diatonic": {
+          "degree": -1,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": -178,
+        "pitch": "D3",
+        "dur": 36,
+        "vel": 127,
+        "midi": 50,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "E3",
+        "dur": 36,
+        "vel": 127,
+        "midi": 52,
+        "diatonic": {
+          "degree": -1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 1,
+        "motif_id": 14,
+        "base_pitch": "D3",
+        "base_midi": 50,
+        "origSegment": [
+          {
+            "delta": 1,
+            "pitch": "D3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 50
+          },
+          {
+            "delta": 0,
+            "pitch": "C3",
+            "dur": 73,
+            "vel": 127,
+            "midi": 48
+          },
+          {
+            "delta": 1,
+            "pitch": "G3",
+            "dur": 73,
+            "vel": 127,
+            "midi": 55
+          },
+          {
+            "delta": 1,
+            "pitch": "E3",
+            "dur": 73,
+            "vel": 127,
+            "midi": 52
+          }
+        ],
+        "refKey": {
+          "tonic": "C",
+          "mode": "major",
+          "accSum": 0,
+          "exact": true,
+          "candidateCount": 1,
+          "baseShift": 0
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "C4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 60,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "G3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 55,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "A3",
+        "dur": 142,
+        "vel": 127,
+        "midi": 57,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -68,
+        "pitch": "F4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 65,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "G4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 67,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "C4",
+        "dur": 142,
+        "vel": 127,
+        "midi": 60,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -142,
+        "motif_id": 19,
+        "base_pitch": "A4",
+        "base_midi": 69,
+        "origSegment": [
+          {
+            "delta": -142,
+            "pitch": "A4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 69
+          },
+          {
+            "delta": 1,
+            "pitch": "G4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 67
+          },
+          {
+            "delta": 1,
+            "pitch": "F4",
+            "dur": 73,
+            "vel": 127,
+            "midi": 65
+          }
+        ],
+        "refKey": {
+          "tonic": "F",
+          "mode": "major",
+          "accSum": 0,
+          "exact": true,
+          "candidateCount": 1,
+          "baseShift": 0
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "A3",
+        "dur": 142,
+        "vel": 127,
+        "midi": 57,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -142,
+        "pitch": "C5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 72,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "A4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 69,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "F3",
+        "dur": 142,
+        "vel": 127,
+        "midi": 53,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -142,
+        "pitch": "F5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 77,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "C5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 72,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Gb3",
+        "dur": 142,
+        "vel": 127,
+        "midi": 54,
+        "diatonic": {
+          "degree": 0,
+          "acc": 1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -142,
+        "pitch": "A5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 81,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Eb5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 75,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "motif_id": 25,
+        "base_pitch": "D5",
+        "base_midi": 74,
+        "origSegment": [
+          {
+            "delta": 0,
+            "pitch": "D5",
+            "dur": 36,
+            "vel": 127,
+            "midi": 74
+          },
+          {
+            "delta": 1,
+            "pitch": "A3",
+            "dur": 142,
+            "vel": 127,
+            "midi": 57
+          },
+          {
+            "delta": -142,
+            "pitch": "C5",
+            "dur": 36,
+            "vel": 127,
+            "midi": 72
+          }
+        ],
+        "refKey": {
+          "tonic": "C",
+          "mode": "major",
+          "accSum": 0,
+          "exact": true,
+          "candidateCount": 2,
+          "baseShift": 0
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "D5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 74,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Eb5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 75,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "Gb3",
+        "dur": 142,
+        "vel": 127,
+        "midi": 54,
+        "diatonic": {
+          "degree": 0,
+          "acc": 1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -142,
+        "pitch": "A4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 69,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "C5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 72,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "D3",
+        "dur": 142,
+        "vel": 127,
+        "midi": 50,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -142,
+        "pitch": "Gb4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 66,
+        "diatonic": {
+          "degree": 0,
+          "acc": 1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "A4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 69,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "G3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 55,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "Bb4",
+        "dur": 138,
+        "vel": 127,
+        "midi": 70,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -64,
+        "pitch": "G2",
+        "dur": 36,
+        "vel": 127,
+        "midi": 43,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "A2",
+        "dur": 36,
+        "vel": 127,
+        "midi": 45,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Bb2",
+        "dur": 36,
+        "vel": 127,
+        "midi": 46,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "D5",
+        "dur": 138,
+        "vel": 127,
+        "midi": 74,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": -101,
+        "pitch": "A2",
+        "dur": 36,
+        "vel": 127,
+        "midi": 45,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "G2",
+        "dur": 73,
+        "vel": 127,
+        "midi": 43,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "D3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 50,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "Bb4",
+        "dur": 138,
+        "vel": 127,
+        "midi": 70,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -64,
+        "pitch": "Bb2",
+        "dur": 73,
+        "vel": 127,
+        "midi": 46,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "G3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 55,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "G4",
+        "dur": 138,
+        "vel": 127,
+        "midi": 67,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -64,
+        "pitch": "D3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 50,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Bb3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 58,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "Ab4",
+        "dur": 138,
+        "vel": 127,
+        "midi": 68,
+        "diatonic": {
+          "degree": 1,
+          "acc": 1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -65,
+        "pitch": "Ab3",
+        "dur": 36,
+        "vel": 127,
+        "midi": 56,
+        "diatonic": {
+          "degree": 1,
+          "acc": 1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "G3",
+        "dur": 36,
+        "vel": 127,
+        "midi": 55,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "F3",
+        "dur": 36,
+        "vel": 127,
+        "midi": 53,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "F5",
+        "dur": 138,
+        "vel": 127,
+        "midi": 77,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": -102,
+        "pitch": "G3",
+        "dur": 36,
+        "vel": 127,
+        "midi": 55,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Ab3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 56,
+        "diatonic": {
+          "degree": 1,
+          "acc": 1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "D3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 50,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "Ab4",
+        "dur": 138,
+        "vel": 127,
+        "midi": 68,
+        "diatonic": {
+          "degree": 1,
+          "acc": 1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -65,
+        "pitch": "F3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 53,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Bb2",
+        "dur": 73,
+        "vel": 127,
+        "midi": 46,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "F4",
+        "dur": 138,
+        "vel": 127,
+        "midi": 65,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -64,
+        "pitch": "D3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 50,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "Eb3",
+        "dur": 142,
+        "vel": 127,
+        "midi": 51,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -142,
+        "pitch": "G4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 67,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "C4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 60,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "D4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 62,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "G3",
+        "dur": 142,
+        "vel": 127,
+        "midi": 55,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -142,
+        "motif_id": 26,
+        "base_pitch": "Eb4",
+        "base_midi": 63,
+        "origSegment": [
+          {
+            "delta": -142,
+            "pitch": "Eb4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 63
+          },
+          {
+            "delta": 0,
+            "pitch": "D4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 62
+          },
+          {
+            "delta": 1,
+            "pitch": "C4",
+            "dur": 73,
+            "vel": 127,
+            "midi": 60
+          }
+        ],
+        "refKey": {
+          "tonic": "C",
+          "mode": "major",
+          "accSum": 1,
+          "exact": true,
+          "candidateCount": 1,
+          "baseShift": 1
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Eb3",
+        "dur": 142,
+        "vel": 127,
+        "midi": 51,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -142,
+        "pitch": "G4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 67,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "Eb4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 63,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "C3",
+        "dur": 142,
+        "vel": 127,
+        "midi": 48,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -142,
+        "pitch": "C5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 72,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "G4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 67,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "B2",
+        "dur": 142,
+        "vel": 127,
+        "midi": 47,
+        "diatonic": {
+          "degree": -3,
+          "acc": -1,
+          "oct": 3
+        }
+      },
+      {
+        "delta": -142,
+        "pitch": "D5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 74,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Ab4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 68,
+        "diatonic": {
+          "degree": 1,
+          "acc": 1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "motif_id": 25,
+        "base_pitch": "G4",
+        "base_midi": 67,
+        "origSegment": [
+          {
+            "delta": 1,
+            "pitch": "G4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 67
+          },
+          {
+            "delta": 1,
+            "pitch": "D3",
+            "dur": 142,
+            "vel": 127,
+            "midi": 50
+          },
+          {
+            "delta": -142,
+            "pitch": "F4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 65
+          }
+        ],
+        "refKey": {
+          "tonic": "D",
+          "mode": "minor",
+          "accSum": 0,
+          "exact": true,
+          "candidateCount": 1,
+          "baseShift": 0
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "G4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 67,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Ab4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 68,
+        "diatonic": {
+          "degree": 1,
+          "acc": 1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "B2",
+        "dur": 142,
+        "vel": 127,
+        "midi": 47,
+        "diatonic": {
+          "degree": -3,
+          "acc": -1,
+          "oct": 3
+        }
+      },
+      {
+        "delta": -142,
+        "pitch": "D4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 62,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "F4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 65,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "G2",
+        "dur": 142,
+        "vel": 127,
+        "midi": 43,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": -142,
+        "pitch": "B3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 59,
+        "diatonic": {
+          "degree": -3,
+          "acc": -1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "G4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 67,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "C3",
+        "dur": 111,
+        "vel": 127,
+        "midi": 48,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -111,
+        "pitch": "Eb4",
+        "dur": 291,
+        "vel": 127,
+        "midi": 63,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -217,
+        "pitch": "C2",
+        "dur": 36,
+        "vel": 127,
+        "midi": 36,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "D2",
+        "dur": 36,
+        "vel": 127,
+        "midi": 38,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": 1,
+        "motif_id": 26,
+        "base_pitch": "Eb2",
+        "base_midi": 39,
+        "origSegment": [
+          {
+            "delta": 1,
+            "pitch": "Eb2",
+            "dur": 36,
+            "vel": 127,
+            "midi": 39
+          },
+          {
+            "delta": 0,
+            "pitch": "D2",
+            "dur": 36,
+            "vel": 127,
+            "midi": 38
+          },
+          {
+            "delta": 1,
+            "pitch": "C2",
+            "dur": 73,
+            "vel": 127,
+            "midi": 36
+          }
+        ],
+        "refKey": {
+          "tonic": "C",
+          "mode": "major",
+          "accSum": 1,
+          "exact": true,
+          "candidateCount": 1,
+          "baseShift": 1
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "C3",
+        "dur": 36,
+        "vel": 127,
+        "midi": 48,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "Bb2",
+        "dur": 36,
+        "vel": 127,
+        "midi": 46,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "C3",
+        "dur": 142,
+        "vel": 127,
+        "midi": 48,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -142,
+        "pitch": "C4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 60,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "D4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 62,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "Eb4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 63,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "D4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 62,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Bb2",
+        "dur": 73,
+        "vel": 127,
+        "midi": 46,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": -73,
+        "motif_id": 27,
+        "base_pitch": "C4",
+        "base_midi": 60,
+        "origSegment": [
+          {
+            "delta": -73,
+            "pitch": "C4",
+            "dur": 73,
+            "vel": 127,
+            "midi": 60
+          },
+          {
+            "delta": 1,
+            "pitch": "A2",
+            "dur": 73,
+            "vel": 127,
+            "midi": 45
+          },
+          {
+            "delta": -73,
+            "pitch": "C5",
+            "dur": 36,
+            "vel": 127,
+            "midi": 72
+          }
+        ],
+        "refKey": {
+          "tonic": "C",
+          "mode": "major",
+          "accSum": 0,
+          "exact": true,
+          "candidateCount": 3,
+          "baseShift": 0
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "Bb4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 70,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "motif_id": 5,
+        "base_pitch": "F2",
+        "base_midi": 41,
+        "origSegment": [
+          {
+            "delta": 1,
+            "pitch": "F2",
+            "dur": 36,
+            "vel": 127,
+            "midi": 41
+          },
+          {
+            "delta": -36,
+            "pitch": "C5",
+            "dur": 122,
+            "vel": 127,
+            "midi": 72
+          },
+          {
+            "delta": -85,
+            "pitch": "G2",
+            "dur": 36,
+            "vel": 127,
+            "midi": 43
+          },
+          {
+            "delta": 0,
+            "pitch": "A2",
+            "dur": 36,
+            "vel": 127,
+            "midi": 45
+          },
+          {
+            "delta": 1,
+            "pitch": "G2",
+            "dur": 36,
+            "vel": 127,
+            "midi": 43
+          },
+          {
+            "delta": 1,
+            "pitch": "F2",
+            "dur": 73,
+            "vel": 127,
+            "midi": 41
+          }
+        ],
+        "refKey": {
+          "tonic": "C",
+          "mode": "major",
+          "accSum": 0,
+          "exact": true,
+          "candidateCount": 1,
+          "baseShift": 0
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "Bb4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 70,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "F3",
+        "dur": 193,
+        "vel": 127,
+        "midi": 53,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -193,
+        "motif_id": 8,
+        "base_pitch": "A4",
+        "base_midi": 69,
+        "origSegment": [
+          {
+            "delta": -193,
+            "pitch": "A4",
+            "dur": 73,
+            "vel": 127,
+            "midi": 69
+          },
+          {
+            "delta": 0,
+            "pitch": "F4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 65
+          },
+          {
+            "delta": 1,
+            "pitch": "G4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 67
+          },
+          {
+            "delta": 0,
+            "pitch": "A4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 69
+          },
+          {
+            "delta": 1,
+            "pitch": "G4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 67
+          }
+        ],
+        "refKey": {
+          "tonic": "F",
+          "mode": "major",
+          "accSum": 0,
+          "exact": true,
+          "candidateCount": 1,
+          "baseShift": 0
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Eb3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 51,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "motif_id": 27,
+        "base_pitch": "F4",
+        "base_midi": 65,
+        "origSegment": [
+          {
+            "delta": -73,
+            "pitch": "F4",
+            "dur": 73,
+            "vel": 127,
+            "midi": 65
+          },
+          {
+            "delta": 1,
+            "pitch": "D3",
+            "dur": 73,
+            "vel": 127,
+            "midi": 50
+          },
+          {
+            "delta": -73,
+            "pitch": "F5",
+            "dur": 36,
+            "vel": 127,
+            "midi": 77
+          }
+        ],
+        "refKey": {
+          "tonic": "C",
+          "mode": "major",
+          "accSum": 0,
+          "exact": true,
+          "candidateCount": 3,
+          "baseShift": 0
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "Eb5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 75,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "motif_id": 5,
+        "base_pitch": "Bb2",
+        "base_midi": 46,
+        "origSegment": [
+          {
+            "delta": 1,
+            "pitch": "Bb2",
+            "dur": 36,
+            "vel": 127,
+            "midi": 46
+          },
+          {
+            "delta": -36,
+            "pitch": "F5",
+            "dur": 122,
+            "vel": 127,
+            "midi": 77
+          },
+          {
+            "delta": -85,
+            "pitch": "C3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 48
+          },
+          {
+            "delta": 0,
+            "pitch": "D3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 50
+          },
+          {
+            "delta": 1,
+            "pitch": "C3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 48
+          },
+          {
+            "delta": 1,
+            "pitch": "Bb2",
+            "dur": 73,
+            "vel": 127,
+            "midi": 46
+          }
+        ],
+        "refKey": {
+          "tonic": "F",
+          "mode": "major",
+          "exact": false,
+          "accSum": null,
+          "candidateCount": 0,
+          "baseShift": 0,
+          "octaveErrors": 3,
+          "semitoneErrors": 0,
+          "absErrorSum": 36,
+          "totalErrorCount": 3,
+          "diffHist": {
+            "0": 3,
+            "-12": 3
+          },
+          "approx": true
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "Eb5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 75,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Bb3",
+        "dur": 190,
+        "vel": 127,
+        "midi": 58,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -190,
+        "motif_id": 8,
+        "base_pitch": "D5",
+        "base_midi": 74,
+        "origSegment": [
+          {
+            "delta": -190,
+            "pitch": "D5",
+            "dur": 73,
+            "vel": 127,
+            "midi": 74
+          },
+          {
+            "delta": 0,
+            "pitch": "Bb4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 70
+          },
+          {
+            "delta": 1,
+            "pitch": "C5",
+            "dur": 36,
+            "vel": 127,
+            "midi": 72
+          },
+          {
+            "delta": 0,
+            "pitch": "D5",
+            "dur": 36,
+            "vel": 127,
+            "midi": 74
+          },
+          {
+            "delta": 1,
+            "pitch": "C5",
+            "dur": 36,
+            "vel": 127,
+            "midi": 72
+          }
+        ],
+        "refKey": {
+          "tonic": "Bb",
+          "mode": "major",
+          "exact": false,
+          "accSum": null,
+          "candidateCount": 0,
+          "baseShift": 0,
+          "octaveErrors": 1,
+          "semitoneErrors": 0,
+          "absErrorSum": 12,
+          "totalErrorCount": 1,
+          "diffHist": {
+            "0": 4,
+            "12": 1
+          },
+          "approx": true
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Ab3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 56,
+        "diatonic": {
+          "degree": 1,
+          "acc": 1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "Bb4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 70,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "G3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 55,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "Bb5",
+        "dur": 213,
+        "vel": 127,
+        "midi": 82,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": -140,
+        "pitch": "Eb3",
+        "dur": 36,
+        "vel": 127,
+        "midi": 51,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "F3",
+        "dur": 36,
+        "vel": 127,
+        "midi": 53,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "G3",
+        "dur": 36,
+        "vel": 127,
+        "midi": 55,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "F3",
+        "dur": 36,
+        "vel": 127,
+        "midi": 53,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Eb3",
+        "dur": 67,
+        "vel": 127,
+        "midi": 51,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -67,
+        "pitch": "Ab5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 80,
+        "diatonic": {
+          "degree": 1,
+          "acc": 1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "Eb4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 63,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "G5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 79,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "D4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 62,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Eb4",
+        "dur": 130,
+        "vel": 127,
+        "midi": 63,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -130,
+        "pitch": "Bb5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 82,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "Ab5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 80,
+        "diatonic": {
+          "degree": 1,
+          "acc": 1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "motif_id": 15,
+        "base_pitch": "G5",
+        "base_midi": 79,
+        "origSegment": [
+          {
+            "delta": 1,
+            "pitch": "G5",
+            "dur": 36,
+            "vel": 127,
+            "midi": 79
+          },
+          {
+            "delta": 1,
+            "pitch": "Ab5",
+            "dur": 36,
+            "vel": 127,
+            "midi": 80
+          },
+          {
+            "delta": 1,
+            "pitch": "D4",
+            "dur": 73,
+            "vel": 127,
+            "midi": 62
+          },
+          {
+            "delta": -73,
+            "pitch": "Bb5",
+            "dur": 73,
+            "vel": 127,
+            "midi": 82
+          }
+        ],
+        "refKey": {
+          "tonic": "D",
+          "mode": "minor",
+          "accSum": 1,
+          "exact": true,
+          "candidateCount": 1,
+          "baseShift": 0
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "C4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 60,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "Eb5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 75,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "motif_id": 10,
+        "base_pitch": "Eb4",
+        "base_midi": 63,
+        "origSegment": [
+          {
+            "delta": 1,
+            "pitch": "Eb4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 63
+          },
+          {
+            "delta": -36,
+            "pitch": "G5",
+            "dur": 36,
+            "vel": 127,
+            "midi": 79
+          },
+          {
+            "delta": 1,
+            "pitch": "D4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 62
+          },
+          {
+            "delta": -36,
+            "pitch": "F5",
+            "dur": 36,
+            "vel": 127,
+            "midi": 77
+          }
+        ],
+        "refKey": {
+          "tonic": "C",
+          "mode": "major",
+          "accSum": 1,
+          "exact": true,
+          "candidateCount": 2,
+          "baseShift": 1
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "C4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 60,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "Eb5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 75,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "motif_id": 16,
+        "base_pitch": "D4",
+        "base_midi": 62,
+        "origSegment": [
+          {
+            "delta": 1,
+            "pitch": "D4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 62
+          },
+          {
+            "delta": -36,
+            "pitch": "F5",
+            "dur": 36,
+            "vel": 127,
+            "midi": 77
+          },
+          {
+            "delta": 1,
+            "pitch": "Eb4",
+            "dur": 73,
+            "vel": 127,
+            "midi": 63
+          },
+          {
+            "delta": -73,
+            "pitch": "G5",
+            "dur": 73,
+            "vel": 127,
+            "midi": 79
+          }
+        ],
+        "refKey": {
+          "tonic": "C",
+          "mode": "major",
+          "accSum": 1,
+          "exact": true,
+          "candidateCount": 2,
+          "baseShift": 0
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "A3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 57,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "C5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 72,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "motif_id": 11,
+        "base_pitch": "C4",
+        "base_midi": 60,
+        "origSegment": [
+          {
+            "delta": 1,
+            "pitch": "C4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 60
+          },
+          {
+            "delta": -36,
+            "pitch": "Eb5",
+            "dur": 36,
+            "vel": 127,
+            "midi": 75
+          },
+          {
+            "delta": 1,
+            "pitch": "Bb3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 58
+          },
+          {
+            "delta": -36,
+            "pitch": "D5",
+            "dur": 36,
+            "vel": 127,
+            "midi": 74
+          }
+        ],
+        "refKey": {
+          "tonic": "F",
+          "mode": "major",
+          "exact": false,
+          "accSum": null,
+          "candidateCount": 0,
+          "baseShift": 0,
+          "octaveErrors": 3,
+          "semitoneErrors": 0,
+          "absErrorSum": 36,
+          "totalErrorCount": 3,
+          "diffHist": {
+            "0": 1,
+            "-12": 3
+          },
+          "approx": true
+        }
+      },
+      {
+        "delta": 0,
+        "motif_id": 9,
+        "base_pitch": "A3",
+        "base_midi": 57,
+        "origSegment": [
+          {
+            "delta": 0,
+            "pitch": "A3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 57
+          },
+          {
+            "delta": -36,
+            "pitch": "C5",
+            "dur": 36,
+            "vel": 127,
+            "midi": 72
+          },
+          {
+            "delta": 1,
+            "pitch": "Bb3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 58
+          },
+          {
+            "delta": -36,
+            "pitch": "D5",
+            "dur": 36,
+            "vel": 127,
+            "midi": 74
+          }
+        ],
+        "refKey": {
+          "tonic": "F",
+          "mode": "major",
+          "exact": false,
+          "accSum": null,
+          "candidateCount": 0,
+          "baseShift": 0,
+          "octaveErrors": 2,
+          "semitoneErrors": 0,
+          "absErrorSum": 24,
+          "totalErrorCount": 2,
+          "diffHist": {
+            "0": 2,
+            "-12": 2
+          },
+          "approx": true
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "C4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 60,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "Eb5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 75,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "F3",
+        "dur": 66,
+        "vel": 127,
+        "midi": 53,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -66,
+        "pitch": "A4",
+        "dur": 62,
+        "vel": 127,
+        "midi": 69,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 12,
+        "motif_id": 7,
+        "base_pitch": "A3",
+        "base_midi": 57,
+        "origSegment": [
+          {
+            "delta": 12,
+            "pitch": "A3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 57
+          },
+          {
+            "delta": -36,
+            "pitch": "C5",
+            "dur": 36,
+            "vel": 127,
+            "midi": 72
+          },
+          {
+            "delta": 1,
+            "pitch": "Bb3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 58
+          },
+          {
+            "delta": -36,
+            "pitch": "D5",
+            "dur": 36,
+            "vel": 127,
+            "midi": 74
+          },
+          {
+            "delta": 1,
+            "pitch": "C4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 60
+          }
+        ],
+        "refKey": {
+          "tonic": "F",
+          "mode": "major",
+          "exact": false,
+          "accSum": null,
+          "candidateCount": 0,
+          "baseShift": 0,
+          "octaveErrors": 3,
+          "semitoneErrors": 0,
+          "absErrorSum": 36,
+          "totalErrorCount": 3,
+          "diffHist": {
+            "0": 2,
+            "-12": 3
+          },
+          "approx": true
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "Eb5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 75,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "motif_id": 3,
+        "base_pitch": "Bb3",
+        "base_midi": 58,
+        "origSegment": [
+          {
+            "delta": 0,
+            "pitch": "Bb3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 58
+          },
+          {
+            "delta": -36,
+            "pitch": "D5",
+            "dur": 36,
+            "vel": 127,
+            "midi": 74
+          },
+          {
+            "delta": 1,
+            "pitch": "A3",
+            "dur": 73,
+            "vel": 127,
+            "midi": 57
+          },
+          {
+            "delta": -73,
+            "pitch": "C5",
+            "dur": 73,
+            "vel": 127,
+            "midi": 72
+          },
+          {
+            "delta": 1,
+            "pitch": "D4",
+            "dur": 73,
+            "vel": 127,
+            "midi": 62
+          },
+          {
+            "delta": -73,
+            "pitch": "F5",
+            "dur": 73,
+            "vel": 127,
+            "midi": 77
+          },
+          {
+            "delta": 0,
+            "pitch": "F3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 53
+          }
+        ],
+        "refKey": {
+          "tonic": "F",
+          "mode": "major",
+          "exact": false,
+          "accSum": null,
+          "candidateCount": 0,
+          "baseShift": 0,
+          "octaveErrors": 3,
+          "semitoneErrors": 0,
+          "absErrorSum": 36,
+          "totalErrorCount": 3,
+          "diffHist": {
+            "0": 4,
+            "-12": 3
+          },
+          "approx": true
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "Ab4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 68,
+        "diatonic": {
+          "degree": 1,
+          "acc": 1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "motif_id": 10,
+        "base_pitch": "Eb3",
+        "base_midi": 51,
+        "origSegment": [
+          {
+            "delta": 1,
+            "pitch": "Eb3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 51
+          },
+          {
+            "delta": -36,
+            "pitch": "G4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 67
+          },
+          {
+            "delta": 1,
+            "pitch": "D3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 50
+          },
+          {
+            "delta": -36,
+            "pitch": "F4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 65
+          }
+        ],
+        "refKey": {
+          "tonic": "C",
+          "mode": "major",
+          "accSum": 1,
+          "exact": true,
+          "candidateCount": 2,
+          "baseShift": 1
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "Eb3",
+        "dur": 36,
+        "vel": 127,
+        "midi": 51,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "G4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 67,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "F3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 53,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "Ab4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 68,
+        "diatonic": {
+          "degree": 1,
+          "acc": 1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Eb3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 51,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "motif_id": 0,
+        "base_pitch": "G4",
+        "base_midi": 67,
+        "origSegment": [
+          {
+            "delta": -73,
+            "pitch": "G4",
+            "dur": 73,
+            "vel": 127,
+            "midi": 67
+          },
+          {
+            "delta": 0,
+            "pitch": "G3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 55
+          },
+          {
+            "delta": -36,
+            "pitch": "Bb4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 70
+          },
+          {
+            "delta": 1,
+            "pitch": "A3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 57
+          },
+          {
+            "delta": -36,
+            "pitch": "C5",
+            "dur": 36,
+            "vel": 127,
+            "midi": 72
+          },
+          {
+            "delta": 1,
+            "pitch": "Bb3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 58
+          },
+          {
+            "delta": -36,
+            "pitch": "D5",
+            "dur": 36,
+            "vel": 127,
+            "midi": 74
+          },
+          {
+            "delta": 0,
+            "pitch": "A3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 57
+          },
+          {
+            "delta": -36,
+            "pitch": "C5",
+            "dur": 36,
+            "vel": 127,
+            "midi": 72
+          },
+          {
+            "delta": 1,
+            "pitch": "G3",
+            "dur": 73,
+            "vel": 127,
+            "midi": 55
+          },
+          {
+            "delta": -73,
+            "pitch": "Bb4",
+            "dur": 73,
+            "vel": 127,
+            "midi": 70
+          },
+          {
+            "delta": 1,
+            "pitch": "C4",
+            "dur": 73,
+            "vel": 127,
+            "midi": 60
+          }
+        ],
+        "refKey": {
+          "tonic": "F",
+          "mode": "major",
+          "exact": false,
+          "accSum": null,
+          "candidateCount": 0,
+          "baseShift": 0,
+          "octaveErrors": 4,
+          "semitoneErrors": 0,
+          "absErrorSum": 48,
+          "totalErrorCount": 4,
+          "diffHist": {
+            "0": 8,
+            "-12": 4
+          },
+          "approx": true
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "Eb5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 75,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "motif_id": 10,
+        "base_pitch": "Eb3",
+        "base_midi": 51,
+        "origSegment": [
+          {
+            "delta": 0,
+            "pitch": "Eb3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 51
+          },
+          {
+            "delta": -36,
+            "pitch": "G4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 67
+          },
+          {
+            "delta": 1,
+            "pitch": "D3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 50
+          },
+          {
+            "delta": -36,
+            "pitch": "F4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 65
+          }
+        ],
+        "refKey": {
+          "tonic": "C",
+          "mode": "major",
+          "accSum": 1,
+          "exact": true,
+          "candidateCount": 2,
+          "baseShift": 1
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "C3",
+        "dur": 36,
+        "vel": 127,
+        "midi": 48,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "Eb4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 63,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 0,
+        "motif_id": 16,
+        "base_pitch": "D3",
+        "base_midi": 50,
+        "origSegment": [
+          {
+            "delta": 0,
+            "pitch": "D3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 50
+          },
+          {
+            "delta": -36,
+            "pitch": "F4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 65
+          },
+          {
+            "delta": 1,
+            "pitch": "Eb3",
+            "dur": 73,
+            "vel": 127,
+            "midi": 51
+          },
+          {
+            "delta": -73,
+            "pitch": "G4",
+            "dur": 73,
+            "vel": 127,
+            "midi": 67
+          }
+        ],
+        "refKey": {
+          "tonic": "C",
+          "mode": "major",
+          "accSum": 1,
+          "exact": true,
+          "candidateCount": 2,
+          "baseShift": 0
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "D3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 50,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "motif_id": 0,
+        "base_pitch": "F4",
+        "base_midi": 65,
+        "origSegment": [
+          {
+            "delta": -73,
+            "pitch": "F4",
+            "dur": 73,
+            "vel": 127,
+            "midi": 65
+          },
+          {
+            "delta": 0,
+            "pitch": "F3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 53
+          },
+          {
+            "delta": -36,
+            "pitch": "A4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 69
+          },
+          {
+            "delta": 1,
+            "pitch": "G3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 55
+          },
+          {
+            "delta": -36,
+            "pitch": "Bb4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 70
+          },
+          {
+            "delta": 1,
+            "pitch": "A3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 57
+          },
+          {
+            "delta": -36,
+            "pitch": "C5",
+            "dur": 36,
+            "vel": 127,
+            "midi": 72
+          },
+          {
+            "delta": 0,
+            "pitch": "G3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 55
+          },
+          {
+            "delta": -36,
+            "pitch": "Bb4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 70
+          },
+          {
+            "delta": 1,
+            "pitch": "F3",
+            "dur": 73,
+            "vel": 127,
+            "midi": 53
+          },
+          {
+            "delta": -73,
+            "pitch": "A4",
+            "dur": 73,
+            "vel": 127,
+            "midi": 69
+          },
+          {
+            "delta": 1,
+            "pitch": "Bb3",
+            "dur": 73,
+            "vel": 127,
+            "midi": 58
+          }
+        ],
+        "refKey": {
+          "tonic": "F",
+          "mode": "major",
+          "exact": false,
+          "accSum": null,
+          "candidateCount": 0,
+          "baseShift": 0,
+          "octaveErrors": 1,
+          "semitoneErrors": 0,
+          "absErrorSum": 12,
+          "totalErrorCount": 1,
+          "diffHist": {
+            "0": 11,
+            "-12": 1
+          },
+          "approx": true
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "D5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 74,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "D3",
+        "dur": 36,
+        "vel": 127,
+        "midi": 50,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "F4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 65,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "motif_id": 11,
+        "base_pitch": "C3",
+        "base_midi": 48,
+        "origSegment": [
+          {
+            "delta": 1,
+            "pitch": "C3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 48
+          },
+          {
+            "delta": -36,
+            "pitch": "Eb4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 63
+          },
+          {
+            "delta": 1,
+            "pitch": "Bb2",
+            "dur": 36,
+            "vel": 127,
+            "midi": 46
+          },
+          {
+            "delta": -36,
+            "pitch": "D4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 62
+          }
+        ],
+        "refKey": {
+          "tonic": "F",
+          "mode": "major",
+          "exact": false,
+          "accSum": null,
+          "candidateCount": 0,
+          "baseShift": 0,
+          "octaveErrors": 3,
+          "semitoneErrors": 0,
+          "absErrorSum": 36,
+          "totalErrorCount": 3,
+          "diffHist": {
+            "0": 1,
+            "-12": 3
+          },
+          "approx": true
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "C3",
+        "dur": 36,
+        "vel": 127,
+        "midi": 48,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "Eb4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 63,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "D3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 50,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "F4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 65,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "C3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 48,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "Eb4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 63,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "Eb3",
+        "dur": 36,
+        "vel": 127,
+        "midi": 51,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -36,
+        "motif_id": 1,
+        "base_pitch": "G4",
+        "base_midi": 67,
+        "origSegment": [
+          {
+            "delta": -36,
+            "pitch": "G4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 67
+          },
+          {
+            "delta": 1,
+            "pitch": "F3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 53
+          },
+          {
+            "delta": -36,
+            "pitch": "A4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 69
+          },
+          {
+            "delta": 1,
+            "pitch": "G3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 55
+          },
+          {
+            "delta": -36,
+            "pitch": "Bb4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 70
+          },
+          {
+            "delta": 0,
+            "pitch": "F3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 53
+          },
+          {
+            "delta": -36,
+            "pitch": "A4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 69
+          }
+        ],
+        "refKey": {
+          "tonic": "F",
+          "mode": "major",
+          "accSum": 0,
+          "exact": true,
+          "candidateCount": 2,
+          "baseShift": 0
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Eb3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 51,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "G4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 67,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "A3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 57,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "C5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 72,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "motif_id": 11,
+        "base_pitch": "C3",
+        "base_midi": 48,
+        "origSegment": [
+          {
+            "delta": 0,
+            "pitch": "C3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 48
+          },
+          {
+            "delta": -36,
+            "pitch": "Eb4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 63
+          },
+          {
+            "delta": 1,
+            "pitch": "Bb2",
+            "dur": 36,
+            "vel": 127,
+            "midi": 46
+          },
+          {
+            "delta": -36,
+            "pitch": "D4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 62
+          }
+        ],
+        "refKey": {
+          "tonic": "F",
+          "mode": "major",
+          "exact": false,
+          "accSum": null,
+          "candidateCount": 0,
+          "baseShift": 0,
+          "octaveErrors": 3,
+          "semitoneErrors": 0,
+          "absErrorSum": 36,
+          "totalErrorCount": 3,
+          "diffHist": {
+            "0": 1,
+            "-12": 3
+          },
+          "approx": true
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "A2",
+        "dur": 36,
+        "vel": 127,
+        "midi": 45,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "C4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 60,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 0,
+        "motif_id": 17,
+        "base_pitch": "Bb2",
+        "base_midi": 46,
+        "origSegment": [
+          {
+            "delta": 0,
+            "pitch": "Bb2",
+            "dur": 36,
+            "vel": 127,
+            "midi": 46
+          },
+          {
+            "delta": -36,
+            "pitch": "D4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 62
+          },
+          {
+            "delta": 1,
+            "pitch": "C3",
+            "dur": 73,
+            "vel": 127,
+            "midi": 48
+          },
+          {
+            "delta": -73,
+            "pitch": "Eb4",
+            "dur": 73,
+            "vel": 127,
+            "midi": 63
+          }
+        ],
+        "refKey": {
+          "tonic": "F",
+          "mode": "major",
+          "exact": false,
+          "accSum": null,
+          "candidateCount": 0,
+          "baseShift": 0,
+          "octaveErrors": 3,
+          "semitoneErrors": 0,
+          "absErrorSum": 36,
+          "totalErrorCount": 3,
+          "diffHist": {
+            "0": 1,
+            "-12": 3
+          },
+          "approx": true
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Bb2",
+        "dur": 73,
+        "vel": 127,
+        "midi": 46,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "D4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 62,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "C4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 60,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Bb3",
+        "dur": 36,
+        "vel": 127,
+        "midi": 58,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "D4",
+        "dur": 69,
+        "vel": 127,
+        "midi": 62,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -32,
+        "pitch": "C4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 60,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "D4",
+        "dur": 123,
+        "vel": 127,
+        "midi": 62,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -86,
+        "motif_id": 14,
+        "base_pitch": "C4",
+        "base_midi": 60,
+        "origSegment": [
+          {
+            "delta": -86,
+            "pitch": "C4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 60
+          },
+          {
+            "delta": 0,
+            "pitch": "Bb3",
+            "dur": 73,
+            "vel": 127,
+            "midi": 58
+          },
+          {
+            "delta": 1,
+            "pitch": "F4",
+            "dur": 73,
+            "vel": 127,
+            "midi": 65
+          },
+          {
+            "delta": 1,
+            "pitch": "D4",
+            "dur": 73,
+            "vel": 127,
+            "midi": 62
+          }
+        ],
+        "refKey": {
+          "tonic": "Bb",
+          "mode": "major",
+          "exact": false,
+          "accSum": null,
+          "candidateCount": 0,
+          "baseShift": 0,
+          "octaveErrors": 1,
+          "semitoneErrors": 0,
+          "absErrorSum": 12,
+          "totalErrorCount": 1,
+          "diffHist": {
+            "0": 3,
+            "12": 1
+          },
+          "approx": true
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "Bb4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 70,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "C5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 72,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "Bb4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 70,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -73,
+        "motif_id": 28,
+        "base_pitch": "D5",
+        "base_midi": 74,
+        "origSegment": [
+          {
+            "delta": -73,
+            "pitch": "D5",
+            "dur": 36,
+            "vel": 127,
+            "midi": 74
+          },
+          {
+            "delta": 1,
+            "pitch": "C5",
+            "dur": 36,
+            "vel": 127,
+            "midi": 72
+          },
+          {
+            "delta": 1,
+            "pitch": "F4",
+            "dur": 73,
+            "vel": 127,
+            "midi": 65
+          }
+        ],
+        "refKey": {
+          "tonic": "C",
+          "mode": "major",
+          "accSum": 0,
+          "exact": true,
+          "candidateCount": 4,
+          "baseShift": 0
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "Bb4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 70,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 0,
+        "motif_id": 18,
+        "base_pitch": "D4",
+        "base_midi": 62,
+        "origSegment": [
+          {
+            "delta": 0,
+            "pitch": "D4",
+            "dur": 73,
+            "vel": 127,
+            "midi": 62
+          },
+          {
+            "delta": -73,
+            "pitch": "F5",
+            "dur": 73,
+            "vel": 127,
+            "midi": 77
+          },
+          {
+            "delta": 1,
+            "pitch": "F4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 65
+          },
+          {
+            "delta": -36,
+            "pitch": "D5",
+            "dur": 73,
+            "vel": 127,
+            "midi": 74
+          }
+        ],
+        "refKey": {
+          "tonic": "C",
+          "mode": "major",
+          "accSum": 0,
+          "exact": true,
+          "candidateCount": 5,
+          "baseShift": 0
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "Eb4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 63,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "D4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 62,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "Bb5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 82,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "Eb4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 63,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "F4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 65,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "F5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 77,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "Bb3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 58,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "motif_id": 29,
+        "base_pitch": "D5",
+        "base_midi": 74,
+        "origSegment": [
+          {
+            "delta": -73,
+            "pitch": "D5",
+            "dur": 73,
+            "vel": 127,
+            "midi": 74
+          },
+          {
+            "delta": 1,
+            "pitch": "D4",
+            "dur": 73,
+            "vel": 127,
+            "midi": 62
+          },
+          {
+            "delta": -73,
+            "pitch": "F5",
+            "dur": 36,
+            "vel": 127,
+            "midi": 77
+          }
+        ],
+        "refKey": {
+          "tonic": "C",
+          "mode": "major",
+          "accSum": 0,
+          "exact": true,
+          "candidateCount": 5,
+          "baseShift": 0
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Eb5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 75,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "F3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 53,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "D5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 74,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Eb5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 75,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Ab3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 56,
+        "diatonic": {
+          "degree": 1,
+          "acc": 1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "motif_id": 30,
+        "base_pitch": "F5",
+        "base_midi": 77,
+        "origSegment": [
+          {
+            "delta": -73,
+            "pitch": "F5",
+            "dur": 73,
+            "vel": 127,
+            "midi": 77
+          },
+          {
+            "delta": 0,
+            "pitch": "G3",
+            "dur": 73,
+            "vel": 127,
+            "midi": 55
+          },
+          {
+            "delta": -73,
+            "pitch": "Bb4",
+            "dur": 73,
+            "vel": 127,
+            "midi": 70
+          }
+        ],
+        "refKey": {
+          "tonic": "F",
+          "mode": "major",
+          "accSum": 0,
+          "exact": true,
+          "candidateCount": 4,
+          "baseShift": 0
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Eb3",
+        "dur": 36,
+        "vel": 127,
+        "midi": 51,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "Eb5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 75,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "F3",
+        "dur": 36,
+        "vel": 127,
+        "midi": 53,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 0,
+        "motif_id": 20,
+        "base_pitch": "G3",
+        "base_midi": 55,
+        "origSegment": [
+          {
+            "delta": 0,
+            "pitch": "G3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 55
+          },
+          {
+            "delta": -36,
+            "pitch": "Bb4",
+            "dur": 73,
+            "vel": 127,
+            "midi": 70
+          },
+          {
+            "delta": -36,
+            "pitch": "F3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 53
+          }
+        ],
+        "refKey": {
+          "tonic": "F",
+          "mode": "major",
+          "accSum": 0,
+          "exact": true,
+          "candidateCount": 4,
+          "baseShift": 0
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Eb3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 51,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "Eb5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 75,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "Bb3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 58,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "G4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 67,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "G3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 55,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "Eb4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 63,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "F4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 65,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "Eb4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 63,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -73,
+        "motif_id": 28,
+        "base_pitch": "G4",
+        "base_midi": 67,
+        "origSegment": [
+          {
+            "delta": -73,
+            "pitch": "G4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 67
+          },
+          {
+            "delta": 1,
+            "pitch": "F4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 65
+          },
+          {
+            "delta": 1,
+            "pitch": "Bb3",
+            "dur": 73,
+            "vel": 127,
+            "midi": 58
+          }
+        ],
+        "refKey": {
+          "tonic": "F",
+          "mode": "major",
+          "accSum": 0,
+          "exact": true,
+          "candidateCount": 4,
+          "baseShift": 0
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "Eb4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 63,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "G3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 55,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "motif_id": 12,
+        "base_pitch": "Bb4",
+        "base_midi": 70,
+        "origSegment": [
+          {
+            "delta": -73,
+            "pitch": "Bb4",
+            "dur": 73,
+            "vel": 127,
+            "midi": 70
+          },
+          {
+            "delta": 1,
+            "pitch": "Bb3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 58
+          },
+          {
+            "delta": -36,
+            "pitch": "G4",
+            "dur": 73,
+            "vel": 127,
+            "midi": 67
+          },
+          {
+            "delta": -36,
+            "pitch": "Ab3",
+            "dur": 36,
+            "vel": 127,
+            "midi": 56
+          }
+        ],
+        "refKey": {
+          "tonic": "F",
+          "mode": "minor",
+          "accSum": 0,
+          "exact": true,
+          "candidateCount": 3,
+          "baseShift": 0
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "G3",
+        "dur": 36,
+        "vel": 127,
+        "midi": 55,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "Eb5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 75,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "Ab3",
+        "dur": 36,
+        "vel": 127,
+        "midi": 56,
+        "diatonic": {
+          "degree": 1,
+          "acc": 1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Bb3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 58,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "Bb4",
+        "dur": 73,
+        "vel": 127,
+        "midi": 70,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "Eb3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 51,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "motif_id": 29,
+        "base_pitch": "G4",
+        "base_midi": 67,
+        "origSegment": [
+          {
+            "delta": -73,
+            "pitch": "G4",
+            "dur": 73,
+            "vel": 127,
+            "midi": 67
+          },
+          {
+            "delta": 1,
+            "pitch": "G3",
+            "dur": 73,
+            "vel": 127,
+            "midi": 55
+          },
+          {
+            "delta": -73,
+            "pitch": "Bb4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 70
+          }
+        ],
+        "refKey": {
+          "tonic": "F",
+          "mode": "major",
+          "accSum": 0,
+          "exact": true,
+          "candidateCount": 5,
+          "baseShift": 0
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Ab4",
+        "dur": 36,
+        "vel": 127,
+        "midi": 68,
+        "diatonic": {
+          "degree": 1,
+          "acc": 1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "Bb2",
+        "dur": 73,
+        "vel": 127,
+        "midi": 46,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": -73,
+        "motif_id": 15,
+        "base_pitch": "G4",
+        "base_midi": 67,
+        "origSegment": [
+          {
+            "delta": -73,
+            "pitch": "G4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 67
+          },
+          {
+            "delta": 1,
+            "pitch": "Ab4",
+            "dur": 36,
+            "vel": 127,
+            "midi": 68
+          },
+          {
+            "delta": 1,
+            "pitch": "D3",
+            "dur": 73,
+            "vel": 127,
+            "midi": 50
+          },
+          {
+            "delta": -73,
+            "pitch": "Bb4",
+            "dur": 73,
+            "vel": 127,
+            "midi": 70
+          }
+        ],
+        "refKey": {
+          "tonic": "D",
+          "mode": "minor",
+          "accSum": 1,
+          "exact": true,
+          "candidateCount": 1,
+          "baseShift": 0
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "C3",
+        "dur": 69,
+        "vel": 127,
+        "midi": 48,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -69,
+        "pitch": "Eb4",
+        "dur": 131,
+        "vel": 127,
+        "midi": 63,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -57,
+        "motif_id": 22,
+        "base_pitch": "F2",
+        "base_midi": 41,
+        "origSegment": [
+          {
+            "delta": -57,
+            "pitch": "F2",
+            "dur": 36,
+            "vel": 127,
+            "midi": 41
+          },
+          {
+            "delta": 1,
+            "pitch": "G2",
+            "dur": 36,
+            "vel": 127,
+            "midi": 43
+          },
+          {
+            "delta": 1,
+            "pitch": "A2",
+            "dur": 36,
+            "vel": 127,
+            "midi": 45
+          }
+        ],
+        "refKey": {
+          "tonic": "F",
+          "mode": "major",
+          "accSum": 0,
+          "exact": true,
+          "candidateCount": 3,
+          "baseShift": 0
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "Eb5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 75,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "G2",
+        "dur": 36,
+        "vel": 127,
+        "midi": 43,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "D5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 74,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "F2",
+        "dur": 73,
+        "vel": 127,
+        "midi": 41,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "Eb5",
+        "dur": 147,
+        "vel": 127,
+        "midi": 75,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "C3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 48,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "A2",
+        "dur": 73,
+        "vel": 127,
+        "midi": 45,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "Eb5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 75,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "D5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 74,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Eb3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 51,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "C5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 72,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "D5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 74,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "C3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 48,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "Eb5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 75,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "A2",
+        "dur": 73,
+        "vel": 127,
+        "midi": 45,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "F4",
+        "dur": 130,
+        "vel": 127,
+        "midi": 65,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -57,
+        "pitch": "C3",
+        "dur": 36,
+        "vel": 127,
+        "midi": 48,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Bb2",
+        "dur": 36,
+        "vel": 127,
+        "midi": 46,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "A2",
+        "dur": 36,
+        "vel": 127,
+        "midi": 45,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "Eb5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 75,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "Bb2",
+        "dur": 36,
+        "vel": 127,
+        "midi": 46,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": -36,
+        "pitch": "D5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 74,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "C3",
+        "dur": 73,
+        "vel": 127,
+        "midi": 48,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "Eb5",
+        "dur": 147,
+        "vel": 127,
+        "midi": 75,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "F2",
+        "dur": 73,
+        "vel": 127,
+        "midi": 41,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "A2",
+        "dur": 73,
+        "vel": 127,
+        "midi": 45,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "C5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 72,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "D5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 74,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "C2",
+        "dur": 73,
+        "vel": 127,
+        "midi": 36,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "Eb5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 75,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "D5",
+        "dur": 36,
+        "vel": 127,
+        "midi": 74,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "Eb2",
+        "dur": 73,
+        "vel": 127,
+        "midi": 39,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 3
+        }
+      },
+      {
+        "delta": -73,
+        "pitch": "C5",
+        "dur": 73,
+        "vel": 127,
+        "midi": 72,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "D2",
+        "dur": 75,
+        "vel": 127,
+        "midi": 38,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": -75,
+        "pitch": "F5",
+        "dur": 75,
+        "vel": 127,
+        "midi": 77,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "Bb2",
+        "dur": 37,
+        "vel": 127,
+        "midi": 46,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": -37,
+        "pitch": "D5",
+        "dur": 37,
+        "vel": 127,
+        "midi": 74,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "C3",
+        "dur": 37,
+        "vel": 127,
+        "midi": 48,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -37,
+        "pitch": "C5",
+        "dur": 37,
+        "vel": 127,
+        "midi": 72,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "D3",
+        "dur": 38,
+        "vel": 127,
+        "midi": 50,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -38,
+        "pitch": "Bb4",
+        "dur": 38,
+        "vel": 127,
+        "midi": 70,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "C3",
+        "dur": 38,
+        "vel": 127,
+        "midi": 48,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -38,
+        "pitch": "C5",
+        "dur": 38,
+        "vel": 127,
+        "midi": 72,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "Bb2",
+        "dur": 76,
+        "vel": 127,
+        "midi": 46,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": -76,
+        "pitch": "D5",
+        "dur": 76,
+        "vel": 127,
+        "midi": 74,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "F3",
+        "dur": 166,
+        "vel": 127,
+        "midi": 53,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": -166,
+        "pitch": "F4",
+        "dur": 83,
+        "vel": 127,
+        "midi": 65,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 0,
+        "pitch": "Bb4",
+        "dur": 83,
+        "vel": 127,
+        "midi": 70,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "F2",
+        "dur": 170,
+        "vel": 127,
+        "midi": 41,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": -170,
+        "pitch": "C5",
+        "dur": 84,
+        "vel": 127,
+        "midi": 72,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 1,
+        "pitch": "A4",
+        "dur": 84,
+        "vel": 127,
+        "midi": 69,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 7,
+        "pitch": "Bb2",
+        "dur": 933,
+        "vel": 127,
+        "midi": 46,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": -933,
+        "pitch": "Bb4",
+        "dur": 933,
+        "vel": 127,
+        "midi": 70,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 5
+        }
+      }
+    ]
+  ],
+  "voiceMeta": [
+    {
+      "trackIndex": 0,
+      "noteCount": 618
+    }
+  ],
+  "motifsDisabled": false,
+  "originalTrackCount": 1,
+  "trackNames": [
+    null
+  ],
+  "voiceToTrack": [
+    0
+  ],
+  "keySignature": {
+    "sf": -1,
+    "mode": "major"
+  },
+  "voiceSplitMeta": null,
+  "keyChanges": [
+    {
+      "start": 0,
+      "end": 1536,
+      "tonic": "Bb",
+      "mode": "major"
+    },
+    {
+      "start": 1024,
+      "end": 2048,
+      "tonic": "Ab",
+      "mode": "major"
+    },
+    {
+      "start": 1536,
+      "end": 2560,
+      "tonic": "Eb",
+      "mode": "major"
+    },
+    {
+      "start": 2048,
+      "end": 3072,
+      "tonic": "Bb",
+      "mode": "major"
+    },
+    {
+      "start": 2560,
+      "end": 3584,
+      "tonic": "F",
+      "mode": "major"
+    },
+    {
+      "start": 3072,
+      "end": 5632,
+      "tonic": "Bb",
+      "mode": "major"
+    },
+    {
+      "start": 5120,
+      "end": 7168,
+      "tonic": "F",
+      "mode": "major"
+    },
+    {
+      "start": 6656,
+      "end": 8192,
+      "tonic": "Bb",
+      "mode": "major"
+    },
+    {
+      "start": 7680,
+      "end": 8704,
+      "tonic": "F",
+      "mode": "major"
+    },
+    {
+      "start": 8192,
+      "end": 9216,
+      "tonic": "G",
+      "mode": "major"
+    },
+    {
+      "start": 8704,
+      "end": 10240,
+      "tonic": "C",
+      "mode": "major"
+    },
+    {
+      "start": 9728,
+      "end": 11264,
+      "tonic": "G",
+      "mode": "minor"
+    },
+    {
+      "start": 10752,
+      "end": 11776,
+      "tonic": "Eb",
+      "mode": "major"
+    },
+    {
+      "start": 11264,
+      "end": 13312,
+      "tonic": "C",
+      "mode": "minor"
+    },
+    {
+      "start": 12800,
+      "end": 14848,
+      "tonic": "Bb",
+      "mode": "major"
+    },
+    {
+      "start": 14336,
+      "end": 16384,
+      "tonic": "Eb",
+      "mode": "major"
+    },
+    {
+      "start": 15872,
+      "end": 18944,
+      "tonic": "Bb",
+      "mode": "major"
+    },
+    {
+      "start": 18432,
+      "end": 20992,
+      "tonic": "Eb",
+      "mode": "major"
+    },
+    {
+      "start": 20480,
+      "end": 23040,
+      "tonic": "Bb",
+      "mode": "major"
+    }
+  ]
+}

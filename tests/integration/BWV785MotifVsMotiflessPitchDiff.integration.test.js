@@ -122,13 +122,7 @@ describe('BWV785 Motif vs Motifless Pitch Diff', () => {
       console.log('\n[PitchDiff] No pitch mismatches between motif and motifless paths.');
     }
 
-    const strict = process.env.STRICT_MOTIF_PITCH === '1' || process.env.STRICT_MOTIF_PITCH === 'true';
-    if (strict) {
-      // In strict mode we demand zero mismatches
-      expect(mismatches.length).toBe(0);
-    } else {
-      // Non-strict (diagnostic) mode: always pass, just report
-      expect(mismatches.length).toBeGreaterThanOrEqual(0);
-    }
+    // Default behavior guarantees modulo-12 fidelity; demand zero mismatches.
+    expect(mismatches.length).toBe(0);
   });
 });

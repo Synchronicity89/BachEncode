@@ -16,47 +16,39 @@ A Node.js utility for batch processing MIDI files with the BachEncode compressio
 
 ### Basic Syntax
 ```bash
-node BatchProcess.js compress [outputDir]
-node BatchProcess.js decompress [inputDir]
+node BatchProcess.js compress <inputDir> <outputDir> [--no-overwrite]
+node BatchProcess.js decompress <inputDir> <outputDir> [--no-overwrite]
 ```
 
 ### Compression Examples
 ```bash
-# Compress all MIDI files in midi/ folder to JSON (output to midi/ folder)
-node BatchProcess.js compress
-
-# Compress all MIDI files in midi/ folder to a specific output directory
-node BatchProcess.js compress compressed_output
+# Compress all MIDI files in midi/ folder to JSON (output to compressed_output)
+node BatchProcess.js compress midi compressed_output
 
 # Compress to a different directory structure
-node BatchProcess.js compress "../backup/compressed"
+node BatchProcess.js compress "../midi" "../backup/compressed"
 ```
 
 ### Decompression Examples
 ```bash
-# Decompress all JSON files in midi/ folder back to MIDI
-node BatchProcess.js decompress
-
 # Decompress JSON files from a specific directory
-node BatchProcess.js decompress compressed_output
+node BatchProcess.js decompress compressed_output restored_midi
 
 # Decompress from a custom location
-node BatchProcess.js decompress "../backup/compressed"
+node BatchProcess.js decompress "../backup/compressed" "../restored"
 ```
 
 ## Command Reference
 
-### `compress [outputDir]`
-- **Input**: All `*.MID` and `*.MIDI` files in the `midi/` folder
-- **Output**: Compressed JSON files with `.json` extension
-- **Default Output**: `midi/` folder (same as input)
-- **Custom Output**: Specified `outputDir` parameter
+### `compress <inputDir> <outputDir> [--no-overwrite]`
+- Input: All `*.MID` and `*.MIDI` files in the given inputDir
+- Output: Compressed JSON files with `.json` extension in outputDir
+- Use `--no-overwrite` to skip already-existing outputs
 
-### `decompress [inputDir]`
-- **Input**: All `*.json` files in the specified `inputDir` (defaults to `midi/`)
-- **Output**: Decompressed MIDI files with `.mid` extension
-- **Default Input**: `midi/` folder
-- **Default Output**: `midi/` folder
+### `decompress <inputDir> <outputDir> [--no-overwrite]`
+- Input: All `*.json` files in inputDir (sidecar `*.summary.json` are ignored automatically)
+- Output: Decompressed MIDI files with `.mid` extension in outputDir
+- Use `--no-overwrite` to skip already-existing outputs
 
 ## File Processing Rules
 
@@ -71,6 +63,7 @@ node BatchProcess.js decompress "../backup/compressed"
 2. For each JSON file `example.json`, creates `example.mid`
 3. Skips files where the output MIDI already exists
 4. Reconstructs MIDI using motif expansion and note generation
+5. Ignores `*.summary.json` sidecar files written during compression
 
 ## Output Format
 
@@ -117,11 +110,10 @@ BatchProcess.js uses the core compression functions from `EncodeDecode.js`:
 - `compressMidiToJson()` - Individual MIDI to JSON compression
 - `decompressJsonToMidi()` - Individual JSON to MIDI decompression
 
-All compression features are available:
+All core compression features are available:
 - ✅ Motif detection and reuse
 - ✅ Diatonic music theory encoding  
 - ✅ Voice separation
-- ✅ Motif inversion support (new `inverted` field)
 - ✅ Tempo and timing preservation
 
 ## Example Workflows
@@ -176,10 +168,8 @@ node BatchProcess.js decompress processed
 
 - Node.js runtime
 - `EncodeDecode.js` module (must be in same directory)
-- All dependencies of the main BachEncode system:
-  - `midi-parser-js`
-  - `midi-writer-js`  
-  - `fs`, `path` (Node.js built-ins)
+- Built-ins: `fs`, `path`
+- See main README for runtime libraries. Note: MIDI writing is handled by the built-in writer; no external writer is required.
 
 ## Troubleshooting
 

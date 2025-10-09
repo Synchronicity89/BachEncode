@@ -1,16 +1,39 @@
 # BachEncode
 
-A Node.js tool for compressing and decompressing MIDI files using intelligent voice separation and JSON encoding.
+Motif-aware MIDI compression/decompression for two-track Bach inventions and similar input. The tool mines repeated motifs, encodes them structurally, and roundtrips back to MIDI while enforcing modulo-12 pitch-class fidelity.
 
-## Features
+## What it does (capabilities)
 
-- **MIDI Compression**: Convert MIDI files to compact JSON format
-- **Voice Separation**: Automatically separates polyphonic music into individual voices
-- **Lossless Conversion**: Preserves timing, pitch, velocity, and tempo information
-- **Human-Readable Output**: JSON format allows for easy editing and inspection
-- **Command-Line Interface**: Simple CLI for single file processing
-- **Batch Processing**: Process entire directories of MIDI files at once
-- **Flexible Directory Structure**: No hardcoded folder requirements
+- MIDI → JSON compression and JSON → MIDI decompression.
+- Voice handling:
+  - Two-track inputs are preserved as two voices (one voice per track).
+  - Single-track inputs are heuristically split into voices and can be reconstructed using embedded metadata.
+- Motif mining and reuse:
+  - Detects repeated subsequences (motifs) using diatonic structure and stores exact chromatic deltas (midi_rels) plus rhythmic shape.
+  - Annotates each motif reference with a key choice (strict search over 24 keys with base_midi ±1 retries; approximate fallback prefers octave errors by default).
+  - Safety expansion: any motif reference that would introduce non-octave (semitone) mismatches is expanded back to its literal notes automatically to preserve fidelity.
+- Modulo-12 validation (MVP guarantee):
+  - After compression, the encoded-with-motifs form is decoded and compared against a motifless baseline modulo 12; compression aborts on any semitone mismatches.
+  - A concise summary line is printed and a sidecar summary JSON is written next to the output file.
+- Deterministic MIDI writer:
+  - Custom SMF writer preserves PPQ, tempo, velocity, and tick timings for stable roundtrips.
+
+Notes and caveats (verified):
+- Modulo-12 fidelity is enforced by default. No flags are required; safety expansion automatically prevents any non-octave (semitone) pitch errors.
+- Optional CLI switches exist for diagnostics only (e.g., --prefer-semitone, --debug-key-selection). They do not disable the modulo-12 check.
+- Batch decompression ignores the sidecar summary files (*.summary.json) that are written next to compressed outputs.
+
+## Input MIDI requirements
+
+For best results (and to meet the MVP constraints), input MIDI should satisfy:
+- Two tracks total (typical for Bach inventions):
+  - Exactly one monophonic voice per track (no overlapping notes within a track).
+- Key signature metadata present (MIDI meta 0x59) to anchor key detection; additional local key changes are inferred heuristically.
+- Reasonable PPQ and properly paired note-on/off events (well-formed SMF).
+
+Notes:
+- Single-track files are supported; the tool will heuristically separate voices and embed metadata to reconstruct the same segmentation on decompression. However, the MVP constraint above (two monophonic tracks) provides the clearest results today.
+- If any motif reference cannot maintain modulo-12 equivalence, it is safely expanded back to literals, and compression still succeeds.
 
 ## Installation
 
@@ -31,7 +54,7 @@ npm install
 
 #### Compress MIDI to JSON
 ```bash
-node EncodeDecode.js compress input.midi output.json
+node EncodeDecode.js compress input.mid output.json
 ```
 
 #### Decompress JSON to MIDI
@@ -39,10 +62,18 @@ node EncodeDecode.js compress input.midi output.json
 node EncodeDecode.js decompress input.json output.midi
 ```
 
+#### Roundtrip with modulo-12 fidelity (default)
+Compression enforces modulo-12 equivalence and will abort on any semitone mismatches. If compression completes, decompression will produce a modulo-12–equivalent MIDI. One-line roundtrip (PowerShell-friendly):
+
+```powershell
+# Replace paths as needed
+node EncodeDecode.js compress input.mid output.json; node EncodeDecode.js decompress output.json output.mid
+```
+
 #### Using npm scripts
 ```bash
 # Compress
-npm run compress input.midi output.json
+npm run compress input.mid output.json
 
 # Decompress
 npm run decompress input.json output.midi
@@ -88,12 +119,22 @@ node BatchProcess.js decompress json_files midi_output --no-overwrite
 
 For detailed batch processing documentation, see [BATCH_PROCESSING.md](BATCH_PROCESSING.md).
 
+### Roundtrip sanity script (optional)
+
+A small PowerShell helper is available to run a compress → decompress roundtrip and surface KeyStrict logs:
+
+```powershell
+scripts/roundtrip-mod12.ps1 -InputMidi midi/bach_BWV785_TwoTracks.mid -OutputMid output/BWV785-roundtrip.mid
+```
+
 ## How It Works
 
-1. **MIDI Parsing**: Reads MIDI files and extracts note events, timing, and tempo information
-2. **Voice Separation**: Groups notes into separate voices based on timing and pitch proximity
-3. **Delta Encoding**: Stores timing as deltas between events to reduce file size
-4. **JSON Output**: Creates a structured, editable JSON representation
+1. **MIDI Parsing**: Reads MIDI files and extracts note events, timing, tempo, and key signature when present.
+2. **Voice Separation**: Two-track inputs map to two voices; otherwise notes are separated heuristically into voices.
+3. **Motif Mining**: Finds repeated structural patterns; stores diatonic relations, exact chromatic offsets (midi_rels), durations, deltas, and velocities.
+4. **Key Annotation**: For each motif reference, exhaustively searches 24 keys (with base_midi ±1) to match original pitches; falls back to an approximate choice with octave preference when needed.
+5. **Safety Expansion**: If a reference would introduce semitone mismatches, it is expanded to literal notes.
+6. **Delta Encoding & JSON Output**: Stores timing as deltas and writes a structured, editable JSON representation.
 
 ## JSON Format
 
@@ -176,9 +217,13 @@ npm run format
 
 ## Dependencies
 
-- **midi-parser-js**: MIDI file parsing
-- **midi-writer-js**: MIDI file generation
-- **@tonaljs/tonal**: Music theory utilities for note conversion
+- Runtime:
+  - midi-parser-js: MIDI file parsing
+  - @tonaljs/tonal: Music theory utilities for notes/keys
+  - Custom MIDI writer (internal) for precise SMF output
+- Dev/test:
+  - jest, eslint, prettier
+  - midi-writer-js (only used in some legacy tests; not used at runtime)
 
 ## License
 

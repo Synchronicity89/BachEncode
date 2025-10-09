@@ -142,10 +142,11 @@ function batchDecompress(inputDir, outputDir, noOverwrite = false) {
     console.log(`Created output directory: ${outputDir}`);
   }
 
-  // Find all JSON files
+  // Find all JSON files, excluding sidecar summary files ("*.summary.json")
   const files = fs.readdirSync(inputDir);
   const jsonFiles = files.filter(file => {
-    return path.extname(file).toLowerCase() === '.json';
+    const lower = file.toLowerCase();
+    return path.extname(lower) === '.json' && !lower.endsWith('.summary.json');
   });
 
   if (jsonFiles.length === 0) {

@@ -668,9 +668,12 @@ function compressMidiToJson(inputMidi, outputJson) {
   const midi = parseMidi(inputMidi);
   const argv = process.argv.slice(2); // after node script
   const motiflessFlags = ['--no-motifs','--motifless','--force-motifless'];
-  const disableMotifsExplicit = motiflessFlags.some(f => argv.includes(f)) || process.env.NO_MOTIFS === '1';
-  const preserveTracksFlag = argv.includes('--preserve-tracks') || process.env.PRESERVE_TRACKS === '1';
-  const disableKeyChanges = argv.includes('--no-key-changes') || process.env.NO_KEY_CHANGES === '1';
+  const disableMotifsExplicit = motiflessFlags.some(f => argv.includes(f));
+  const preserveTracksFlag = argv.includes('--preserve-tracks');
+  const disableKeyChanges = argv.includes('--no-key-changes');
+  // KeyStrict options (no env): prefer octave errors by default; allow CLI to flip if desired for diagnostics
+  const preferSemitone = argv.includes('--prefer-semitone');
+  const debugKeySelection = argv.includes('--debug-key-selection');
 
   const { ppq, tempo, notes, key_sig, perTrackNotes, trackNames, recoveredVoiceSplitMeta, keyOverride } = extractTempoAndPPQAndNotes(midi);
   let key = findBestKey(notes, key_sig);
@@ -758,6 +761,9 @@ function compressMidiToJson(inputMidi, outputJson) {
     }
   }
   let encodedVoices = encodeVoices(voices);
+  // Keep a snapshot of the motifless encoded voices so we can validate roundtrip pitch-classes
+  // by decoding the motif-encoded form and comparing to this snapshot modulo 12.
+  const motiflessEncodedSnapshot = JSON.parse(JSON.stringify(encodedVoices));
   const disableMotifs = disableMotifsExplicit; // Honor explicit disabling only
   let motifs = [];
   if (!disableMotifs) {
@@ -782,48 +788,31 @@ function compressMidiToJson(inputMidi, outputJson) {
       }
     }
     motifs = newMotifs;
-    // Backfill missing midi_rels now that we know which motifs are used
+    // Backfill missing midi_rels now that we know which motifs are used.
+    // IMPORTANT: Use exact origSegment MIDI captured at application time to avoid any semitone drift.
     for (let vIdx=0; vIdx<encodedVoices.length; vIdx++) {
       const voice = encodedVoices[vIdx];
-      let absTime = 0;
       for (const ev of voice) {
-        absTime += ev.delta || 0;
-        if (ev.motif_id !== undefined) {
-          const m = motifs[ev.motif_id];
-          if (m && (!m.midi_rels || m.midi_rels.length !== m.deg_rels.length)) {
-            // Decode once on the fly to reconstruct midi_rels precisely using current key fallback
-            const base_midi = ev.base_midi != null ? ev.base_midi : (ev.base_pitch ? tonal.Note.midi(ev.base_pitch) : null);
-            if (base_midi != null) {
-              // Attempt diatonic reconstruction to gather actual pitches (worst case) – but better: temporarily decode motif using existing logic
-              const pitches = [];
-              // Use existing midi_rels if partial, else diatonic fallback
-              if (m.midi_rels && m.midi_rels.length > 0) {
-                for (let i=0;i<m.midi_rels.length;i++) pitches.push(base_midi + m.midi_rels[i]);
-              } else {
-                // crude diatonic fallback: reuse pitchToDiatonic inverse approximation via degrees
-                const tonic_pc = key.tonic_pc;
-                const mode = key.mode;
-                const scale_offsets = mode === 'major' ? [0,2,4,5,7,9,11] : [0,2,3,5,7,8,11];
-                const base_pc = base_midi % 12; const base_oct = Math.floor(base_midi/12);
-                const base_diat = pitchToDiatonic(base_midi, tonic_pc, mode);
-                for (let i=0;i<m.deg_rels.length;i++) {
-                  const rel = m.deg_rels[i];
-                  const total_deg = base_diat.degree + rel;
-                  const deg_mod = ((total_deg % 7) +7)%7;
-                  const oct_add = Math.floor(total_deg/7);
-                  let exp_pc = (tonic_pc + scale_offsets[deg_mod]) % 12;
-                  let pc = (exp_pc + m.accs[i]) % 12; if (pc<0) pc+=12;
-                  pitches.push(pc + (base_diat.oct + oct_add)*12);
-                }
-              }
-              if (pitches.length === m.deg_rels.length) {
-                m.midi_rels = pitches.map(p => p - pitches[0]);
-                m.sample_base_midi = pitches[0];
-              }
+        if (ev.motif_id === undefined) continue;
+        const m = motifs[ev.motif_id];
+        if (!m) continue;
+        if (!m.midi_rels || m.midi_rels.length !== m.deg_rels.length) {
+          // Prefer computing from embedded origSegment for this reference (exact MIDI)
+          if (ev.origSegment && ev.origSegment.length === m.deg_rels.length) {
+            const midis = ev.origSegment.map(n => n.midi != null ? n.midi : (n.pitch ? tonal.Note.midi(n.pitch) : null)).filter(p=>p!=null);
+            if (midis.length === m.deg_rels.length) {
+              const base = midis[0];
+              m.midi_rels = midis.map(p => p - base);
+              m.sample_base_midi = base;
+              continue;
             }
           }
+          // As a last resort, derive relative semitone offsets directly from base_midi + decoded pitches using any existing midi_rels
+          const base_midi = ev.base_midi != null ? ev.base_midi : (ev.base_pitch ? tonal.Note.midi(ev.base_pitch) : null);
+          if (base_midi != null && m.midi_rels && m.midi_rels.length > 0) {
+            m.sample_base_midi = base_midi + m.midi_rels[0];
+          }
         }
-        // advance time by motif duration if needed (not required for this pass)
       }
     }
   }
@@ -855,7 +844,110 @@ function compressMidiToJson(inputMidi, outputJson) {
     keyChanges: disableKeyChanges ? [] : detectKeyChanges(notes, ppq)
   };
   if (!disableMotifs && compressed.motifs.length) {
-    annotateMotifReferences(compressed.voices, compressed.motifs, compressed.keyChanges, key);
+    annotateMotifReferences(compressed.voices, compressed.motifs, compressed.keyChanges, key, { preferOctave: !preferSemitone, debug: !!debugKeySelection });
+    // Safety pass: expand any motif references that would cause semitone mismatches when using midi_rels
+    const safety = expandUnsafeMotifReferences(compressed.voices, compressed.motifs);
+    if (safety && Array.isArray(safety.voices)) {
+      compressed.voices = safety.voices;
+      if (safety.expandedCount > 0) {
+        console.warn(`[KeyStrict][safety] Expanded ${safety.expandedCount} unsafe motif reference(s) to prevent semitone mismatches.`);
+      }
+    }
+  }
+  
+  // Abort test: ensure no semitone (non-octave) pitch errors were introduced by motif encoding.
+  // We decode the motif-encoded voices and compare pitch-classes (mod 12) to the original motifless encoding.
+  // Any mismatch indicates a semitone error; crash compression to surface the issue early.
+  try {
+    const decodedFromMotifs = compressed.voices.map(v => decodeSingleVoice(v, ppq, compressed.motifs, { tonic: tonic_name, mode: key.mode }));
+    const decodedFromMotifless = motiflessEncodedSnapshot.map(v => decodeSingleVoice(v, ppq, [], { tonic: tonic_name, mode: key.mode }));
+    let mismatches = [];
+    const voiceCount = Math.max(decodedFromMotifs.length, decodedFromMotifless.length);
+    if (decodedFromMotifs.length !== decodedFromMotifless.length) {
+      throw new Error(`[AbortCheck] Voice count mismatch: motifs=${decodedFromMotifs.length} motifless=${decodedFromMotifless.length}`);
+    }
+    for (let vi = 0; vi < voiceCount; vi++) {
+      const a = decodedFromMotifs[vi] || [];
+      const b = decodedFromMotifless[vi] || [];
+      if (a.length !== b.length) {
+        throw new Error(`[AbortCheck] Note count mismatch in voice ${vi}: motifs=${a.length} motifless=${b.length}`);
+      }
+      for (let i = 0; i < a.length; i++) {
+        const pa = a[i].pitch;
+        const pb = b[i].pitch;
+        if (pa == null || pb == null) continue;
+        if (((pa - pb) % 12 + 12) % 12 !== 0) {
+          if (mismatches.length < 25) {
+            mismatches.push({ voice: vi, index: i, startA: a[i].start, startB: b[i].start, pitchA: pa, pitchB: pb, diff: pa - pb });
+          } else {
+            mismatches.push('...');
+            break;
+          }
+        }
+      }
+      if (mismatches.length && mismatches[mismatches.length-1] === '...') break;
+    }
+    if (mismatches.length > 0) {
+      const diag = { message: 'Modulo-12 pitch-class mismatches detected between motif-decoded and motifless encodings', mismatches };
+      try { fs.writeFileSync('keystrict-mod12-fail.json', JSON.stringify(diag, null, 2)); } catch(e) { /* ignore */ }
+      console.error('[AbortCheck] Non-octave pitch mismatches found. See keystrict-mod12-fail.json for details.');
+      throw new Error('[AbortCheck] Compression aborted due to semitone pitch errors (non-octave differences).');
+    }
+  } catch (e) {
+    // Rethrow to ensure CLI exits non-zero; include context in stderr
+    console.error('[AbortCheck] Validation error:', e && e.message || e);
+    throw e;
+  }
+  
+  // End-of-run summary: aggregate approximate motif references for quick QA
+  try {
+    const approxRefs = [];
+    for (let vIdx = 0; vIdx < compressed.voices.length; vIdx++) {
+      const voice = compressed.voices[vIdx];
+      for (const ev of voice) {
+        if (ev && ev.motif_id !== undefined && ev.refKey && (ev.refKey.approx || ev.refKey.exact === false)) {
+          approxRefs.push({
+            voice: vIdx,
+            motif_id: ev.motif_id,
+            tonic: ev.refKey.tonic,
+            mode: ev.refKey.mode,
+            baseShift: ev.refKey.baseShift ?? 0,
+            octaveErrors: ev.refKey.octaveErrors ?? null,
+            semitoneErrors: ev.refKey.semitoneErrors ?? null,
+            absErrorSum: ev.refKey.absErrorSum ?? null,
+            totalErrorCount: ev.refKey.totalErrorCount ?? null
+          });
+        }
+      }
+    }
+    const motifSet = new Set(approxRefs.map(r => r.motif_id));
+    const sumOct = approxRefs.reduce((a,b)=> a + (b.octaveErrors || 0), 0);
+    const maxOct = approxRefs.reduce((m,b)=> Math.max(m, b.octaveErrors || 0), 0);
+    const semiRefCount = approxRefs.reduce((a,b)=> a + ((b.semitoneErrors || 0) > 0 ? 1 : 0), 0);
+    const baseShiftHist = approxRefs.reduce((m,b)=>{ const k = String(b.baseShift||0); m[k]=(m[k]||0)+1; return m; }, {});
+    const keyHist = approxRefs.reduce((m,b)=>{ const k = `${b.tonic}/${b.mode}`; m[k]=(m[k]||0)+1; return m; }, {});
+    const summary = {
+      totalApproxReferences: approxRefs.length,
+      uniqueMotifs: motifSet.size,
+      octaveErrorSum: sumOct,
+      worstOctaveErrors: maxOct,
+      semitoneErrorReferenceCount: semiRefCount,
+      baseShiftHistogram: baseShiftHist,
+      chosenKeyHistogram: keyHist,
+      samples: approxRefs.slice(0, 50)
+    };
+    // Print concise console line
+    console.log(`[KeyStrict][summary] approxRefs=${summary.totalApproxReferences} motifs=${summary.uniqueMotifs} octaveErrSum=${summary.octaveErrorSum} worstOct=${summary.worstOctaveErrors} semiRefs=${summary.semitoneErrorReferenceCount}`);
+    // Attempt to write a sidecar summary JSON next to the output path
+    try {
+      const sumPath = outputJson.replace(/\.json$/i, '') + '.summary.json';
+      const sumDir = path.dirname(sumPath);
+      if (!fs.existsSync(sumDir)) fs.mkdirSync(sumDir, { recursive: true });
+      fs.writeFileSync(sumPath, JSON.stringify(summary, null, 2));
+    } catch(e) { /* ignore file write errors */ }
+  } catch (e) {
+    // Non-fatal: summary should not block compression
+    console.warn('[KeyStrict][summary] failed to compute/write summary:', e && e.message || e);
   }
   
   // Ensure output directory exists
@@ -1038,6 +1130,53 @@ function decodeSingleVoice(encodedVoice, ppq, motifs = [], key = { tonic: 'C', m
   return notes;
 }
 
+// Safety: expand any motif references that would introduce non-octave (semitone) pitch mismatches
+// when decoded using midi_rels. This preserves correctness by falling back to literal notes only for
+// unsafe references while keeping safe motif compressions intact.
+function expandUnsafeMotifReferences(encodedVoices, motifs) {
+  let expandedCount = 0;
+  const voicesOut = [];
+  for (let vIdx = 0; vIdx < encodedVoices.length; vIdx++) {
+    const voice = encodedVoices[vIdx];
+    const out = [];
+    for (const ev of voice) {
+      if (ev.motif_id === undefined) { out.push(ev); continue; }
+      const m = motifs[ev.motif_id];
+      if (!m) { out.push(ev); continue; }
+      const base = ev.base_midi != null ? ev.base_midi : (ev.base_pitch ? tonal.Note.midi(ev.base_pitch) : null);
+      const hasMidiRels = Array.isArray(m.midi_rels) && m.midi_rels.length === m.deg_rels.length;
+      const origMidis = Array.isArray(ev.origSegment) ? ev.origSegment.map(n => (n && (n.midi != null ? n.midi : (n.pitch ? tonal.Note.midi(n.pitch) : null)))).filter(p => p != null) : [];
+      let unsafe = false;
+      if (!(hasMidiRels && base != null && origMidis.length === m.deg_rels.length)) {
+        unsafe = true; // insufficient data to guarantee safety
+      } else {
+        for (let i = 0; i < m.midi_rels.length; i++) {
+          const recon = base + m.midi_rels[i];
+          const diff = ((recon - origMidis[i]) % 12 + 12) % 12;
+          if (diff !== 0) { unsafe = true; break; }
+        }
+      }
+      if (unsafe) {
+        if (origMidis.length === m.deg_rels.length && Array.isArray(ev.origSegment)) {
+          // Expand back to original literal notes
+          for (const n of ev.origSegment) {
+            // Shallow clone without internal helper midi field
+            out.push({ delta: n.delta, pitch: n.pitch, dur: n.dur, vel: n.vel });
+          }
+          expandedCount++;
+        } else {
+          // As a last resort, keep the motif reference (cannot safely expand), but it's likely to be caught later
+          out.push(ev);
+        }
+      } else {
+        out.push(ev); // safe to keep motif compressed
+      }
+    }
+    voicesOut.push(out);
+  }
+  return { voices: voicesOut, expandedCount };
+}
+
 // Helper: given decoded single-track notes and a voiceSplitMeta array of index arrays (global note indices),
 // reconstruct encoded voices deterministically for later recompression parity.
 function reconstructVoicesFromSplitMeta(allNotes, voiceSplitMeta) {
@@ -1070,105 +1209,178 @@ function circleDistance(a,b) {
   return Math.min(diff, len - diff);
 }
 
-function annotateMotifReferences(encodedVoices, motifs, keyChanges, globalKey) {
+function annotateMotifReferences(encodedVoices, motifs, keyChanges, globalKey, opts = {}) {
   if (!encodedVoices || !motifs || !motifs.length) return;
-  const pcNamesSharp = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
-  const pcNamesFlat  = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
-  const globalTonicName = pcNamesSharp[globalKey.tonic_pc];
+  const PC_SHARP = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+  const PC_FLAT  = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+  const flatFriendly = new Set([10,3,8,1,6]);
   const motifDurations = motifs.map(m => m.durs.reduce((a,b)=>a+b,0) + m.deltas.reduce((a,b)=>a+b,0));
+  const debug = !!opts.debug;
 
-  function nameToPc(name) {
-    const midi = tonal.Note.midi(name + '4');
-    return midi != null ? midi % 12 : null;
+  function tonicNameForPc(pc) {
+    return (flatFriendly.has(pc) ? PC_FLAT : PC_SHARP)[pc];
   }
-  // Expand candidate tonics along circle of fifths starting from seed
-  function expandCircleCandidates(seedName, radius = 5) {
-    const idx = CIRCLE_OF_FIFTHS.indexOf(seedName);
-    if (idx < 0) return [seedName];
-    const out = [seedName];
-    for (let r=1; r<=radius; r++) {
-      const left = CIRCLE_OF_FIFTHS[(idx - r + CIRCLE_OF_FIFTHS.length) % CIRCLE_OF_FIFTHS.length];
-      const right = CIRCLE_OF_FIFTHS[(idx + r) % CIRCLE_OF_FIFTHS.length];
-      out.push(left);
-      if (right !== left) out.push(right);
+
+  // Attempt to reconstruct exact original pitches for a motif reference under a candidate key
+  function reconstructPitches(motif, base_midi, tonic_pc, mode) {
+    if (base_midi == null) return null;
+    const baseDiat = pitchToDiatonic(base_midi, tonic_pc, mode);
+    const scale_offsets = mode === 'major' ? [0,2,4,5,7,9,11] : [0,2,3,5,7,8,11];
+    const out = [];
+    for (let i=0;i<motif.deg_rels.length;i++) {
+      const rel = motif.deg_rels[i];
+      const total_deg = baseDiat.degree + rel;
+      const deg_mod = ((total_deg % 7)+7)%7;
+      const oct_add = Math.floor(total_deg / 7);
+      let exp_pc = (tonic_pc + scale_offsets[deg_mod]) % 12;
+      let pc = (exp_pc + motif.accs[i]) % 12; if (pc < 0) pc += 12;
+      const oct = baseDiat.oct + oct_add;
+      out.push(pc + oct*12);
     }
     return out;
   }
-  function scoreKeyForSegment(tonicName, mode, motif, base_midi, origPitches) {
-    const tonic_pc = nameToPc(tonicName);
-    if (tonic_pc == null) return { score: -Infinity, tonic: tonicName, mode, accSum: 999, degMismatches: origPitches.length };
-    // Compute diatonic mapping + mismatches vs motif.deg_rels
-    const baseDiat = pitchToDiatonic(base_midi, tonic_pc, mode);
-    let accSum = 0; let degMismatches = 0;
-    for (let i=0;i<origPitches.length;i++) {
-      const p = origPitches[i];
-      const di = pitchToDiatonic(p, tonic_pc, mode);
-      accSum += Math.abs(di.acc);
-      const rel = (di.degree - baseDiat.degree) + 7*(di.oct - baseDiat.oct);
-      if (motif.deg_rels && motif.deg_rels[i] !== undefined && rel !== motif.deg_rels[i]) degMismatches++;
-    }
-    // Fewer accidentals + fewer mismatches is better. Combine into score.
-    const score = - (accSum * 3 + degMismatches * 5);
-    return { score, tonic: tonicName, mode, accSum, degMismatches };
-  }
-
-  const debug = process.env.DEBUG_KEY_SELECTION === '1';
 
   for (let vIndex=0; vIndex<encodedVoices.length; vIndex++) {
     const voice = encodedVoices[vIndex];
     let abs = 0;
     for (const ev of voice) {
       abs += ev.delta || 0;
-      if (ev.motif_id !== undefined) {
-        const motif = motifs[ev.motif_id];
-        const span = motifDurations[ev.motif_id] || 0;
-        const start = abs;
-        const end = abs + span;
-        // Determine seed key segment (largest overlap) or fall back to global
-        let seed = { tonic: globalTonicName, mode: globalKey.mode, _fallback:true };
-        if (keyChanges && keyChanges.length) {
-          let bestOv = -1;
-            for (const seg of keyChanges) {
-              const ov = Math.min(end, seg.end) - Math.max(start, seg.start);
-              if (ov > bestOv) { bestOv = ov; seed = { tonic: seg.tonic, mode: seg.mode, _fallback:false }; }
+      if (ev.motif_id === undefined) { if (ev.dur) abs += ev.dur; continue; }
+      const motif = motifs[ev.motif_id];
+      const span = motifDurations[ev.motif_id] || 0;
+      const start = abs; const end = abs + span;
+      // Build original pitch list from embedded origSegment
+      if (!ev.origSegment || !ev.origSegment.length) {
+        throw new Error(`[KeyStrict] Missing origSegment for motif reference (motif_id=${ev.motif_id})`);
+      }
+      const origPitches = ev.origSegment.map(n => n.midi != null ? n.midi : tonal.Note.midi(n.pitch)).filter(p=>p!=null);
+      if (origPitches.length !== motif.deg_rels.length) {
+        throw new Error(`[KeyStrict] origSegment length (${origPitches.length}) != motif length (${motif.deg_rels.length}) for motif_id=${ev.motif_id}`);
+      }
+      const base_midi = ev.base_midi != null ? ev.base_midi : (ev.base_pitch ? tonal.Note.midi(ev.base_pitch) : null);
+      if (base_midi == null) {
+        throw new Error(`[KeyStrict] Missing base_midi for motif reference motif_id=${ev.motif_id}`);
+      }
+      // Determine candidate mode: use overlapping keyChanges segment if available else global
+      let seedMode = globalKey.mode;
+      if (keyChanges && keyChanges.length) {
+        let bestOv = -1; let chosen = null;
+        for (const seg of keyChanges) {
+          const ov = Math.min(end, seg.end) - Math.max(start, seg.start);
+          if (ov > bestOv) { bestOv = ov; chosen = seg; }
+        }
+        if (chosen) seedMode = chosen.mode;
+      }
+      function tryAllKeys(testBaseMidi) {
+        const localMatches = [];
+        for (let tonic_pc=0; tonic_pc<12; tonic_pc++) {
+          for (const mode of [seedMode, seedMode === 'major' ? 'minor' : 'major']) {
+            const recon = reconstructPitches(motif, testBaseMidi, tonic_pc, mode);
+            if (!recon) continue;
+            let ok = true;
+            for (let i=0;i<recon.length;i++) { if (recon[i] !== origPitches[i]) { ok = false; break; } }
+            if (ok) {
+              let accSum = 0; for (let i=0;i<origPitches.length;i++) { const di = pitchToDiatonic(origPitches[i], tonic_pc, mode); accSum += Math.abs(di.acc); }
+              localMatches.push({ tonic_pc, mode, accSum, testBaseMidi });
             }
+          }
         }
-        // Build candidate tonic names expanding around seed. Prefer flats for flat-friendly pitch classes if needed.
-        const candidates = expandCircleCandidates(seed.tonic);
-        const base_midi = ev.base_midi != null ? ev.base_midi : (ev.base_pitch ? tonal.Note.midi(ev.base_pitch) : null);
-        let origPitches = [];
-        if (ev.origSegment && ev.origSegment.length) {
-          // Recreate absolute pitches from original segment encoding
-          origPitches = ev.origSegment.map(n => n.midi != null ? n.midi : tonal.Note.midi(n.pitch)).filter(p=>p!=null);
-        } else if (motif && motif.midi_rels && base_midi != null) {
-          origPitches = motif.midi_rels.map(rel => base_midi + rel);
+        return localMatches;
+      }
+      let matches = tryAllKeys(base_midi);
+      let baseShift = 0;
+      if (!matches.length) {
+        matches = tryAllKeys(base_midi - 1);
+        if (matches.length) baseShift = -1;
+      }
+      if (!matches.length) {
+        matches = tryAllKeys(base_midi + 1);
+        if (matches.length) baseShift = 1;
+      }
+      if (!matches.length) {
+        // Approximate fallback: evaluate all candidates and score by minimizing octave errors first, then total abs semitone difference.
+        const baseCandidates = [base_midi-1, base_midi, base_midi+1];
+        let bestApprox = null;
+        const attemptSummaries = [];
+        for (const candidateBase of baseCandidates) {
+          for (let tonic_pc=0; tonic_pc<12; tonic_pc++) {
+            for (const mode of ['major','minor']) {
+              const recon = reconstructPitches(motif, candidateBase, tonic_pc, mode);
+              if (!recon) continue;
+              let octaveErrors = 0; // count diffs that are multiples of 12 (non-zero)
+              let semitoneErrors = 0; // remaining non-zero diffs
+              let absSum = 0; let offsets=[];
+              for (let i=0;i<origPitches.length;i++) {
+                const diff = recon[i]-origPitches[i];
+                if (diff !== 0) {
+                  if (diff % 12 === 0) octaveErrors++; else semitoneErrors++;
+                }
+                absSum += Math.abs(diff);
+                offsets.push(diff);
+              }
+              // Scoring preference:
+              // Default: prefer octave errors over semitone errors (better musical tolerance).
+              // Can be flipped via CLI flag --prefer-semitone (diagnostic only).
+              const preferOct = opts.preferOctave !== false;
+              const OCT_W = preferOct ? 30 : 1000;   // if prefer octave, make them cheap
+              const SEMI_W = preferOct ? 2000 : 50;  // if prefer octave, make semitone errors very expensive
+              const score = octaveErrors*OCT_W + semitoneErrors*SEMI_W + absSum;
+              const summary = { candidateBase, tonic_pc, mode, octaveErrors, semitoneErrors, absSum, score, offsets }; 
+              attemptSummaries.push(summary);
+              if (!bestApprox || score < bestApprox.score) bestApprox = summary;
+            }
+          }
         }
-        const tried = [];
-        let best = null;
-        for (const tonicName of candidates) {
-          const result = scoreKeyForSegment(tonicName, seed.mode, motif, base_midi, origPitches);
-          tried.push(result);
-          if (!best || result.score > best.score) best = result;
-        }
-        // Attach annotation
-        ev.refKey = {
-          tonic: best ? best.tonic : seed.tonic,
-          mode: seed.mode,
-          source: seed._fallback ? 'global-seed' : 'local-seed',
-          accSum: best ? best.accSum : null,
-          degMismatches: best ? best.degMismatches : null,
-          circleSearchRadius: 5
-        };
-        if (process.env.INCLUDE_KEY_TRIED === '1') {
-          ev.refKey.tried = tried.map(t => ({ tonic: t.tonic, score: t.score, accSum: t.accSum, degMis: t.degMismatches }));
-        }
-        if (debug) {
-          console.log(`[KeySelect] motif_id=${ev.motif_id} seed=${seed.tonic}/${seed.mode} chosen=${ev.refKey.tonic} accSum=${ev.refKey.accSum} degMis=${ev.refKey.degMismatches}`);
+        if (bestApprox) {
+          // Accept approximate
+            const diffHist = bestApprox.offsets.reduce((m,d)=>{m[d]=(m[d]||0)+1;return m;},{});
+            ev.refKey = {
+              tonic: tonicNameForPc(bestApprox.tonic_pc),
+              mode: bestApprox.mode,
+              exact: false,
+              accSum: null,
+              candidateCount: 0,
+              baseShift: bestApprox.candidateBase - base_midi,
+              octaveErrors: bestApprox.octaveErrors,
+              semitoneErrors: bestApprox.semitoneErrors,
+              absErrorSum: bestApprox.absSum,
+              totalErrorCount: bestApprox.octaveErrors + bestApprox.semitoneErrors,
+              diffHist,
+              approx: true
+            };
+            // Persist diagnostic file for later refinement
+            const diag = { motif_id: ev.motif_id, base_midi, origPitches, motif: { deg_rels: motif.deg_rels, accs: motif.accs, midi_rels: motif.midi_rels, sample_base_midi: motif.sample_base_midi }, attempts: attemptSummaries.slice(0,200) };
+            try { fs.writeFileSync(`keystrict-approx-motif-${ev.motif_id}.json`, JSON.stringify(diag, null, 2)); } catch(e) { /* ignore */ }
+            console.warn(`[KeyStrict][approx] motif_id=${ev.motif_id} no exact key; chose ${ev.refKey.tonic}/${ev.refKey.mode} baseShift=${ev.refKey.baseShift} octaveErr=${bestApprox.octaveErrors} semiErr=${bestApprox.semitoneErrors}`);
+        } else {
+          console.error(`[KeyStrict] FAILED motif_id=${ev.motif_id} no reconstructable candidates even for approximation.`);
+          throw new Error(`[KeyStrict] Could not approximate key for motif_id=${ev.motif_id}`);
         }
         abs += span;
-        continue;
+        continue; // proceed to next motif reference
       }
-      if (ev.dur) abs += ev.dur;
+      // Choose match with minimal accidentals; tie-break by circle distance to global key tonic
+      function circleDistPc(pcA, pcB) {
+        // use global circle list
+        const nameA = tonicNameForPc(pcA);
+        const nameB = tonicNameForPc(pcB);
+        return circleDistance(nameA, nameB);
+      }
+      const globalPc = globalKey.tonic_pc;
+      matches.sort((a,b)=> a.accSum - b.accSum || circleDistPc(a.tonic_pc, globalPc) - circleDistPc(b.tonic_pc, globalPc));
+      const chosen = matches[0];
+      ev.refKey = {
+        tonic: tonicNameForPc(chosen.tonic_pc),
+        mode: chosen.mode,
+        accSum: chosen.accSum,
+        exact: true,
+        candidateCount: matches.length,
+        baseShift
+      };
+      if (debug) {
+        console.log(`[KeyStrict] motif_id=${ev.motif_id} chosen=${ev.refKey.tonic}/${ev.refKey.mode} accSum=${chosen.accSum} matches=${matches.length} baseShift=${baseShift}`);
+      }
+      abs += span;
     }
   }
 }
@@ -1185,7 +1397,7 @@ if (require.main === module) {
       const args = process.argv.slice(2);
       if (args.length < 1 || ['-h','--help'].includes(args[0])) {
         console.log('Usage:');
-        console.log('  node EncodeDecode.js compress <input.mid> <output.json> [--preserve-tracks] [--motifless|--no-motifs]');
+  console.log('  node EncodeDecode.js compress <input.mid> <output.json> [--preserve-tracks] [--motifless|--no-motifs] [--no-key-changes] [--prefer-semitone] [--debug-key-selection]');
         console.log('  node EncodeDecode.js decompress <input.json> <output.mid>');
         process.exit(0);
       }
@@ -1214,3 +1426,15 @@ if (require.main === module) {
     }
   })();
 }
+
+// Export programmatic APIs for batch processing and tests
+module.exports = {
+  compressMidiToJson,
+  decompressJsonToMidi,
+  // Optionally expose helpers for advanced/test usage
+  parseMidi,
+  extractTempoAndPPQAndNotes,
+  findBestKey,
+  detectKeyChanges,
+  decodeSingleVoice
+};
