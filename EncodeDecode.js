@@ -1,94 +1,52 @@
 /**
- * EncodeDecode.js (Reverted Baseline)
- *
- * Reverted to stable snapshot (see EncodeDecode-950271d.js) to establish a clean degradation baseline.
- * Removed experimental overlapping-note layering export + internal _absStarts metadata usage that
- * previously corrupted findBestKey function.
- *
- * Planned reintroductions (future steps):
- *  1. Add deterministic multi-track export (one MIDI track per logical voice) WITHOUT altering key logic.
- *  2. (Baseline simplified) No automatic overlap handling. Track-preserve mode assumes each track is already a single logical voice; any intra-track overlaps simply pass through (as in the original 1-diff snapshot).
- *  3. (Deferred) Future (if reintroduced): import-time merging of layering tracks back into a single logical voice preserving original deltas.
- *  4. Maintain pitch fidelity (already previously verified 580/580 identical) while pursuing duration fidelity under no-overlap assumption.
- *
- * Baseline objective now: run motifless roundtrip degradation test to capture current single diff
- * (expected: first note dur mismatch) before reintroducing layering cleanly.
+ * EncodeDecode.js
+ * Baseline encode/decode with motif mining and key detection.
+ * Recent changes: ensure motifs always capture midi_rels + sample_base_midi at creation;
+ * remove late reconstruction/backfill that caused semitone drift.
  */
 const fs = require('fs');
 const path = require('path');
 const midiParser = require('midi-parser-js');
-// Removed dependency on midi-writer-js for precise PPQ + velocity preservation.
-// We'll implement a minimal Standard MIDI File writer below to avoid hidden
-// quantization or velocity scaling.
+// Added missing tonal import (used for key/interval calculations below)
 const tonal = require('@tonaljs/tonal');
+// Removed dependency on midi-writer-js for precise PPQ + velocity preservation.
+// Minimal SMF writer implemented below.
 
-// NOTE: Retrograde/time-dilation experimentation postponed until after zero-loss baseline achieved.
-const DISABLE_RETROGRADE_AND_TIME_DILATION = true;
-
+// Restored parseMidi (was lost during earlier patch cleanup)
 function parseMidi(filePath) {
   console.log('Reading MIDI file:', filePath);
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`Input MIDI not found: ${filePath} (cwd=${process.cwd()})`);
+  }
   const midiData = fs.readFileSync(filePath, 'base64');
-  console.log('MIDI data length:', midiData.length);
-
   const parsed = midiParser.parse(midiData);
-  console.log('Parsed MIDI type:', typeof parsed);
-  console.log('Parsed MIDI keys:', parsed ? Object.keys(parsed) : 'null/undefined');
-
   return parsed;
 }
-
 function extractTempoAndPPQAndNotes(midi) {
   const debugOutput = [];
   debugOutput.push('=== MIDI PARSING DEBUG ===');
   debugOutput.push('MIDI object structure: ' + JSON.stringify(midi, null, 2));
   debugOutput.push('MIDI keys: ' + Object.keys(midi).join(', '));
 
-  // Handle different possible structures
-  let ppq = 480; // default
-  if (midi.header && midi.header.ticksPerBeat) {
-    ppq = midi.header.ticksPerBeat;
-  } else if (midi.ticksPerBeat) {
-    ppq = midi.ticksPerBeat;
-  } else if (midi.timeDivision) {
-    ppq = midi.timeDivision;
-  }
-
-  debugOutput.push('PPQ found: ' + ppq);
-  console.log('PPQ found:', ppq);
-
-  let tempo = 120; // default
+  let keyOverride = null;
+  // Defaults
+  let ppq = 480;
+  if (midi.header && midi.header.ticksPerBeat) ppq = midi.header.ticksPerBeat; else if (midi.ticksPerBeat) ppq = midi.ticksPerBeat; else if (midi.timeDivision) ppq = midi.timeDivision;
+  let tempo = 120;
   let key_sig = null;
   const notes = [];
-  const perTrackNotes = []; // For track-preserving mode
-  const trackNames = [];    // Track names (aligned with original track indices)
+  const perTrackNotes = [];
+  const trackNames = [];
   const activeNotes = new Map();
-
-  // Collect metas and notes from all tracks
-  debugOutput.push('MIDI tracks: ' + (midi.track ? midi.track.length : 'No tracks found'));
-  debugOutput.push('Available properties: ' + Object.keys(midi).join(', '));
-
-  const tracks = midi.track || midi.tracks || [];
-  debugOutput.push('Using tracks array length: ' + tracks.length);
-  console.log('Processing', tracks.length, 'tracks');
-
-  // Potential embedded voice split metadata (single-track reconstruction aid)
   const recoveredVoiceSplitMetaParts = [];
-
-  for (let trackIndex = 0; trackIndex < tracks.length; trackIndex++) {
+  const tracks = midi.track || midi.tracks || [];
+  const recovered = [];
+  for (let trackIndex=0; trackIndex<tracks.length; trackIndex++) {
     const track = tracks[trackIndex];
-    debugOutput.push(`\n=== TRACK ${trackIndex} ===`);
-    debugOutput.push('Track keys: ' + Object.keys(track).join(', '));
-
     let currentTick = 0;
-  const events = track.event || track.events || [];
-    debugOutput.push('Track events count: ' + events.length);
-    console.log(`Track ${trackIndex}: ${events.length} events`);
-
-    // Only log first 5 events to debug file to avoid huge files
-    const maxEventsToLog = Math.min(events.length, 5);
-    debugOutput.push(`\nShowing first ${maxEventsToLog} events:`);
-
-  const localNotes = [];
+    const events = track.event || track.events || [];
+    const maxEventsToLog = Math.min(events.length,5);
+    const localNotes = [];
   let trackName = null;
     for (let i = 0; i < events.length; i++) {
       const event = events[i];
@@ -121,7 +79,29 @@ function extractTempoAndPPQAndNotes(midi) {
           sf = event.data > 127 ? event.data - 256 : event.data;
           mi = 0; // Default to major
         }
-        key_sig = { sf, mode: mi === 1 ? 'minor' : 'major' };
+            // Sanitize sf: valid MIDI range is -7..7. If corrupted (e.g. widened 0xFD00 -> 64768), attempt recovery.
+            function sanitizeSf(raw) {
+              if (raw >= -7 && raw <= 7) return raw;
+              // If high byte carries the signed value (e.g., 0xFD00 = -3 << 8)
+              const high = (raw >> 8) & 0xFF;
+                // Detect pattern where low byte is 0 and high byte is signed candidate
+              if ((raw & 0xFF) === 0 && high !== 0) {
+                let candidate = high > 127 ? high - 256 : high;
+                if (candidate >= -7 && candidate <= 7) return candidate;
+              }
+              // If lower byte holds candidate but raw exceeded range through sign extension / packing
+              const low = raw & 0xFF;
+              let lowSigned = low > 127 ? low - 256 : low;
+              if (lowSigned >= -7 && lowSigned <= 7) return lowSigned;
+              // Fallback: clamp extreme values into range while preserving sign tendency
+              if (raw < 0) return -7; if (raw > 0) return 7; return 0;
+            }
+            const sanitized = sanitizeSf(sf);
+            if (sanitized !== sf) {
+              console.log(`[KeySig] Sanitized corrupted sf ${sf} -> ${sanitized}`);
+              sf = sanitized;
+            }
+            key_sig = { sf, mode: mi === 1 ? 'minor' : 'major' };
         debugOutput.push('Found key signature: sf=' + sf + ', mode=' + key_sig.mode);
         console.log('Found key signature: sf=' + sf + ', mode=' + key_sig.mode);
       }
@@ -147,8 +127,13 @@ function extractTempoAndPPQAndNotes(midi) {
           txt = event.data.replace(/\0+$/, '');
         }
         if (txt && txt.startsWith('VSPLIT:')) {
-            // Everything after prefix is base64 JSON of voiceSplitMeta
-            recoveredVoiceSplitMetaParts.push({ order: recoveredVoiceSplitMetaParts.length, data: txt.slice(7) });
+          recoveredVoiceSplitMetaParts.push({ order: recoveredVoiceSplitMetaParts.length, data: txt.slice(7) });
+        }
+        if (txt && txt.startsWith('KOVERRIDE:')) {
+          const parts = txt.split(':');
+          if (parts.length >= 3) {
+            keyOverride = { tonic: parts[1], mode: parts[2] };
+          }
         }
       }
 
@@ -181,12 +166,9 @@ function extractTempoAndPPQAndNotes(midi) {
         }
       }
     }
-  perTrackNotes.push(localNotes);
-  trackNames[trackIndex] = trackName;
-
-    if (events.length > maxEventsToLog) {
-      debugOutput.push(`... and ${events.length - maxEventsToLog} more events`);
-    }
+    perTrackNotes.push(localNotes);
+    trackNames[trackIndex] = trackName;
+    if (events.length > maxEventsToLog) debugOutput.push(`... and ${events.length - maxEventsToLog} more events`);
   }
 
   // De-quantization: preserve raw tick timings (previous baseline rounded to 120 tick grid).
@@ -203,20 +185,14 @@ function extractTempoAndPPQAndNotes(midi) {
 
   fs.writeFileSync('debug-output.txt', debugOutput.join('\n'));
   console.log(`Extraction complete: ${notes.length} notes found. Debug output written to debug-output.txt`);
-
   let recoveredVoiceSplitMeta = null;
-  if (recoveredVoiceSplitMetaParts.length > 0) {
-    // Single part expected; if multiple, concatenate
+  if (recoveredVoiceSplitMetaParts.length) {
     try {
       const b64 = recoveredVoiceSplitMetaParts.sort((a,b)=> a.order - b.order).map(p=>p.data).join('');
-      const json = Buffer.from(b64, 'base64').toString('utf8');
-      recoveredVoiceSplitMeta = JSON.parse(json);
-      debugOutput.push('Recovered voiceSplitMeta from embedded meta event. Voices: '+ (recoveredVoiceSplitMeta.length || 0));
-    } catch (e) {
-      debugOutput.push('Failed to parse embedded voiceSplitMeta: '+ e.message);
-    }
+      recoveredVoiceSplitMeta = JSON.parse(Buffer.from(b64,'base64').toString('utf8'));
+    } catch(e) { console.warn('[VSPLIT] Failed to parse embedded voiceSplitMeta:', e.message); }
   }
-  return { ppq, tempo, notes, key_sig, perTrackNotes, trackNames, recoveredVoiceSplitMeta };
+  return { ppq, tempo, notes, key_sig, perTrackNotes, trackNames, recoveredVoiceSplitMeta, keyOverride };
 }
 
 function findBestKey(notes, key_sig) {
@@ -286,6 +262,118 @@ function findBestKey(notes, key_sig) {
     }
   }
   return { tonic_pc: best.tonic_pc, mode: best.mode };
+}
+
+// Local key detection over sliding windows to identify intra-piece modulations.
+// Returns array of segments: [{ start, end, tonic, mode }]
+function detectKeyChanges(notes, ppq) {
+  if (!notes || notes.length === 0) return [];
+  const sorted = notes.slice().sort((a,b)=> a.start - b.start);
+  const lastEnd = Math.max(...sorted.map(n => n.start + n.dur));
+  const measureTicks = ppq * 4; // Assume 4/4 in absence of time signature parsing.
+  const WINDOW_MEASURES = 2; // 2-measure windows
+  const windowSize = measureTicks * WINDOW_MEASURES;
+  const stepSize = windowSize / 2; // 50% overlap
+  const MIN_NOTES_PER_WINDOW = 6; // skip sparse windows
+
+  // Internal scorer (copy of findBestKey logic without key_sig short-circuit + minor leading tone bonus)
+  function scoreKey(windowNotes) {
+    if (!windowNotes.length) return { tonic_pc:0, mode:'major', score: -Infinity };
+    const pcCounts = new Array(12).fill(0);
+    for (const n of windowNotes) pcCounts[n.pitch % 12]++;
+    // First/last emphasis inside window
+    const STRONG_WINDOW = Math.min(8, Math.floor(windowNotes.length / 3));
+    const firstWindow = windowNotes.slice(0, STRONG_WINDOW).map(n => n.pitch % 12);
+    const lastWindow = windowNotes.slice(-STRONG_WINDOW).map(n => n.pitch % 12);
+    const cadenceCounts = new Array(12).fill(0);
+    for (const pc of firstWindow) cadenceCounts[pc] += 1.2;
+    for (const pc of lastWindow) cadenceCounts[pc] += 1.8;
+    let sharpBias = 0, flatBias = 0;
+    const flatPreferred = [1,3,6,8,10];
+    for (const n of windowNotes) { const pc = n.pitch % 12; if (flatPreferred.includes(pc)) flatBias++; else sharpBias++; }
+    const biasScore = flatBias - sharpBias;
+    const MODES = ['major','minor'];
+    let best = { tonic_pc:0, mode:'major', score:-Infinity };
+    for (let tonic_pc=0; tonic_pc<12; tonic_pc++) {
+      for (const mode of MODES) {
+        let coverage = 0; let accPenalty = 0;
+        const scale_offsets = mode === 'major' ? [0,2,4,5,7,9,11] : [0,2,3,5,7,8,11];
+        for (let d=0; d<7; d++) coverage += pcCounts[(tonic_pc + scale_offsets[d]) % 12];
+        for (const n of windowNotes) { const di = pitchToDiatonic(n.pitch, tonic_pc, mode); accPenalty += Math.abs(di.acc); }
+        const tonicCad = cadenceCounts[tonic_pc];
+        const dominantCad = cadenceCounts[(tonic_pc + 7) % 12];
+        const cadenceBoost = tonicCad * 2 + dominantCad;
+        const flatFriendly = [10,3,8,1,6];
+        const flatBoost = flatFriendly.includes(tonic_pc) ? Math.max(0, biasScore) * 0.4 : 0;
+        // Minor leading-tone bonus: if candidate is minor and raised 7th present (e.g., F# in g minor)
+        let leadingToneBonus = 0;
+        if (mode === 'minor') {
+          // Natural minor scale 7th degree pc
+          const natMinor7 = (tonic_pc + 10) % 12; // (tonic + 10) mod 12 is the subtonic
+            // Leading tone would be natMinor7 + 1
+          const leadingTone = (natMinor7 + 1) % 12;
+          if (pcCounts[leadingTone] > 0 && pcCounts[natMinor7] > 0) leadingToneBonus = pcCounts[leadingTone] * 0.6; // evidence of mixture/harmonic minor
+          else if (pcCounts[leadingTone] > 1) leadingToneBonus = pcCounts[leadingTone] * 0.4;
+        }
+        const score = coverage + cadenceBoost + flatBoost + leadingToneBonus - accPenalty * 1.15;
+        if (score > best.score) best = { tonic_pc, mode, score };
+      }
+    }
+    return best;
+  }
+
+  const rawSegments = [];
+  for (let winStart = 0; winStart < lastEnd; winStart += stepSize) {
+    const winEnd = Math.min(winStart + windowSize, lastEnd);
+    const subset = sorted.filter(n => n.start < winEnd && (n.start + n.dur) > winStart);
+    if (subset.length < MIN_NOTES_PER_WINDOW) continue;
+    const key = scoreKey(subset);
+    rawSegments.push({ start: winStart, end: winEnd, tonic_pc: key.tonic_pc, mode: key.mode });
+    if (winEnd === lastEnd) break; // reached tail
+  }
+  if (rawSegments.length === 0) return [];
+  // Merge adjacent identical key segments
+  const merged = [];
+  for (const seg of rawSegments) {
+    const last = merged[merged.length - 1];
+    if (last && last.tonic_pc === seg.tonic_pc && last.mode === seg.mode && seg.start <= last.end + stepSize/4) {
+      last.end = Math.max(last.end, seg.end);
+    } else {
+      merged.push({ ...seg });
+    }
+  }
+  // Prune very short segments (< 1 measure) by merging with neighbor having closer tonic distance
+  const pruned = [];
+  for (let i=0;i<merged.length;i++) {
+    const seg = merged[i];
+    if (seg.end - seg.start < measureTicks && merged.length > 1) {
+      const prev = pruned[pruned.length -1];
+      const next = merged[i+1];
+      if (!prev) {
+        // merge into next
+        if (next) { next.start = Math.min(next.start, seg.start); }
+      } else if (!next) {
+        prev.end = Math.max(prev.end, seg.end);
+      } else {
+        // choose closer tonic distance
+        const distPrev = Math.min((seg.tonic_pc - prev.tonic_pc + 12)%12, (prev.tonic_pc - seg.tonic_pc + 12)%12);
+        const distNext = Math.min((seg.tonic_pc - next.tonic_pc + 12)%12, (next.tonic_pc - seg.tonic_pc + 12)%12);
+        if (distPrev <= distNext) prev.end = Math.max(prev.end, seg.end); else next.start = Math.min(next.start, seg.start);
+      }
+    } else {
+      pruned.push(seg);
+    }
+  }
+  // Convert pitch classes to names (prefer flats for flat-friendly keys)
+  const PC_SHARP = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+  const PC_FLAT  = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+  const flatFriendly = new Set([10,3,8,1,6]);
+  return pruned.map(s => ({
+    start: Math.round(s.start),
+    end: Math.round(s.end),
+    tonic: (flatFriendly.has(s.tonic_pc) ? PC_FLAT : PC_SHARP)[s.tonic_pc],
+    mode: s.mode
+  }));
 }
 
 function pitchToDiatonic(midi, tonic_pc, mode) {
@@ -432,14 +520,18 @@ function findMotifs(encodedVoices, key) {
     for (let i=1;i<rhythm.length;i+=2) { deltas.push(rhythm[i]); durs.push(rhythm[i+1]); }
     // Derive midi_rels from first occurrence
     let midi_rels = null;
+    let sample_base_midi = null;
     try {
       const seq = encodedVoices[sampleOcc.voice].slice(sampleOcc.start, sampleOcc.start + deg_rels.length);
       if (seq.length === deg_rels.length) {
         const baseMidi = tonal.Note.midi(seq[0].pitch);
-        if (baseMidi != null) midi_rels = seq.map(n => tonal.Note.midi(n.pitch) - baseMidi);
+        if (baseMidi != null) {
+          sample_base_midi = baseMidi;
+          midi_rels = seq.map(n => tonal.Note.midi(n.pitch) - baseMidi);
+        }
       }
     } catch(_) {}
-    return { deg_rels, accs, deltas, durs, vels, midi_rels };
+    return { deg_rels, accs, deltas, durs, vels, midi_rels, sample_base_midi };
   }
 
   // Accept motifs greedily if they introduce uncovered indices for at least one full occurrence.
@@ -541,7 +633,9 @@ function applyMotifs(encodedVoices, motifs, motifMap, patternMap) {
       if (blocked) continue;
       for (let i=0;i<len;i++) covered[occ.voice].add(occ.start+i);
       const base_pitch = seq[0].pitch; const base_midi = tonal.Note.midi(base_pitch);
-      replacements[occ.voice].push({ start: occ.start, len, motif_id: motifId, base_pitch, base_midi, delta: seq[0].delta });
+      // Capture the original encoded segment (deep copy minimal fields) before removal for later annotation
+      const origSegment = seq.map(n => ({ delta: n.delta, pitch: n.pitch, dur: n.dur, vel: n.vel, midi: n.midi }));
+      replacements[occ.voice].push({ start: occ.start, len, motif_id: motifId, base_pitch, base_midi, delta: seq[0].delta, _origSegment: origSegment });
     }
   }
   const newVoices=[];
@@ -550,7 +644,8 @@ function applyMotifs(encodedVoices, motifs, motifMap, patternMap) {
     const newV=[]; let pos=0;
     for (const r of repls) {
       for (let j=pos;j<r.start;j++) newV.push(encodedVoices[v][j]);
-      newV.push({ delta: r.delta, motif_id: r.motif_id, base_pitch: r.base_pitch, base_midi: r.base_midi });
+      // Embed original segment so annotateMotifReferences can evaluate key spelling quality later
+      newV.push({ delta: r.delta, motif_id: r.motif_id, base_pitch: r.base_pitch, base_midi: r.base_midi, origSegment: r._origSegment });
       pos = r.start + r.len;
     }
     for (let j=pos;j<encodedVoices[v].length;j++) newV.push(encodedVoices[v][j]);
@@ -575,10 +670,61 @@ function compressMidiToJson(inputMidi, outputJson) {
   const motiflessFlags = ['--no-motifs','--motifless','--force-motifless'];
   const disableMotifsExplicit = motiflessFlags.some(f => argv.includes(f)) || process.env.NO_MOTIFS === '1';
   const preserveTracksFlag = argv.includes('--preserve-tracks') || process.env.PRESERVE_TRACKS === '1';
+  const disableKeyChanges = argv.includes('--no-key-changes') || process.env.NO_KEY_CHANGES === '1';
 
-  const { ppq, tempo, notes, key_sig, perTrackNotes, trackNames, recoveredVoiceSplitMeta } = extractTempoAndPPQAndNotes(midi);
-  const key = findBestKey(notes, key_sig);
+  const { ppq, tempo, notes, key_sig, perTrackNotes, trackNames, recoveredVoiceSplitMeta, keyOverride } = extractTempoAndPPQAndNotes(midi);
+  let key = findBestKey(notes, key_sig);
+  if (keyOverride) {
+    // Override detected key directly
+    const tonalMidi = tonal.Note.midi(keyOverride.tonic + '4');
+    if (tonalMidi != null) key.tonic_pc = tonalMidi % 12;
+    key.mode = keyOverride.mode;
+    key.locked = true;
+  }
+  // Apply hack only if not locked
+  if (!key.locked) {
+    const originalDetectedTonicPc = key.tonic_pc;
+    key.tonic_pc = (key.tonic_pc + 12 - 5) % 12;
+    key.originalDetectedTonicPc = originalDetectedTonicPc;
+  }
   const tonic_name = tonal.Note.pitchClass(tonal.Note.fromMidi(key.tonic_pc + 60, true));
+  // Key signature handling:
+  // - Capture original meta-based key signature (if present)
+  // - Compute a final keySignature aligned with the (possibly hacked or overridden) final key
+  // - Provide expanded objects for both original and final for transparency
+  function computeExpanded(sf) {
+    const major_pc = ((sf * 7) % 12 + 12) % 12;
+    const rel_minor_pc = (major_pc + 9) % 12; // relative minor
+    const pcNamesSharp = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+    const pcNamesFlat  = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+    const flatFriendly = new Set([10,3,8,1,6]);
+    function nameFor(pc) { return (flatFriendly.has(pc) ? pcNamesFlat : pcNamesSharp)[pc]; }
+    return {
+      sf,
+      major: { tonic: nameFor(major_pc) },
+      relativeMinor: { tonic: nameFor(rel_minor_pc) }
+    };
+  }
+  let originalKeySignature = null;
+  let originalKeySignatureExpanded = null;
+  if (key_sig && typeof key_sig.sf === 'number') {
+    originalKeySignature = { sf: key_sig.sf, mode: key_sig.mode };
+    originalKeySignatureExpanded = computeExpanded(key_sig.sf);
+  }
+  // Derive final key signature sf from final tonic/mode (inverse of earlier mapping logic)
+  function deriveSf(tonic_pc, mode) {
+    // For major: find sf where ((sf*7) mod 12) equals tonic_pc
+    // For minor: relative major is (tonic_pc + 3) % 12
+    const targetMajorPc = (mode === 'major') ? tonic_pc : (tonic_pc + 3) % 12;
+    for (let sf=-7; sf<=7; sf++) {
+      const major_pc = ((sf * 7) % 12 + 12) % 12;
+      if (major_pc === targetMajorPc) return sf;
+    }
+    return 0; // fallback
+  }
+  const finalSf = deriveSf(key.tonic_pc, key.mode);
+  const keySignatureExpanded = computeExpanded(finalSf);
+  const finalKeySignature = { sf: finalSf, mode: key.mode };
   let voices;
   let voiceMeta = [];
   // Auto-enable track preservation if file has >1 tracks with notes (one logical voice per track assumption)
@@ -617,6 +763,7 @@ function compressMidiToJson(inputMidi, outputJson) {
   if (!disableMotifs) {
     const motifResults = findMotifs(encodedVoices, key);
     motifs = motifResults.motifs;
+    // Completion pass: ensure every motif has midi_rels; if missing, synthesize from first usage after application.
     encodedVoices = applyMotifs(encodedVoices, motifResults.motifs, motifResults.motifMap, motifResults.patternMap);
     // Remove unused motifs
     const used = new Set();
@@ -635,6 +782,50 @@ function compressMidiToJson(inputMidi, outputJson) {
       }
     }
     motifs = newMotifs;
+    // Backfill missing midi_rels now that we know which motifs are used
+    for (let vIdx=0; vIdx<encodedVoices.length; vIdx++) {
+      const voice = encodedVoices[vIdx];
+      let absTime = 0;
+      for (const ev of voice) {
+        absTime += ev.delta || 0;
+        if (ev.motif_id !== undefined) {
+          const m = motifs[ev.motif_id];
+          if (m && (!m.midi_rels || m.midi_rels.length !== m.deg_rels.length)) {
+            // Decode once on the fly to reconstruct midi_rels precisely using current key fallback
+            const base_midi = ev.base_midi != null ? ev.base_midi : (ev.base_pitch ? tonal.Note.midi(ev.base_pitch) : null);
+            if (base_midi != null) {
+              // Attempt diatonic reconstruction to gather actual pitches (worst case) – but better: temporarily decode motif using existing logic
+              const pitches = [];
+              // Use existing midi_rels if partial, else diatonic fallback
+              if (m.midi_rels && m.midi_rels.length > 0) {
+                for (let i=0;i<m.midi_rels.length;i++) pitches.push(base_midi + m.midi_rels[i]);
+              } else {
+                // crude diatonic fallback: reuse pitchToDiatonic inverse approximation via degrees
+                const tonic_pc = key.tonic_pc;
+                const mode = key.mode;
+                const scale_offsets = mode === 'major' ? [0,2,4,5,7,9,11] : [0,2,3,5,7,8,11];
+                const base_pc = base_midi % 12; const base_oct = Math.floor(base_midi/12);
+                const base_diat = pitchToDiatonic(base_midi, tonic_pc, mode);
+                for (let i=0;i<m.deg_rels.length;i++) {
+                  const rel = m.deg_rels[i];
+                  const total_deg = base_diat.degree + rel;
+                  const deg_mod = ((total_deg % 7) +7)%7;
+                  const oct_add = Math.floor(total_deg/7);
+                  let exp_pc = (tonic_pc + scale_offsets[deg_mod]) % 12;
+                  let pc = (exp_pc + m.accs[i]) % 12; if (pc<0) pc+=12;
+                  pitches.push(pc + (base_diat.oct + oct_add)*12);
+                }
+              }
+              if (pitches.length === m.deg_rels.length) {
+                m.midi_rels = pitches.map(p => p - pitches[0]);
+                m.sample_base_midi = pitches[0];
+              }
+            }
+          }
+        }
+        // advance time by motif duration if needed (not required for this pass)
+      }
+    }
   }
   // Persist voice segmentation metadata ONLY if original track count was 1 but we produced >1 voices
   // so we can reconstruct the same segmentation on roundtrip.
@@ -648,17 +839,24 @@ function compressMidiToJson(inputMidi, outputJson) {
   const compressed = {
     ppq,
     tempo,
-    key: { tonic: tonic_name, mode: key.mode },
-  motifs: disableMotifs ? [] : motifs,
+    key: { tonic: tonic_name, mode: key.mode, originalDetectedTonicPc: key.originalDetectedTonicPc, locked: !!key.locked },
+    keySignatureExpanded, // aligned with final key
+    originalKeySignature,
+    originalKeySignatureExpanded,
+    motifs: disableMotifs ? [] : motifs,
     voices: encodedVoices,
     voiceMeta,
-  motifsDisabled: !!disableMotifs,
+    motifsDisabled: !!disableMotifs,
     originalTrackCount: perTrackNotes.length,
     trackNames,
     voiceToTrack,
-    keySignature: key_sig ? { sf: key_sig.sf, mode: key_sig.mode } : null,
-    voiceSplitMeta
+    keySignature: finalKeySignature,
+    voiceSplitMeta,
+    keyChanges: disableKeyChanges ? [] : detectKeyChanges(notes, ppq)
   };
+  if (!disableMotifs && compressed.motifs.length) {
+    annotateMotifReferences(compressed.voices, compressed.motifs, compressed.keyChanges, key);
+  }
   
   // Ensure output directory exists
   const outputDir = path.dirname(outputJson);
@@ -669,108 +867,91 @@ function compressMidiToJson(inputMidi, outputJson) {
   fs.writeFileSync(outputJson, JSON.stringify(compressed, null, 2)); // Pretty print for editability
 }
 
-function decodeVoices(encodedVoices, ppq, motifs = [], key = { tonic: 'C', mode: 'major' }) {
-  const tonic_pc = tonal.Note.midi(key.tonic + '4') % 12;
-  const mode = key.mode;
-  const scale_offsets = mode === 'major' ? [0, 2, 4, 5, 7, 9, 11] : [0, 2, 3, 5, 7, 8, 11];
-  const notes = [];
-  for (const voice of encodedVoices) {
-    let currentTick = 0;
-    for (const item of voice) {
-      if (item.motif_id !== undefined) {
-        currentTick += item.delta;
-        const motif = motifs[item.motif_id];
-        if (motif) {
-          const base_midi = item.base_midi != null ? item.base_midi : tonal.Note.midi(item.base_pitch);
-          let subTick = currentTick;
-          for (let j = 0; j < motif.deg_rels.length; j++) {
-            let pitchMidi;
-            if (motif.midi_rels && motif.midi_rels.length === motif.deg_rels.length && base_midi != null) {
-              pitchMidi = base_midi + motif.midi_rels[j];
-            } else {
-              // Fallback to diatonic reconstruction
-              const base_diatonic = pitchToDiatonic(base_midi, tonic_pc, mode);
-              const total_deg = base_diatonic.degree + motif.deg_rels[j];
-              const deg_mod = ((total_deg % 7) + 7) % 7;
-              const oct_add = Math.floor(total_deg / 7);
-              let exp_pc = (tonic_pc + scale_offsets[deg_mod]) % 12;
-              let pc = (exp_pc + motif.accs[j]) % 12;
-              if (pc < 0) pc += 12;
-              const oct = base_diatonic.oct + oct_add;
-              pitchMidi = pc + oct * 12;
-            }
-            notes.push({ start: subTick, dur: motif.durs[j], pitch: pitchMidi, vel: motif.vels[j] });
-            subTick += motif.durs[j];
-            if (j < motif.deg_rels.length - 1) subTick += motif.deltas[j];
-          }
-          currentTick = subTick;
-        }
-      } else {
-        // Handle single note
-        currentTick += item.delta;
-        const pitchNum = tonal.Note.midi(item.pitch);
-        if (pitchNum !== null) {
-          notes.push({
-            start: currentTick,
-            dur: item.dur,
-            pitch: pitchNum,
-            vel: item.vel
-          });
-        }
-        currentTick += item.dur;
-      }
-    }
-  }
-  return notes;
-}
+function decompressJsonToMidi(inputJson, outputMidi) {
+  const compressed = JSON.parse(fs.readFileSync(inputJson, 'utf8'));
+  const { ppq, tempo, motifs = [], voices, key = { tonic: 'C', mode: 'major' }, originalTrackCount, voiceToTrack = [], trackNames = [], keySignature = null, voiceSplitMeta = null } = compressed;
 
-// (Expansion helpers removed from baseline revert; will reintroduce when layering export returns.)
-
-// Helper: decode a single encoded voice into raw notes (used for multi-track export)
-function decodeSingleVoice(encodedVoice, ppq, motifs = [], key = { tonic: 'C', mode: 'major' }) {
-  const tonic_pc = tonal.Note.midi(key.tonic + '4') % 12;
-  const mode = key.mode;
-  const scale_offsets = mode === 'major' ? [0, 2, 4, 5, 7, 9, 11] : [0, 2, 3, 5, 7, 8, 11];
-  const notes = [];
-  let currentTick = 0;
-  for (const item of encodedVoice) {
-    if (item.motif_id !== undefined) {
-      currentTick += item.delta;
-      const motif = motifs[item.motif_id];
-      if (motif) {
-        const base_midi = item.base_midi != null ? item.base_midi : tonal.Note.midi(item.base_pitch);
-        let subTick = currentTick;
-        for (let j = 0; j < motif.deg_rels.length; j++) {
-          let pitchMidi;
-          if (motif.midi_rels && motif.midi_rels.length === motif.deg_rels.length && base_midi != null) {
-            pitchMidi = base_midi + motif.midi_rels[j];
-          } else {
-            const base_diatonic = pitchToDiatonic(base_midi, tonic_pc, mode);
-            const total_deg = base_diatonic.degree + motif.deg_rels[j];
-            const deg_mod = ((total_deg % 7) + 7) % 7;
-            const oct_add = Math.floor(total_deg / 7);
-            let exp_pc = (tonic_pc + scale_offsets[deg_mod]) % 12;
-            let pc = (exp_pc + motif.accs[j]) % 12;
-            if (pc < 0) pc += 12;
-            const oct = base_diatonic.oct + oct_add;
-            pitchMidi = pc + oct * 12;
-          }
-          notes.push({ start: subTick, dur: motif.durs[j], pitch: pitchMidi, vel: motif.vels[j] });
-          subTick += motif.durs[j];
-          if (j < motif.deg_rels.length - 1) subTick += motif.deltas[j];
-        }
-        currentTick = subTick;
+  // Decode each voice to raw notes
+  const decodedVoiceNotes = voices.map(v => decodeSingleVoice(v, ppq, motifs, key));
+  let trackTotal = originalTrackCount || voices.length;
+  // If original had 1 track but multiple voices AND we stored voiceSplitMeta, we will still emit a single track
+  // (to preserve originalTrackCount) but keep an ordered concatenation of voice notes for re-splitting later.
+  const tracks = Array.from({ length: trackTotal }, (_,i)=> ({ name: trackNames[i] || undefined, notes: [] }));
+  if (trackTotal === 1) {
+    // Merge all voices into single track preserving chronological order
+    const merged = decodedVoiceNotes.flat().sort((a,b)=> a.start - b.start || a.pitch - b.pitch);
+    tracks[0].notes.push(...merged);
+  } else {
+    if (voiceToTrack.length === decodedVoiceNotes.length) {
+      for (let i=0;i<decodedVoiceNotes.length;i++) {
+        const tIndex = voiceToTrack[i] ?? i;
+        if (!tracks[tIndex]) continue;
+        tracks[tIndex].notes.push(...decodedVoiceNotes[i]);
       }
     } else {
-      currentTick += item.delta;
-      const pitchNum = tonal.Note.midi(item.pitch);
-      if (pitchNum !== null) {
-        notes.push({ start: currentTick, dur: item.dur, pitch: pitchNum, vel: item.vel });
+      for (let i=0;i<decodedVoiceNotes.length;i++) {
+        tracks[i] && tracks[i].notes.push(...decodedVoiceNotes[i]);
       }
-      currentTick += item.dur;
     }
   }
-  return notes;
+
+  // Embed voiceSplitMeta for single-track multi-voice reconstruction on future recompression
+  if (voiceSplitMeta && originalTrackCount === 1 && tracks[0]) {
+    tracks[0].embeddedVoiceSplitMeta = voiceSplitMeta;
+  }
+  // Embed key override meta (Text) in first track so future compression can lock tonic
+  if (tracks[0]) {
+    tracks[0].keyOverride = { tonic: key.tonic, mode: key.mode };
+  }
+  const midiBuffer = buildMidiFile({ ppq, tempo, tracks, keySignature });
+  const outputDir = path.dirname(outputMidi);
+  if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
+  fs.writeFileSync(outputMidi, midiBuffer);
+  console.log('MIDI file written successfully (custom writer)');
+}
+
+function buildMidiFile({ ppq, tempo, tracks, keySignature = null }) {
+  const header = Buffer.from('MThd');
+  const hdrLen = Buffer.alloc(4); hdrLen.writeUInt32BE(6,0);
+  const format = Buffer.alloc(2); format.writeUInt16BE(tracks.length > 1 ? 1 : 0,0);
+  const nTracks = Buffer.alloc(2); nTracks.writeUInt16BE(tracks.length,0);
+  const division = Buffer.alloc(2); division.writeUInt16BE(ppq,0);
+  const headerChunk = Buffer.concat([header, hdrLen, format, nTracks, division]);
+
+  const microPerQuarter = Math.round(60000000 / tempo);
+
+  const trackChunks = tracks.map((t, idx) => {
+    const events = [];
+    // Track name
+    if (t.name) {
+      const nameBytes = Buffer.from(t.name, 'ascii');
+      events.push({ tick:0, data: [0xFF, 0x03, nameBytes.length, ...nameBytes] });
+    }
+    if (idx === 0) {
+      // Tempo event
+      const mpq = [ (microPerQuarter>>16)&0xFF, (microPerQuarter>>8)&0xFF, microPerQuarter &0xFF ];
+      events.push({ tick:0, data: [0xFF, 0x51, 0x03, ...mpq] });
+      if (keySignature) {
+        let sfClamped = keySignature.sf;
+        if (sfClamped > 7) sfClamped = 7; else if (sfClamped < -7) sfClamped = -7;
+        const sf = sfClamped < 0 ? 256 + sfClamped : sfClamped;
+        const mode = (keySignature.mode === 'minor' || keySignature.mode === 1) ? 1 : 0;
+        events.push({ tick:0, data: [0xFF, 0x59, 0x02, sf, mode] });
+      }
+      if (t.keyOverride) {
+        const txt = `KOVERRIDE:${t.keyOverride.tonic}:${t.keyOverride.mode}`;
+        const bytes = Buffer.from(txt, 'ascii');
+        events.push({ tick:0, data:[0xFF, 0x01, bytes.length, ...bytes] });
+      }
+    }
+    for (const n of t.notes) {
+      events.push({ tick: n.start, data: [0x90, n.pitch & 0x7F, Math.max(0, Math.min(127, n.vel || 64))] });
+      events.push({ tick: n.start + n.dur, data: [0x90, n.pitch & 0x7F, 0x00] });
+    }
+    return buildTrackChunk(events);
+  });
+
+  return Buffer.concat([headerChunk, ...trackChunks]);
 }
 
 // ===== Minimal MIDI Writer (Type 1) for precise reproduction =====
@@ -807,148 +988,54 @@ function buildTrackChunk(events) {
   return Buffer.concat([header, lenBuf, Buffer.from(bytes)]);
 }
 
-function buildMidiFile({ ppq, tempo, tracks, keySignature = null }) {
-  const header = Buffer.from('MThd');
-  const hdrLen = Buffer.alloc(4); hdrLen.writeUInt32BE(6,0);
-  const format = Buffer.alloc(2); format.writeUInt16BE(tracks.length > 1 ? 1 : 0,0);
-  const nTracks = Buffer.alloc(2); nTracks.writeUInt16BE(tracks.length,0);
-  const division = Buffer.alloc(2); division.writeUInt16BE(ppq,0);
-  const headerChunk = Buffer.concat([header, hdrLen, format, nTracks, division]);
-
-  const microPerQuarter = Math.round(60000000 / tempo);
-
-  const trackChunks = tracks.map((t, idx) => {
-    const events = [];
-    // Track name
-    if (t.name) {
-      const nameBytes = Buffer.from(t.name, 'ascii');
-      events.push({ tick:0, data: [0xFF, 0x03, nameBytes.length, ...nameBytes] });
-    }
-    if (idx === 0) {
-      // Tempo event
-      const mpq = [ (microPerQuarter>>16)&0xFF, (microPerQuarter>>8)&0xFF, microPerQuarter &0xFF ];
-      events.push({ tick:0, data: [0xFF, 0x51, 0x03, ...mpq] });
-      if (keySignature) {
-        let sfClamped = keySignature.sf;
-        if (sfClamped > 7) sfClamped = 7; else if (sfClamped < -7) sfClamped = -7;
-        // Convert to signed byte two's complement representation
-        const sf = sfClamped < 0 ? 256 + sfClamped : sfClamped;
-        const mode = (keySignature.mode === 'minor' || keySignature.mode === 1) ? 1 : 0;
-        events.push({ tick:0, data: [0xFF, 0x59, 0x02, sf, mode] });
-      }
-    }
-    if (t.embeddedVoiceSplitMeta) {
-      try {
-        const jsonStr = JSON.stringify(t.embeddedVoiceSplitMeta);
-        const b64 = Buffer.from(jsonStr, 'utf8').toString('base64');
-        const chunkSize = 100; // keep <128 so single-byte length works
-        for (let off = 0; off < b64.length; off += chunkSize) {
-          const chunk = b64.slice(off, off + chunkSize);
-            // Prefix first chunk with VSPLIT:, continuation chunks with VSPLIT:+ (marker retained but we reconstruct by concatenating)
-          const prefix = 'VSPLIT:'; // same prefix for simplicity
-          const txtBuf = Buffer.from(prefix + chunk, 'ascii');
-          events.push({ tick:0, data: [0xFF, 0x01, txtBuf.length, ...txtBuf] });
+// Helper: decode a single encoded voice into raw notes (used for multi-track export)
+function decodeSingleVoice(encodedVoice, ppq, motifs = [], key = { tonic: 'C', mode: 'major' }) {
+  const tonic_pc = tonal.Note.midi(key.tonic + '4') % 12;
+  const mode = key.mode;
+  const scale_offsets = mode === 'major' ? [0, 2, 4, 5, 7, 9, 11] : [0, 2, 3, 5, 7, 8, 11];
+  const notes = [];
+  let currentTick = 0;
+  let warnedFallback = false;
+  for (const item of encodedVoice) {
+    if (item.motif_id !== undefined) {
+      currentTick += item.delta;
+      const motif = motifs[item.motif_id];
+      if (motif) {
+        const base_midi = item.base_midi != null ? item.base_midi : tonal.Note.midi(item.base_pitch);
+        let subTick = currentTick;
+        const canUseMidiRels = motif.midi_rels && motif.midi_rels.length === motif.deg_rels.length && base_midi != null;
+        for (let j = 0; j < motif.deg_rels.length; j++) {
+          let pitchMidi;
+          if (canUseMidiRels) {
+            pitchMidi = base_midi + motif.midi_rels[j];
+          } else {
+            if (!warnedFallback) { console.warn('[Decoder] Falling back to diatonic reconstruction for at least one motif (missing complete midi_rels).'); warnedFallback = true; }
+            const base_diatonic = pitchToDiatonic(base_midi, tonic_pc, mode);
+            const total_deg = base_diatonic.degree + motif.deg_rels[j];
+            const deg_mod = ((total_deg % 7) + 7) % 7;
+            const oct_add = Math.floor(total_deg / 7);
+            let exp_pc = (tonic_pc + scale_offsets[deg_mod]) % 12;
+            let pc = (exp_pc + motif.accs[j]) % 12;
+            if (pc < 0) pc += 12;
+            const oct = base_diatonic.oct + oct_add;
+            pitchMidi = pc + oct * 12;
+          }
+          notes.push({ start: subTick, dur: motif.durs[j], pitch: pitchMidi, vel: motif.vels[j] });
+          subTick += motif.durs[j];
+          if (j < motif.deg_rels.length - 1) subTick += motif.deltas[j];
         }
-      } catch (e) {
-        // swallow errors silently; embedding is best-effort
-      }
-    }
-    for (const n of t.notes) {
-      events.push({ tick: n.start, data: [0x90, n.pitch & 0x7F, Math.max(0, Math.min(127, n.vel || 64))] });
-      events.push({ tick: n.start + n.dur, data: [0x90, n.pitch & 0x7F, 0x00] });
-    }
-    return buildTrackChunk(events);
-  });
-
-  return Buffer.concat([headerChunk, ...trackChunks]);
-}
-
-function decompressJsonToMidi(inputJson, outputMidi) {
-  const compressed = JSON.parse(fs.readFileSync(inputJson, 'utf8'));
-  const { ppq, tempo, motifs = [], voices, key = { tonic: 'C', mode: 'major' }, originalTrackCount, voiceToTrack = [], trackNames = [], keySignature = null, voiceSplitMeta = null } = compressed;
-
-  // Decode each voice to raw notes
-  const decodedVoiceNotes = voices.map(v => decodeSingleVoice(v, ppq, motifs, key));
-  let trackTotal = originalTrackCount || voices.length;
-  // If original had 1 track but multiple voices AND we stored voiceSplitMeta, we will still emit a single track
-  // (to preserve originalTrackCount) but keep an ordered concatenation of voice notes for re-splitting later.
-  const tracks = Array.from({ length: trackTotal }, (_,i)=> ({ name: trackNames[i] || undefined, notes: [] }));
-  if (trackTotal === 1) {
-    // Merge all voices into single track preserving chronological order
-    const merged = decodedVoiceNotes.flat().sort((a,b)=> a.start - b.start || a.pitch - b.pitch);
-    tracks[0].notes.push(...merged);
-  } else {
-    if (voiceToTrack.length === decodedVoiceNotes.length) {
-      for (let i=0;i<decodedVoiceNotes.length;i++) {
-        const tIndex = voiceToTrack[i] ?? i;
-        if (!tracks[tIndex]) continue;
-        tracks[tIndex].notes.push(...decodedVoiceNotes[i]);
+        currentTick = subTick;
       }
     } else {
-      for (let i=0;i<decodedVoiceNotes.length;i++) {
-        tracks[i] && tracks[i].notes.push(...decodedVoiceNotes[i]);
+      currentTick += item.delta;
+      const pitchNum = tonal.Note.midi(item.pitch);
+      if (pitchNum !== null) {
+        notes.push({ start: currentTick, dur: item.dur, pitch: pitchNum, vel: item.vel });
       }
+      currentTick += item.dur;
     }
   }
-
-  // Embed voiceSplitMeta for single-track multi-voice reconstruction on future recompression
-  if (voiceSplitMeta && originalTrackCount === 1 && tracks[0]) {
-    tracks[0].embeddedVoiceSplitMeta = voiceSplitMeta;
-  }
-
-  const midiBuffer = buildMidiFile({ ppq, tempo, tracks, keySignature });
-  const outputDir = path.dirname(outputMidi);
-  if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
-  fs.writeFileSync(outputMidi, midiBuffer);
-  console.log('MIDI file written successfully (custom writer)');
-}
-
-function main() {
-  try {
-    const args = process.argv.slice(2);
-    if (args.length < 3) {
-      console.log('Usage: node program.js compress input.midi output.json');
-      console.log('Or: node program.js decompress input.json output.midi');
-      return;
-    }
-
-    const command = args[0];
-    const input = args[1];
-    const output = args[2];
-
-    console.log(`Command: ${command}, Input: ${input}, Output: ${output}`);
-
-    if (command === 'compress') {
-      compressMidiToJson(input, output);
-      console.log('Compression completed successfully');
-    } else if (command === 'decompress') {
-      decompressJsonToMidi(input, output);
-      console.log('Decompression completed successfully');
-    } else {
-      console.log('Unknown command');
-    }
-  } catch (error) {
-    console.error('Error occurred:', error.message);
-    console.error('Stack trace:', error.stack);
-    process.exitCode = 1;
-  }
-}
-
-// Export functions for testing
-// Export baseline functions for tests
-module.exports = {
-  compressMidiToJson,
-  decompressJsonToMidi,
-  decodeVoices,
-  // Expose internals for advanced key analysis / future integration tests
-  parseMidi,
-  extractTempoAndPPQAndNotes,
-  separateVoices,
-  reconstructVoicesFromSplitMeta
-};
-
-if (require.main === module) {
-  main();
+  return notes;
 }
 
 // Helper: given decoded single-track notes and a voiceSplitMeta array of index arrays (global note indices),
@@ -970,4 +1057,160 @@ function reconstructVoicesFromSplitMeta(allNotes, voiceSplitMeta) {
     }
     return encoded;
   });
+}
+
+// Circle of fifths ordering (enharmonic simplifications used intentionally)
+const CIRCLE_OF_FIFTHS = ['C','G','D','A','E','B','F#','Db','Ab','Eb','Bb','F'];
+function circleIndex(tonic) { return CIRCLE_OF_FIFTHS.indexOf(tonic); }
+function circleDistance(a,b) {
+  const ia = circleIndex(a); const ib = circleIndex(b);
+  if (ia < 0 || ib < 0) return 99;
+  const len = CIRCLE_OF_FIFTHS.length;
+  const diff = Math.abs(ia - ib);
+  return Math.min(diff, len - diff);
+}
+
+function annotateMotifReferences(encodedVoices, motifs, keyChanges, globalKey) {
+  if (!encodedVoices || !motifs || !motifs.length) return;
+  const pcNamesSharp = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+  const pcNamesFlat  = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+  const globalTonicName = pcNamesSharp[globalKey.tonic_pc];
+  const motifDurations = motifs.map(m => m.durs.reduce((a,b)=>a+b,0) + m.deltas.reduce((a,b)=>a+b,0));
+
+  function nameToPc(name) {
+    const midi = tonal.Note.midi(name + '4');
+    return midi != null ? midi % 12 : null;
+  }
+  // Expand candidate tonics along circle of fifths starting from seed
+  function expandCircleCandidates(seedName, radius = 5) {
+    const idx = CIRCLE_OF_FIFTHS.indexOf(seedName);
+    if (idx < 0) return [seedName];
+    const out = [seedName];
+    for (let r=1; r<=radius; r++) {
+      const left = CIRCLE_OF_FIFTHS[(idx - r + CIRCLE_OF_FIFTHS.length) % CIRCLE_OF_FIFTHS.length];
+      const right = CIRCLE_OF_FIFTHS[(idx + r) % CIRCLE_OF_FIFTHS.length];
+      out.push(left);
+      if (right !== left) out.push(right);
+    }
+    return out;
+  }
+  function scoreKeyForSegment(tonicName, mode, motif, base_midi, origPitches) {
+    const tonic_pc = nameToPc(tonicName);
+    if (tonic_pc == null) return { score: -Infinity, tonic: tonicName, mode, accSum: 999, degMismatches: origPitches.length };
+    // Compute diatonic mapping + mismatches vs motif.deg_rels
+    const baseDiat = pitchToDiatonic(base_midi, tonic_pc, mode);
+    let accSum = 0; let degMismatches = 0;
+    for (let i=0;i<origPitches.length;i++) {
+      const p = origPitches[i];
+      const di = pitchToDiatonic(p, tonic_pc, mode);
+      accSum += Math.abs(di.acc);
+      const rel = (di.degree - baseDiat.degree) + 7*(di.oct - baseDiat.oct);
+      if (motif.deg_rels && motif.deg_rels[i] !== undefined && rel !== motif.deg_rels[i]) degMismatches++;
+    }
+    // Fewer accidentals + fewer mismatches is better. Combine into score.
+    const score = - (accSum * 3 + degMismatches * 5);
+    return { score, tonic: tonicName, mode, accSum, degMismatches };
+  }
+
+  const debug = process.env.DEBUG_KEY_SELECTION === '1';
+
+  for (let vIndex=0; vIndex<encodedVoices.length; vIndex++) {
+    const voice = encodedVoices[vIndex];
+    let abs = 0;
+    for (const ev of voice) {
+      abs += ev.delta || 0;
+      if (ev.motif_id !== undefined) {
+        const motif = motifs[ev.motif_id];
+        const span = motifDurations[ev.motif_id] || 0;
+        const start = abs;
+        const end = abs + span;
+        // Determine seed key segment (largest overlap) or fall back to global
+        let seed = { tonic: globalTonicName, mode: globalKey.mode, _fallback:true };
+        if (keyChanges && keyChanges.length) {
+          let bestOv = -1;
+            for (const seg of keyChanges) {
+              const ov = Math.min(end, seg.end) - Math.max(start, seg.start);
+              if (ov > bestOv) { bestOv = ov; seed = { tonic: seg.tonic, mode: seg.mode, _fallback:false }; }
+            }
+        }
+        // Build candidate tonic names expanding around seed. Prefer flats for flat-friendly pitch classes if needed.
+        const candidates = expandCircleCandidates(seed.tonic);
+        const base_midi = ev.base_midi != null ? ev.base_midi : (ev.base_pitch ? tonal.Note.midi(ev.base_pitch) : null);
+        let origPitches = [];
+        if (ev.origSegment && ev.origSegment.length) {
+          // Recreate absolute pitches from original segment encoding
+          origPitches = ev.origSegment.map(n => n.midi != null ? n.midi : tonal.Note.midi(n.pitch)).filter(p=>p!=null);
+        } else if (motif && motif.midi_rels && base_midi != null) {
+          origPitches = motif.midi_rels.map(rel => base_midi + rel);
+        }
+        const tried = [];
+        let best = null;
+        for (const tonicName of candidates) {
+          const result = scoreKeyForSegment(tonicName, seed.mode, motif, base_midi, origPitches);
+          tried.push(result);
+          if (!best || result.score > best.score) best = result;
+        }
+        // Attach annotation
+        ev.refKey = {
+          tonic: best ? best.tonic : seed.tonic,
+          mode: seed.mode,
+          source: seed._fallback ? 'global-seed' : 'local-seed',
+          accSum: best ? best.accSum : null,
+          degMismatches: best ? best.degMismatches : null,
+          circleSearchRadius: 5
+        };
+        if (process.env.INCLUDE_KEY_TRIED === '1') {
+          ev.refKey.tried = tried.map(t => ({ tonic: t.tonic, score: t.score, accSum: t.accSum, degMis: t.degMismatches }));
+        }
+        if (debug) {
+          console.log(`[KeySelect] motif_id=${ev.motif_id} seed=${seed.tonic}/${seed.mode} chosen=${ev.refKey.tonic} accSum=${ev.refKey.accSum} degMis=${ev.refKey.degMismatches}`);
+        }
+        abs += span;
+        continue;
+      }
+      if (ev.dur) abs += ev.dur;
+    }
+  }
+}
+
+// ------------------------------
+// Simple CLI dispatcher (restored after revert)
+// Usage:
+//   node EncodeDecode.js compress input.mid output.json [--preserve-tracks] [--motifless|--no-motifs]
+//   node EncodeDecode.js decompress input.json output.mid
+// Exits with non-zero code on error to help integration tests fail fast.
+if (require.main === module) {
+  (function runCLI(){
+    try {
+      const args = process.argv.slice(2);
+      if (args.length < 1 || ['-h','--help'].includes(args[0])) {
+        console.log('Usage:');
+        console.log('  node EncodeDecode.js compress <input.mid> <output.json> [--preserve-tracks] [--motifless|--no-motifs]');
+        console.log('  node EncodeDecode.js decompress <input.json> <output.mid>');
+        process.exit(0);
+      }
+      const cmd = args[0];
+      if (cmd === 'compress') {
+        if (args.length < 3) { console.error('compress requires <input.mid> <output.json>'); process.exit(2); }
+        const inMid = args[1];
+        const outJson = args[2];
+        console.log(`[CLI] Compressing ${inMid} -> ${outJson}`);
+        compressMidiToJson(inMid, outJson);
+        console.log('[CLI] Compression complete.');
+      } else if (cmd === 'decompress') {
+        if (args.length < 3) { console.error('decompress requires <input.json> <output.mid>'); process.exit(2); }
+        const inJson = args[1];
+        const outMid = args[2];
+        console.log(`[CLI] Decompressing ${inJson} -> ${outMid}`);
+        decompressJsonToMidi(inJson, outMid);
+        console.log('[CLI] Decompression complete.');
+      } else {
+        console.error('Unknown command:', cmd);
+        process.exit(2);
+      }
+    } catch (e) {
+      console.error('[CLI] Error:', e && e.stack || e);
+      process.exit(1);
+    }
+  })();
 }
