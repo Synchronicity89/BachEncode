@@ -1,0 +1,24 @@
+Motif report for bach-No01.reversed.JSON
+- motifs: 16
+- totalExactRefs: 35
+- motifsWithInversionPartners: 4
+- totalInvertedRefs (via partner IDs): 20
+- unusedMotifCount: 0
+
+Per motif (motif_id, len, exactCount, invertedCount, partners):
+- #0 len=9 exact=2 inverted=0 partners=[]
+- #1 len=8 exact=2 inverted=0 partners=[]
+- #2 len=8 exact=2 inverted=0 partners=[]
+- #3 len=8 exact=2 inverted=0 partners=[]
+- #4 len=8 exact=2 inverted=0 partners=[]
+- #5 len=7 exact=3 inverted=4 partners=[8,11]
+- #6 len=7 exact=3 inverted=4 partners=[8,11]
+- #7 len=7 exact=2 inverted=0 partners=[]
+- #8 len=7 exact=2 inverted=6 partners=[5,6]
+- #9 len=7 exact=2 inverted=0 partners=[]
+- #10 len=7 exact=2 inverted=0 partners=[]
+- #11 len=7 exact=2 inverted=6 partners=[5,6]
+- #12 len=7 exact=2 inverted=0 partners=[]
+- #13 len=3 exact=2 inverted=0 partners=[]
+- #14 len=4 exact=3 inverted=0 partners=[]
+- #15 len=3 exact=2 inverted=0 partners=[]

@@ -2,6 +2,35 @@
 
 Motif-aware MIDI compression/decompression for two-track Bach inventions and similar input. The tool mines repeated motifs, encodes them structurally, and roundtrips back to MIDI while enforcing modulo-12 pitch-class fidelity.
 
+## 🎧 Quick Listen: Original vs Motifs-Reversed MIDIs
+
+Compare the original two-track MIDIs against versions where notes inside detected motifs are reversed. Each pair links to the original MIDI (source) and the transformed MIDI (destination), plus the JSON behind the reversal.
+
+[Open the interactive HTML preview](preview-twoTrackMIDI.html) to play files in your browser.
+
+- bach-No01
+  - Original: twoTrackMIDISource/bach-No01.mid
+  - Motifs Reversed: twoTrackMIDIDestination/bach-No01.reversed.mid
+  - Reversal JSON: twoTrackMIDIDestination/bach-No01.reversed.JSON
+- bach-No02
+  - Original: twoTrackMIDISource/bach-No02.mid
+  - Motifs Reversed: twoTrackMIDIDestination/bach-No02.reversed.mid
+  - Reversal JSON: twoTrackMIDIDestination/bach-No02.reversed.JSON
+- bach-No03
+  - Original: twoTrackMIDISource/bach-No03.mid
+  - Motifs Reversed: twoTrackMIDIDestination/bach-No03.reversed.mid
+  - Reversal JSON: twoTrackMIDIDestination/bach-No03.reversed.JSON
+- bach-No04
+  - Original: twoTrackMIDISource/bach-No04.mid
+  - Motifs Reversed: twoTrackMIDIDestination/bach-No04.reversed.mid
+  - Reversal JSON: twoTrackMIDIDestination/bach-No04.reversed.JSON
+- bach-No12
+  - Original: twoTrackMIDISource/bach-No12.mid
+  - Motifs Reversed: twoTrackMIDIDestination/bach-No12.reversed.mid
+  - Reversal JSON: twoTrackMIDIDestination/bach-No12.reversed.JSON
+
+Tip: Most Git hosting UIs will let you click and play .mid files directly in the browser. If not, download them or drag the links into a DAW.
+
 ## What it does (capabilities)
 
 - MIDI → JSON compression and JSON → MIDI decompression.

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Two-Track MIDI: Original vs Motifs-Reversed</title>
+  <style>
+    body { font-family: system-ui, Arial, sans-serif; margin: 24px; line-height: 1.4; }
+    h1 { margin-top: 0; }
+    .pair { border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin: 12px 0; }
+    .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    button { padding: 6px 10px; }
+    .meta { color: #666; font-size: 0.9em; }
+    audio { width: 260px; }
+  </style>
+  <!-- ToneJS + MIDI loader -->
+  <script src="https://unpkg.com/tone@14.8.49/build/Tone.js"></script>
+  <script src="https://unpkg.com/@tonejs/midi"></script>
+</head>
+<body>
+  <h1>Two-Track MIDI: Original vs Motifs-Reversed</h1>
+  <p>Click Play to hear the original two-track MIDI and compare to the version where the notes inside motifs are reversed. If your browser blocks audio until a user gesture, click any Play button first.</p>
+
+  <div id="app"></div>
+
+  <script>
+    // Pairs to present: { id, original, reversed }
+    const pairs = [
+      { id: 'bach-No01', original: 'twoTrackMIDISource/bach-No01.mid', reversed: 'twoTrackMIDIDestination/bach-No01.reversed.mid' },
+      { id: 'bach-No02', original: 'twoTrackMIDISource/bach-No02.mid', reversed: 'twoTrackMIDIDestination/bach-No02.reversed.mid' },
+      { id: 'bach-No03', original: 'twoTrackMIDISource/bach-No03.mid', reversed: 'twoTrackMIDIDestination/bach-No03.reversed.mid' },
+      { id: 'bach-No04', original: 'twoTrackMIDISource/bach-No04.mid', reversed: 'twoTrackMIDIDestination/bach-No04.reversed.mid' },
+      { id: 'bach-No12', original: 'twoTrackMIDISource/bach-No12.mid', reversed: 'twoTrackMIDIDestination/bach-No12.reversed.mid' },
+    ];
+
+    const app = document.getElementById('app');
+
+    // Simple MIDI -> Tone playback utility
+    async function playMidi(url) {
+      await Tone.start();
+      const resp = await fetch(url);
+      const arrayBuffer = await resp.arrayBuffer();
+      const midi = new Midi(arrayBuffer);
+
+      const now = Tone.now() + 0.2;
+      const synths = [];
+
+      midi.tracks.forEach((track, i) => {
+        const synth = new Tone.PolySynth(Tone.Synth).toDestination();
+        synths.push(synth);
+        track.notes.forEach(note => {
+          synth.triggerAttackRelease(note.name, note.duration, now + note.time, note.velocity);
+        });
+      });
+
+      // Best-effort stop after piece duration
+      const total = midi.duration + 1;
+      setTimeout(() => synths.forEach(s => s.dispose()), total * 1000);
+    }
+
+    function renderPair(p) {
+      const block = document.createElement('div');
+      block.className = 'pair';
+      block.innerHTML = `
+        <h3>${p.id}</h3>
+        <div class="row">
+          <button data-action="play-original">Play Original</button>
+          <a href="${p.original}" download>Download original .mid</a>
+        </div>
+        <div class="row">
+          <button data-action="play-reversed">Play Reversed (motifs)</button>
+          <a href="${p.reversed}" download>Download reversed .mid</a>
+        </div>
+        <div class="meta">JSON: <a href="twoTrackMIDIDestination/${p.id}.reversed.JSON">${p.id}.reversed.JSON</a></div>
+      `;
+
+      block.querySelector('[data-action="play-original"]').addEventListener('click', () => playMidi(p.original));
+      block.querySelector('[data-action="play-reversed"]').addEventListener('click', () => playMidi(p.reversed));
+      return block;
+    }
+
+    pairs.forEach(p => app.appendChild(renderPair(p)));
+  </script>
+</body>
+</html>
