@@ -1,0 +1,274 @@
+{
+  "totals": {
+    "motifs": 10,
+    "totalExactRefs": 24,
+    "motifsWithInversionPartners": 3,
+    "totalInvertedRefs": 9,
+    "unusedMotifCount": 0
+  },
+  "perMotif": [
+    {
+      "motif_id": 0,
+      "length": 14,
+      "exactCount": 2,
+      "invertedPartnerIds": [],
+      "invertedCount": 0,
+      "midi_rels": [
+        10,
+        5,
+        1,
+        0,
+        1,
+        3,
+        5,
+        6,
+        -3,
+        6,
+        5,
+        3,
+        1,
+        0
+      ],
+      "durs": [
+        91,
+        91,
+        91,
+        43,
+        43,
+        43,
+        43,
+        43,
+        43,
+        43,
+        43,
+        43,
+        43,
+        43
+      ],
+      "deltas": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+      ]
+    },
+    {
+      "motif_id": 1,
+      "length": 3,
+      "exactCount": 5,
+      "invertedPartnerIds": [],
+      "invertedCount": 0,
+      "midi_rels": [
+        3,
+        2,
+        0
+      ],
+      "durs": [
+        43,
+        43,
+        43
+      ],
+      "deltas": [
+        5,
+        5
+      ]
+    },
+    {
+      "motif_id": 2,
+      "length": 4,
+      "exactCount": 2,
+      "invertedPartnerIds": [
+        3
+      ],
+      "invertedCount": 2,
+      "midi_rels": [
+        -5,
+        -3,
+        -1,
+        0
+      ],
+      "durs": [
+        43,
+        43,
+        43,
+        43
+      ],
+      "deltas": [
+        5,
+        5,
+        5
+      ]
+    },
+    {
+      "motif_id": 3,
+      "length": 4,
+      "exactCount": 2,
+      "invertedPartnerIds": [
+        2,
+        5
+      ],
+      "invertedCount": 5,
+      "midi_rels": [
+        5,
+        3,
+        1,
+        0
+      ],
+      "durs": [
+        43,
+        43,
+        43,
+        43
+      ],
+      "deltas": [
+        5,
+        5,
+        5
+      ]
+    },
+    {
+      "motif_id": 4,
+      "length": 4,
+      "exactCount": 2,
+      "invertedPartnerIds": [],
+      "invertedCount": 0,
+      "midi_rels": [
+        -5,
+        -3,
+        -2,
+        0
+      ],
+      "durs": [
+        43,
+        43,
+        43,
+        43
+      ],
+      "deltas": [
+        5,
+        5,
+        5
+      ]
+    },
+    {
+      "motif_id": 5,
+      "length": 4,
+      "exactCount": 3,
+      "invertedPartnerIds": [
+        3
+      ],
+      "invertedCount": 2,
+      "midi_rels": [
+        -5,
+        -3,
+        -1,
+        0
+      ],
+      "durs": [
+        43,
+        43,
+        43,
+        43
+      ],
+      "deltas": [
+        5,
+        5,
+        5
+      ]
+    },
+    {
+      "motif_id": 6,
+      "length": 3,
+      "exactCount": 2,
+      "invertedPartnerIds": [],
+      "invertedCount": 0,
+      "midi_rels": [
+        3,
+        1,
+        0
+      ],
+      "durs": [
+        43,
+        43,
+        43
+      ],
+      "deltas": [
+        5,
+        5
+      ]
+    },
+    {
+      "motif_id": 7,
+      "length": 3,
+      "exactCount": 2,
+      "invertedPartnerIds": [],
+      "invertedCount": 0,
+      "midi_rels": [
+        9,
+        3,
+        0
+      ],
+      "durs": [
+        91,
+        91,
+        91
+      ],
+      "deltas": [
+        5,
+        5
+      ]
+    },
+    {
+      "motif_id": 8,
+      "length": 3,
+      "exactCount": 2,
+      "invertedPartnerIds": [],
+      "invertedCount": 0,
+      "midi_rels": [
+        3,
+        2,
+        0
+      ],
+      "durs": [
+        91,
+        91,
+        91
+      ],
+      "deltas": [
+        5,
+        5
+      ]
+    },
+    {
+      "motif_id": 9,
+      "length": 3,
+      "exactCount": 2,
+      "invertedPartnerIds": [],
+      "invertedCount": 0,
+      "midi_rels": [
+        -7,
+        -12,
+        0
+      ],
+      "durs": [
+        43,
+        91,
+        91
+      ],
+      "deltas": [
+        5,
+        5
+      ]
+    }
+  ],
+  "unusedMotifs": []
+}

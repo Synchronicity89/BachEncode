@@ -12,6 +12,9 @@ yarn-error.log*
 !examples/*.json
 !examples/*.midi
 !twoTrackMIDISource/*.mid
+!twoTrackMIDIDestination/*.mid
+!twoTrackMIDIDestination/*.JSON
+!twoTrackMIDIDestination/*.json
 
 # Environment variables
 .env

@@ -1,0 +1,573 @@
+{
+  "totals": {
+    "motifs": 18,
+    "totalExactRefs": 40,
+    "motifsWithInversionPartners": 0,
+    "totalInvertedRefs": 0,
+    "unusedMotifCount": 0
+  },
+  "perMotif": [
+    {
+      "motif_id": 0,
+      "length": 17,
+      "exactCount": 2,
+      "invertedPartnerIds": [],
+      "invertedCount": 0,
+      "midi_rels": [
+        4,
+        5,
+        7,
+        9,
+        5,
+        4,
+        5,
+        4,
+        2,
+        0,
+        -1,
+        0,
+        2,
+        0,
+        0,
+        0,
+        0
+      ],
+      "durs": [
+        41,
+        41,
+        41,
+        41,
+        41,
+        41,
+        41,
+        41,
+        41,
+        41,
+        41,
+        41,
+        617,
+        89,
+        185,
+        89,
+        185
+      ],
+      "deltas": [
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "motif_id": 1,
+      "length": 14,
+      "exactCount": 2,
+      "invertedPartnerIds": [],
+      "invertedCount": 0,
+      "midi_rels": [
+        -3,
+        -6,
+        0,
+        -3,
+        0,
+        4,
+        0,
+        -3,
+        4,
+        0,
+        4,
+        7,
+        4,
+        0
+      ],
+      "durs": [
+        89,
+        89,
+        41,
+        41,
+        41,
+        41,
+        41,
+        41,
+        41,
+        41,
+        41,
+        41,
+        41,
+        41
+      ],
+      "deltas": [
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "motif_id": 2,
+      "length": 13,
+      "exactCount": 2,
+      "invertedPartnerIds": [],
+      "invertedCount": 0,
+      "midi_rels": [
+        -7,
+        -5,
+        -4,
+        -2,
+        0,
+        -2,
+        -4,
+        -2,
+        0,
+        1,
+        3,
+        1,
+        0
+      ],
+      "durs": [
+        89,
+        41,
+        41,
+        41,
+        41,
+        41,
+        41,
+        41,
+        41,
+        41,
+        41,
+        41,
+        41
+      ],
+      "deltas": [
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "motif_id": 3,
+      "length": 12,
+      "exactCount": 2,
+      "invertedPartnerIds": [],
+      "invertedCount": 0,
+      "midi_rels": [
+        0,
+        -3,
+        -7,
+        -3,
+        0,
+        5,
+        0,
+        -3,
+        -7,
+        -3,
+        -2,
+        0
+      ],
+      "durs": [
+        41,
+        41,
+        41,
+        41,
+        41,
+        41,
+        41,
+        41,
+        41,
+        41,
+        41,
+        41
+      ],
+      "deltas": [
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "motif_id": 4,
+      "length": 9,
+      "exactCount": 2,
+      "invertedPartnerIds": [],
+      "invertedCount": 0,
+      "midi_rels": [
+        1,
+        3,
+        -2,
+        -6,
+        -9,
+        1,
+        3,
+        5,
+        0
+      ],
+      "durs": [
+        41,
+        41,
+        41,
+        41,
+        41,
+        89,
+        41,
+        41,
+        41
+      ],
+      "deltas": [
+        7,
+        7,
+        7,
+        7,
+        247,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "motif_id": 5,
+      "length": 7,
+      "exactCount": 2,
+      "invertedPartnerIds": [],
+      "invertedCount": 0,
+      "midi_rels": [
+        -1,
+        9,
+        11,
+        12,
+        7,
+        4,
+        0
+      ],
+      "durs": [
+        41,
+        89,
+        41,
+        41,
+        41,
+        41,
+        41
+      ],
+      "deltas": [
+        247,
+        7,
+        7,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "motif_id": 6,
+      "length": 3,
+      "exactCount": 2,
+      "invertedPartnerIds": [],
+      "invertedCount": 0,
+      "midi_rels": [
+        7,
+        4,
+        0
+      ],
+      "durs": [
+        41,
+        41,
+        41
+      ],
+      "deltas": [
+        7,
+        7
+      ]
+    },
+    {
+      "motif_id": 7,
+      "length": 3,
+      "exactCount": 2,
+      "invertedPartnerIds": [],
+      "invertedCount": 0,
+      "midi_rels": [
+        0,
+        5,
+        0
+      ],
+      "durs": [
+        41,
+        41,
+        41
+      ],
+      "deltas": [
+        7,
+        7
+      ]
+    },
+    {
+      "motif_id": 8,
+      "length": 4,
+      "exactCount": 2,
+      "invertedPartnerIds": [],
+      "invertedCount": 0,
+      "midi_rels": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "durs": [
+        89,
+        185,
+        89,
+        185
+      ],
+      "deltas": [
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "motif_id": 9,
+      "length": 5,
+      "exactCount": 2,
+      "invertedPartnerIds": [],
+      "invertedCount": 0,
+      "midi_rels": [
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "durs": [
+        41,
+        89,
+        185,
+        89,
+        185
+      ],
+      "deltas": [
+        7,
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "motif_id": 10,
+      "length": 4,
+      "exactCount": 3,
+      "invertedPartnerIds": [],
+      "invertedCount": 0,
+      "midi_rels": [
+        -2,
+        -5,
+        -2,
+        0
+      ],
+      "durs": [
+        41,
+        41,
+        41,
+        41
+      ],
+      "deltas": [
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "motif_id": 11,
+      "length": 3,
+      "exactCount": 2,
+      "invertedPartnerIds": [],
+      "invertedCount": 0,
+      "midi_rels": [
+        -9,
+        -3,
+        0
+      ],
+      "durs": [
+        41,
+        41,
+        41
+      ],
+      "deltas": [
+        7,
+        7
+      ]
+    },
+    {
+      "motif_id": 12,
+      "length": 4,
+      "exactCount": 3,
+      "invertedPartnerIds": [],
+      "invertedCount": 0,
+      "midi_rels": [
+        -5,
+        -3,
+        -2,
+        0
+      ],
+      "durs": [
+        41,
+        41,
+        41,
+        41
+      ],
+      "deltas": [
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "motif_id": 13,
+      "length": 3,
+      "exactCount": 3,
+      "invertedPartnerIds": [],
+      "invertedCount": 0,
+      "midi_rels": [
+        3,
+        2,
+        0
+      ],
+      "durs": [
+        41,
+        41,
+        41
+      ],
+      "deltas": [
+        7,
+        7
+      ]
+    },
+    {
+      "motif_id": 14,
+      "length": 4,
+      "exactCount": 3,
+      "invertedPartnerIds": [],
+      "invertedCount": 0,
+      "midi_rels": [
+        12,
+        7,
+        4,
+        0
+      ],
+      "durs": [
+        41,
+        41,
+        41,
+        41
+      ],
+      "deltas": [
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "motif_id": 15,
+      "length": 4,
+      "exactCount": 2,
+      "invertedPartnerIds": [],
+      "invertedCount": 0,
+      "midi_rels": [
+        -5,
+        -4,
+        -2,
+        0
+      ],
+      "durs": [
+        41,
+        41,
+        41,
+        41
+      ],
+      "deltas": [
+        7,
+        7,
+        7
+      ]
+    },
+    {
+      "motif_id": 16,
+      "length": 3,
+      "exactCount": 2,
+      "invertedPartnerIds": [],
+      "invertedCount": 0,
+      "midi_rels": [
+        0,
+        -3,
+        0
+      ],
+      "durs": [
+        41,
+        41,
+        41
+      ],
+      "deltas": [
+        7,
+        7
+      ]
+    },
+    {
+      "motif_id": 17,
+      "length": 3,
+      "exactCount": 2,
+      "invertedPartnerIds": [],
+      "invertedCount": 0,
+      "midi_rels": [
+        0,
+        -4,
+        0
+      ],
+      "durs": [
+        41,
+        41,
+        41
+      ],
+      "deltas": [
+        7,
+        7
+      ]
+    }
+  ],
+  "unusedMotifs": []
+}

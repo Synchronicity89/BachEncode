@@ -26,11 +26,11 @@
   <script>
     // Pairs to present: { id, original, reversed }
     const pairs = [
-      { id: 'bach-No01', original: 'twoTrackMIDISource/bach-No01.mid', reversed: 'twoTrackMIDIDestination/bach-No01.reversed.mid' },
-      { id: 'bach-No02', original: 'twoTrackMIDISource/bach-No02.mid', reversed: 'twoTrackMIDIDestination/bach-No02.reversed.mid' },
-      { id: 'bach-No03', original: 'twoTrackMIDISource/bach-No03.mid', reversed: 'twoTrackMIDIDestination/bach-No03.reversed.mid' },
-      { id: 'bach-No04', original: 'twoTrackMIDISource/bach-No04.mid', reversed: 'twoTrackMIDIDestination/bach-No04.reversed.mid' },
-      { id: 'bach-No12', original: 'twoTrackMIDISource/bach-No12.mid', reversed: 'twoTrackMIDIDestination/bach-No12.reversed.mid' },
+      { id: 'bach-No01', original: './twoTrackMIDISource/bach-No01.mid', reversed: './twoTrackMIDIDestination/bach-No01.reversed.mid' },
+      { id: 'bach-No02', original: './twoTrackMIDISource/bach-No02.mid', reversed: './twoTrackMIDIDestination/bach-No02.reversed.mid' },
+      { id: 'bach-No03', original: './twoTrackMIDISource/bach-No03.mid', reversed: './twoTrackMIDIDestination/bach-No03.reversed.mid' },
+      { id: 'bach-No04', original: './twoTrackMIDISource/bach-No04.mid', reversed: './twoTrackMIDIDestination/bach-No04.reversed.mid' },
+      { id: 'bach-No12', original: './twoTrackMIDISource/bach-No12.mid', reversed: './twoTrackMIDIDestination/bach-No12.reversed.mid' },
     ];
 
     const app = document.getElementById('app');
@@ -38,9 +38,17 @@
     // Simple MIDI -> Tone playback utility
     async function playMidi(url) {
       await Tone.start();
-      const resp = await fetch(url);
-      const arrayBuffer = await resp.arrayBuffer();
-      const midi = new Midi(arrayBuffer);
+      let midi;
+      try {
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status} for ${url}`);
+        const arrayBuffer = await resp.arrayBuffer();
+        midi = new Midi(arrayBuffer);
+      } catch (err) {
+        console.error('Failed to load MIDI', url, err);
+        alert(`Could not load: ${url}\n\nIf you opened this file directly, try serving the folder (e.g. with a static server) or verify the path exists.`);
+        return;
+      }
 
       const now = Tone.now() + 0.2;
       const synths = [];
@@ -71,7 +79,7 @@
           <button data-action="play-reversed">Play Reversed (motifs)</button>
           <a href="${p.reversed}" download>Download reversed .mid</a>
         </div>
-        <div class="meta">JSON: <a href="twoTrackMIDIDestination/${p.id}.reversed.JSON">${p.id}.reversed.JSON</a></div>
+  <div class="meta">JSON: <a href="./twoTrackMIDIDestination/${p.id}.reversed.JSON">${p.id}.reversed.JSON</a></div>
       `;
 
       block.querySelector('[data-action="play-original"]').addEventListener('click', () => playMidi(p.original));

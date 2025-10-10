@@ -1,0 +1,5593 @@
+{
+  "ppq": 192,
+  "tempo": 98.00014373354415,
+  "key": {
+    "tonic": "G",
+    "mode": "major",
+    "originalDetectedTonicPc": 0,
+    "locked": false
+  },
+  "keySignatureExpanded": {
+    "sf": 1,
+    "major": {
+      "tonic": "G"
+    },
+    "relativeMinor": {
+      "tonic": "E"
+    }
+  },
+  "originalKeySignature": {
+    "sf": 0,
+    "mode": "major"
+  },
+  "originalKeySignatureExpanded": {
+    "sf": 0,
+    "major": {
+      "tonic": "C"
+    },
+    "relativeMinor": {
+      "tonic": "A"
+    }
+  },
+  "motifs": [
+    {
+      "deg_rels": [
+        7,
+        4,
+        0,
+        2,
+        1,
+        10,
+        2,
+        1,
+        0
+      ],
+      "accs": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "durs": [
+        90,
+        90,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42
+      ],
+      "vels": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "midi_rels": [
+        12,
+        7,
+        0,
+        4,
+        2,
+        5,
+        4,
+        2,
+        0
+      ],
+      "sample_base_midi": 67
+    },
+    {
+      "deg_rels": [
+        3,
+        1,
+        2,
+        0,
+        1,
+        2,
+        3,
+        0
+      ],
+      "accs": [
+        0,
+        -1,
+        0,
+        0,
+        -1,
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "durs": [
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42
+      ],
+      "vels": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "midi_rels": [
+        5,
+        1,
+        3,
+        0,
+        1,
+        3,
+        5,
+        0
+      ],
+      "sample_base_midi": 76
+    },
+    {
+      "deg_rels": [
+        2,
+        3,
+        8,
+        2,
+        0,
+        8,
+        -1,
+        0
+      ],
+      "accs": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "durs": [
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42
+      ],
+      "vels": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "midi_rels": [
+        3,
+        5,
+        1,
+        3,
+        0,
+        1,
+        -2,
+        0
+      ],
+      "sample_base_midi": 71
+    },
+    {
+      "deg_rels": [
+        10,
+        0,
+        2,
+        1,
+        10,
+        2,
+        1,
+        0
+      ],
+      "accs": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "durs": [
+        90,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42
+      ],
+      "vels": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "midi_rels": [
+        5,
+        0,
+        4,
+        2,
+        5,
+        4,
+        2,
+        0
+      ],
+      "sample_base_midi": 79
+    },
+    {
+      "deg_rels": [
+        0,
+        0,
+        -1,
+        0,
+        -2,
+        -1,
+        0,
+        0
+      ],
+      "accs": [
+        0,
+        1,
+        0,
+        0,
+        -1,
+        0,
+        0,
+        1
+      ],
+      "deltas": [
+        6,
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "durs": [
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42
+      ],
+      "vels": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "midi_rels": [
+        -1,
+        0,
+        -3,
+        -1,
+        -5,
+        -3,
+        -1,
+        0
+      ],
+      "sample_base_midi": 70
+    },
+    {
+      "deg_rels": [
+        0,
+        -2,
+        6,
+        -3,
+        -2,
+        6,
+        0
+      ],
+      "accs": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "durs": [
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42
+      ],
+      "vels": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "midi_rels": [
+        0,
+        -3,
+        -2,
+        -5,
+        -3,
+        -2,
+        0
+      ],
+      "sample_base_midi": 74
+    },
+    {
+      "deg_rels": [
+        0,
+        -2,
+        -1,
+        -3,
+        -2,
+        -1,
+        0
+      ],
+      "accs": [
+        0,
+        0,
+        -1,
+        0,
+        0,
+        -1,
+        0
+      ],
+      "deltas": [
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "durs": [
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42
+      ],
+      "vels": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "midi_rels": [
+        0,
+        -3,
+        -2,
+        -5,
+        -3,
+        -2,
+        0
+      ],
+      "sample_base_midi": 79
+    },
+    {
+      "deg_rels": [
+        3,
+        6,
+        1,
+        0,
+        2,
+        1,
+        0
+      ],
+      "accs": [
+        0,
+        0,
+        0,
+        0,
+        -1,
+        0,
+        0
+      ],
+      "deltas": [
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "durs": [
+        90,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42
+      ],
+      "vels": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "midi_rels": [
+        5,
+        -2,
+        2,
+        0,
+        3,
+        2,
+        0
+      ],
+      "sample_base_midi": 62
+    },
+    {
+      "deg_rels": [
+        0,
+        9,
+        1,
+        3,
+        9,
+        1,
+        0
+      ],
+      "accs": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "durs": [
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42
+      ],
+      "vels": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "midi_rels": [
+        0,
+        3,
+        2,
+        5,
+        3,
+        2,
+        0
+      ],
+      "sample_base_midi": 69
+    },
+    {
+      "deg_rels": [
+        0,
+        -1,
+        -1,
+        -3,
+        5,
+        -1,
+        0
+      ],
+      "accs": [
+        0,
+        -1,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "durs": [
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42
+      ],
+      "vels": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "midi_rels": [
+        0,
+        -3,
+        -2,
+        -5,
+        -4,
+        -2,
+        0
+      ],
+      "sample_base_midi": 76
+    },
+    {
+      "deg_rels": [
+        0,
+        2,
+        1,
+        3,
+        2,
+        1,
+        0
+      ],
+      "accs": [
+        0,
+        0,
+        -1,
+        0,
+        0,
+        -1,
+        0
+      ],
+      "deltas": [
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "durs": [
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42
+      ],
+      "vels": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "midi_rels": [
+        0,
+        3,
+        1,
+        5,
+        3,
+        1,
+        0
+      ],
+      "sample_base_midi": 76
+    },
+    {
+      "deg_rels": [
+        0,
+        2,
+        1,
+        3,
+        2,
+        1,
+        0
+      ],
+      "accs": [
+        0,
+        -1,
+        0,
+        0,
+        -1,
+        0,
+        0
+      ],
+      "deltas": [
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "durs": [
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42
+      ],
+      "vels": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "midi_rels": [
+        0,
+        3,
+        2,
+        5,
+        3,
+        2,
+        0
+      ],
+      "sample_base_midi": 74
+    },
+    {
+      "deg_rels": [
+        0,
+        2,
+        1,
+        3,
+        2,
+        1,
+        0
+      ],
+      "accs": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        6,
+        6,
+        6,
+        6,
+        6,
+        6
+      ],
+      "durs": [
+        42,
+        42,
+        42,
+        42,
+        42,
+        42,
+        42
+      ],
+      "vels": [
+        64,
+        64,
+        64,
+        64,
+        64,
+        64,
+        64
+      ],
+      "midi_rels": [
+        0,
+        4,
+        2,
+        5,
+        4,
+        2,
+        0
+      ],
+      "sample_base_midi": 50
+    },
+    {
+      "deg_rels": [
+        -2,
+        -1,
+        0
+      ],
+      "accs": [
+        0,
+        0,
+        -1
+      ],
+      "deltas": [
+        6,
+        6
+      ],
+      "durs": [
+        42,
+        42,
+        42
+      ],
+      "vels": [
+        64,
+        64,
+        64
+      ],
+      "midi_rels": [
+        -3,
+        -1,
+        0
+      ],
+      "sample_base_midi": 77
+    },
+    {
+      "deg_rels": [
+        -3,
+        5,
+        -1,
+        0
+      ],
+      "accs": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "deltas": [
+        6,
+        6,
+        6
+      ],
+      "durs": [
+        42,
+        42,
+        42,
+        42
+      ],
+      "vels": [
+        64,
+        64,
+        64,
+        64
+      ],
+      "midi_rels": [
+        -5,
+        -4,
+        -2,
+        0
+      ],
+      "sample_base_midi": 64
+    },
+    {
+      "deg_rels": [
+        1,
+        -1,
+        0
+      ],
+      "accs": [
+        0,
+        1,
+        0
+      ],
+      "deltas": [
+        6,
+        6
+      ],
+      "durs": [
+        42,
+        42,
+        42
+      ],
+      "vels": [
+        64,
+        64,
+        64
+      ],
+      "midi_rels": [
+        2,
+        -1,
+        0
+      ],
+      "sample_base_midi": 57
+    }
+  ],
+  "voices": [
+    [
+      {
+        "delta": 48,
+        "pitch": "C4",
+        "dur": 41,
+        "vel": 64,
+        "midi": 60,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 7,
+        "motif_id": 7,
+        "base_pitch": "D4",
+        "base_midi": 62,
+        "origSegment": [
+          {
+            "delta": 7,
+            "pitch": "G4",
+            "dur": 90,
+            "vel": 64,
+            "midi": 67
+          },
+          {
+            "delta": 6,
+            "pitch": "C4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 60
+          },
+          {
+            "delta": 6,
+            "pitch": "E4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 64
+          },
+          {
+            "delta": 6,
+            "pitch": "D4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 62
+          },
+          {
+            "delta": 6,
+            "pitch": "F4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 65
+          },
+          {
+            "delta": 6,
+            "pitch": "E4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 64
+          },
+          {
+            "delta": 6,
+            "pitch": "D4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 62
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "C5",
+        "dur": 90,
+        "vel": 64,
+        "midi": 72,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "B4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 71,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "C5",
+        "dur": 90,
+        "vel": 64,
+        "midi": 72,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "D5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 74,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "motif_id": 0,
+        "base_pitch": "G4",
+        "base_midi": 67,
+        "origSegment": [
+          {
+            "delta": 6,
+            "pitch": "G5",
+            "dur": 90,
+            "vel": 64,
+            "midi": 79
+          },
+          {
+            "delta": 6,
+            "pitch": "D5",
+            "dur": 90,
+            "vel": 64,
+            "midi": 74
+          },
+          {
+            "delta": 6,
+            "pitch": "G4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 67
+          },
+          {
+            "delta": 6,
+            "pitch": "B4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 71
+          },
+          {
+            "delta": 6,
+            "pitch": "A4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 69
+          },
+          {
+            "delta": 6,
+            "pitch": "C5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 72
+          },
+          {
+            "delta": 6,
+            "pitch": "B4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 71
+          },
+          {
+            "delta": 6,
+            "pitch": "A4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 69
+          },
+          {
+            "delta": 6,
+            "pitch": "G4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 67
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "F5",
+        "dur": 90,
+        "vel": 64,
+        "midi": 77,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "G5",
+        "dur": 90,
+        "vel": 64,
+        "midi": 79,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "motif_id": 1,
+        "base_pitch": "E5",
+        "base_midi": 76,
+        "origSegment": [
+          {
+            "delta": 6,
+            "pitch": "A5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 81
+          },
+          {
+            "delta": 6,
+            "pitch": "F5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 77
+          },
+          {
+            "delta": 6,
+            "pitch": "G5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 79
+          },
+          {
+            "delta": 6,
+            "pitch": "E5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 76
+          },
+          {
+            "delta": 6,
+            "pitch": "F5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 77
+          },
+          {
+            "delta": 6,
+            "pitch": "G5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 79
+          },
+          {
+            "delta": 6,
+            "pitch": "A5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 81
+          },
+          {
+            "delta": 6,
+            "pitch": "E5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 76
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "G5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 79,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "motif_id": 13,
+        "base_pitch": "F5",
+        "base_midi": 77,
+        "origSegment": [
+          {
+            "delta": 6,
+            "pitch": "D5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 74
+          },
+          {
+            "delta": 6,
+            "pitch": "E5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 76
+          },
+          {
+            "delta": 6,
+            "pitch": "F5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 77
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "C5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 72,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "E5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 76,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "D5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 74,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "F5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 77,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "E5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 76,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "motif_id": 5,
+        "base_pitch": "D5",
+        "base_midi": 74,
+        "origSegment": [
+          {
+            "delta": 6,
+            "pitch": "D5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 74
+          },
+          {
+            "delta": 6,
+            "pitch": "B4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 71
+          },
+          {
+            "delta": 6,
+            "pitch": "C5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 72
+          },
+          {
+            "delta": 6,
+            "pitch": "A4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 69
+          },
+          {
+            "delta": 6,
+            "pitch": "B4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 71
+          },
+          {
+            "delta": 6,
+            "pitch": "C5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 72
+          },
+          {
+            "delta": 6,
+            "pitch": "D5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 74
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "C5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 72,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "B4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 71,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "A4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 69,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "G4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 67,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "Gb4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 66,
+        "diatonic": {
+          "degree": -1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "A4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 69,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "G4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 67,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "B4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 71,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "A4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 69,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "D4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 62,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "C5",
+        "dur": 138,
+        "vel": 64,
+        "midi": 72,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "D5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 74,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "B4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 71,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "A4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 69,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "G4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 67,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "Gb4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 66,
+        "diatonic": {
+          "degree": -1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "E4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 64,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "G4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 67,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "Gb4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 66,
+        "diatonic": {
+          "degree": -1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "A4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 69,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "G4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 67,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "motif_id": 2,
+        "base_pitch": "B4",
+        "base_midi": 71,
+        "origSegment": [
+          {
+            "delta": 6,
+            "pitch": "D5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 74
+          },
+          {
+            "delta": 6,
+            "pitch": "E5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 76
+          },
+          {
+            "delta": 6,
+            "pitch": "C5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 72
+          },
+          {
+            "delta": 6,
+            "pitch": "D5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 74
+          },
+          {
+            "delta": 6,
+            "pitch": "B4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 71
+          },
+          {
+            "delta": 6,
+            "pitch": "C5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 72
+          },
+          {
+            "delta": 6,
+            "pitch": "A4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 69
+          },
+          {
+            "delta": 6,
+            "pitch": "B4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 71
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "B4",
+        "dur": 18,
+        "vel": 64,
+        "midi": 71,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "C5",
+        "dur": 18,
+        "vel": 64,
+        "midi": 72,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "D5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 74,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "G5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 79,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "B4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 71,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "A4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 69,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "G4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 67,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "G4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 67,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 342,
+        "pitch": "G4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 67,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "A4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 69,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "B4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 71,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "C5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 72,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "A4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 69,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "B4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 71,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "G4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 67,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "Gb4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 66,
+        "diatonic": {
+          "degree": -1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 342,
+        "motif_id": 8,
+        "base_pitch": "A4",
+        "base_midi": 69,
+        "origSegment": [
+          {
+            "delta": 342,
+            "pitch": "A4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 69
+          },
+          {
+            "delta": 6,
+            "pitch": "C5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 72
+          },
+          {
+            "delta": 6,
+            "pitch": "B4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 71
+          },
+          {
+            "delta": 6,
+            "pitch": "D5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 74
+          },
+          {
+            "delta": 6,
+            "pitch": "C5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 72
+          },
+          {
+            "delta": 6,
+            "pitch": "B4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 71
+          },
+          {
+            "delta": 6,
+            "pitch": "A4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 69
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "B4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 71,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 342,
+        "motif_id": 5,
+        "base_pitch": "D5",
+        "base_midi": 74,
+        "origSegment": [
+          {
+            "delta": 342,
+            "pitch": "D5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 74
+          },
+          {
+            "delta": 6,
+            "pitch": "B4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 71
+          },
+          {
+            "delta": 6,
+            "pitch": "C5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 72
+          },
+          {
+            "delta": 6,
+            "pitch": "A4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 69
+          },
+          {
+            "delta": 6,
+            "pitch": "B4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 71
+          },
+          {
+            "delta": 6,
+            "pitch": "C5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 72
+          },
+          {
+            "delta": 6,
+            "pitch": "D5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 74
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "C5",
+        "dur": 90,
+        "vel": 64,
+        "midi": 72,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 342,
+        "motif_id": 9,
+        "base_pitch": "E5",
+        "base_midi": 76,
+        "origSegment": [
+          {
+            "delta": 342,
+            "pitch": "E5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 76
+          },
+          {
+            "delta": 6,
+            "pitch": "Db5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 73
+          },
+          {
+            "delta": 6,
+            "pitch": "D5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 74
+          },
+          {
+            "delta": 6,
+            "pitch": "B4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 71
+          },
+          {
+            "delta": 6,
+            "pitch": "C5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 72
+          },
+          {
+            "delta": 6,
+            "pitch": "D5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 74
+          },
+          {
+            "delta": 6,
+            "pitch": "E5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 76
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "D5",
+        "dur": 90,
+        "vel": 64,
+        "midi": 74,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "Db5",
+        "dur": 90,
+        "vel": 64,
+        "midi": 73,
+        "diatonic": {
+          "degree": -3,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "D5",
+        "dur": 90,
+        "vel": 64,
+        "midi": 74,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "E5",
+        "dur": 90,
+        "vel": 64,
+        "midi": 76,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "F5",
+        "dur": 90,
+        "vel": 64,
+        "midi": 77,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "A4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 69,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "B4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 71,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "Db5",
+        "dur": 90,
+        "vel": 64,
+        "midi": 73,
+        "diatonic": {
+          "degree": -3,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "D5",
+        "dur": 90,
+        "vel": 64,
+        "midi": 74,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "Gb4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 66,
+        "diatonic": {
+          "degree": -1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "Ab4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 68,
+        "diatonic": {
+          "degree": 0,
+          "acc": 1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "A4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 69,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "B4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 71,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "C5",
+        "dur": 90,
+        "vel": 64,
+        "midi": 72,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "D5",
+        "dur": 234,
+        "vel": 64,
+        "midi": 74,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "E4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 64,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "Gb4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 66,
+        "diatonic": {
+          "degree": -1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "Ab4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 68,
+        "diatonic": {
+          "degree": 0,
+          "acc": 1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "A4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 69,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "Gb4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 66,
+        "diatonic": {
+          "degree": -1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "Ab4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 68,
+        "diatonic": {
+          "degree": 0,
+          "acc": 1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "E4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 64,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "E5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 76,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "D5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 74,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "C5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 72,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "motif_id": 14,
+        "base_pitch": "E5",
+        "base_midi": 76,
+        "origSegment": [
+          {
+            "delta": 6,
+            "pitch": "B4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 71
+          },
+          {
+            "delta": 6,
+            "pitch": "C5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 72
+          },
+          {
+            "delta": 6,
+            "pitch": "D5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 74
+          },
+          {
+            "delta": 6,
+            "pitch": "E5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 76
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "D5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 74,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "C5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 72,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "motif_id": 15,
+        "base_pitch": "A5",
+        "base_midi": 81,
+        "origSegment": [
+          {
+            "delta": 6,
+            "pitch": "B5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 83
+          },
+          {
+            "delta": 6,
+            "pitch": "Ab5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 80
+          },
+          {
+            "delta": 6,
+            "pitch": "A5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 81
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "A5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 81,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "E5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 76,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "F5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 77,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "D5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 74,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "Ab4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 68,
+        "diatonic": {
+          "degree": 0,
+          "acc": 1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "motif_id": 13,
+        "base_pitch": "F5",
+        "base_midi": 77,
+        "origSegment": [
+          {
+            "delta": 6,
+            "pitch": "D5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 74
+          },
+          {
+            "delta": 6,
+            "pitch": "E5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 76
+          },
+          {
+            "delta": 6,
+            "pitch": "F5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 77
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "C5",
+        "dur": 90,
+        "vel": 64,
+        "midi": 72,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "B4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 71,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "A4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 69,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "A4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 69,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "A5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 81,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "G5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 79,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "F5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 77,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "E5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 76,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "G5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 79,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "F5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 77,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "A5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 81,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "G5",
+        "dur": 426,
+        "vel": 64,
+        "midi": 79,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "motif_id": 10,
+        "base_pitch": "E5",
+        "base_midi": 76,
+        "origSegment": [
+          {
+            "delta": 6,
+            "pitch": "E5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 76
+          },
+          {
+            "delta": 6,
+            "pitch": "G5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 79
+          },
+          {
+            "delta": 6,
+            "pitch": "F5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 77
+          },
+          {
+            "delta": 6,
+            "pitch": "A5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 81
+          },
+          {
+            "delta": 6,
+            "pitch": "G5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 79
+          },
+          {
+            "delta": 6,
+            "pitch": "F5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 77
+          },
+          {
+            "delta": 6,
+            "pitch": "E5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 76
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "F5",
+        "dur": 426,
+        "vel": 64,
+        "midi": 77,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "motif_id": 6,
+        "base_pitch": "G5",
+        "base_midi": 79,
+        "origSegment": [
+          {
+            "delta": 6,
+            "pitch": "G5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 79
+          },
+          {
+            "delta": 6,
+            "pitch": "E5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 76
+          },
+          {
+            "delta": 6,
+            "pitch": "F5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 77
+          },
+          {
+            "delta": 6,
+            "pitch": "D5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 74
+          },
+          {
+            "delta": 6,
+            "pitch": "E5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 76
+          },
+          {
+            "delta": 6,
+            "pitch": "F5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 77
+          },
+          {
+            "delta": 6,
+            "pitch": "G5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 79
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "F5",
+        "dur": 426,
+        "vel": 64,
+        "midi": 77,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "motif_id": 11,
+        "base_pitch": "D5",
+        "base_midi": 74,
+        "origSegment": [
+          {
+            "delta": 6,
+            "pitch": "D5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 74
+          },
+          {
+            "delta": 6,
+            "pitch": "F5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 77
+          },
+          {
+            "delta": 6,
+            "pitch": "E5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 76
+          },
+          {
+            "delta": 6,
+            "pitch": "G5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 79
+          },
+          {
+            "delta": 6,
+            "pitch": "F5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 77
+          },
+          {
+            "delta": 6,
+            "pitch": "E5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 76
+          },
+          {
+            "delta": 6,
+            "pitch": "D5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 74
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "E5",
+        "dur": 426,
+        "vel": 64,
+        "midi": 76,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "C5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 72,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "D5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 74,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "E5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 76,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "F5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 77,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "D5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 74,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "E5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 76,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "C5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 72,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "D5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 74,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "motif_id": 10,
+        "base_pitch": "E5",
+        "base_midi": 76,
+        "origSegment": [
+          {
+            "delta": 6,
+            "pitch": "E5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 76
+          },
+          {
+            "delta": 6,
+            "pitch": "G5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 79
+          },
+          {
+            "delta": 6,
+            "pitch": "F5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 77
+          },
+          {
+            "delta": 6,
+            "pitch": "A5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 81
+          },
+          {
+            "delta": 6,
+            "pitch": "G5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 79
+          },
+          {
+            "delta": 6,
+            "pitch": "F5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 77
+          },
+          {
+            "delta": 6,
+            "pitch": "E5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 76
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "F5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 77,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "motif_id": 3,
+        "base_pitch": "G5",
+        "base_midi": 79,
+        "origSegment": [
+          {
+            "delta": 6,
+            "pitch": "C6",
+            "dur": 90,
+            "vel": 64,
+            "midi": 84
+          },
+          {
+            "delta": 6,
+            "pitch": "G5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 79
+          },
+          {
+            "delta": 6,
+            "pitch": "B5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 83
+          },
+          {
+            "delta": 6,
+            "pitch": "A5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 81
+          },
+          {
+            "delta": 6,
+            "pitch": "C6",
+            "dur": 42,
+            "vel": 64,
+            "midi": 84
+          },
+          {
+            "delta": 6,
+            "pitch": "B5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 83
+          },
+          {
+            "delta": 6,
+            "pitch": "A5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 81
+          },
+          {
+            "delta": 6,
+            "pitch": "G5",
+            "dur": 42,
+            "vel": 64,
+            "midi": 79
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "G5",
+        "dur": 90,
+        "vel": 64,
+        "midi": 79,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "E5",
+        "dur": 90,
+        "vel": 64,
+        "midi": 76,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "D5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 74,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "C5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 72,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "C5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 72,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "motif_id": 4,
+        "base_pitch": "Bb4",
+        "base_midi": 70,
+        "origSegment": [
+          {
+            "delta": 6,
+            "pitch": "A4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 69
+          },
+          {
+            "delta": 6,
+            "pitch": "Bb4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 70
+          },
+          {
+            "delta": 6,
+            "pitch": "G4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 67
+          },
+          {
+            "delta": 6,
+            "pitch": "A4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 69
+          },
+          {
+            "delta": 6,
+            "pitch": "F4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 65
+          },
+          {
+            "delta": 6,
+            "pitch": "G4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 67
+          },
+          {
+            "delta": 6,
+            "pitch": "A4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 69
+          },
+          {
+            "delta": 6,
+            "pitch": "Bb4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 70
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "B4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 71,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "C5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 72,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "E4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 64,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "D4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 62,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "C5",
+        "dur": 42,
+        "vel": 64,
+        "midi": 72,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 6
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "F4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 65,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "B4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 71,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "E4",
+        "dur": 762,
+        "vel": 64,
+        "midi": 64,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -762,
+        "pitch": "G4",
+        "dur": 762,
+        "vel": 64,
+        "midi": 67,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": -762,
+        "pitch": "C5",
+        "dur": 762,
+        "vel": 64,
+        "midi": 72,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 6
+        }
+      }
+    ],
+    [
+      {
+        "delta": 432,
+        "pitch": "C3",
+        "dur": 42,
+        "vel": 64,
+        "midi": 48,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "motif_id": 7,
+        "base_pitch": "D3",
+        "base_midi": 50,
+        "origSegment": [
+          {
+            "delta": 6,
+            "pitch": "G3",
+            "dur": 90,
+            "vel": 64,
+            "midi": 55
+          },
+          {
+            "delta": 6,
+            "pitch": "C3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 48
+          },
+          {
+            "delta": 6,
+            "pitch": "E3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 52
+          },
+          {
+            "delta": 6,
+            "pitch": "D3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 50
+          },
+          {
+            "delta": 6,
+            "pitch": "F3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 53
+          },
+          {
+            "delta": 6,
+            "pitch": "E3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 52
+          },
+          {
+            "delta": 6,
+            "pitch": "D3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 50
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "G2",
+        "dur": 90,
+        "vel": 64,
+        "midi": 43,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": 246,
+        "motif_id": 3,
+        "base_pitch": "G3",
+        "base_midi": 55,
+        "origSegment": [
+          {
+            "delta": 246,
+            "pitch": "C4",
+            "dur": 90,
+            "vel": 64,
+            "midi": 60
+          },
+          {
+            "delta": 6,
+            "pitch": "G3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 55
+          },
+          {
+            "delta": 6,
+            "pitch": "B3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 59
+          },
+          {
+            "delta": 6,
+            "pitch": "A3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 57
+          },
+          {
+            "delta": 6,
+            "pitch": "C4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 60
+          },
+          {
+            "delta": 6,
+            "pitch": "B3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 59
+          },
+          {
+            "delta": 6,
+            "pitch": "A3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 57
+          },
+          {
+            "delta": 6,
+            "pitch": "G3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 55
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "B3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 59,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "C4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 60,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "D4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 62,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "E4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 64,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "G3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 55,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "A3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 57,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "B3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 59,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "C4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 60,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "E3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 52,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "Gb3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 54,
+        "diatonic": {
+          "degree": -1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "G3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 55,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "A3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 57,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "B3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 59,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "C4",
+        "dur": 234,
+        "vel": 64,
+        "midi": 60,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "motif_id": 12,
+        "base_pitch": "D3",
+        "base_midi": 50,
+        "origSegment": [
+          {
+            "delta": 6,
+            "pitch": "D3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 50
+          },
+          {
+            "delta": 6,
+            "pitch": "Gb3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 54
+          },
+          {
+            "delta": 6,
+            "pitch": "E3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 52
+          },
+          {
+            "delta": 6,
+            "pitch": "G3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 55
+          },
+          {
+            "delta": 6,
+            "pitch": "Gb3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 54
+          },
+          {
+            "delta": 6,
+            "pitch": "E3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 52
+          },
+          {
+            "delta": 6,
+            "pitch": "D3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 50
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "G3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 55,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "B2",
+        "dur": 90,
+        "vel": 64,
+        "midi": 47,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "C3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 48,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "D3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 50,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "E3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 52,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "Gb3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 54,
+        "diatonic": {
+          "degree": -1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "G3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 55,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "E3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 52,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "B2",
+        "dur": 138,
+        "vel": 64,
+        "midi": 47,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "C3",
+        "dur": 42,
+        "vel": 64,
+        "midi": 48,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "D3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 50,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "D2",
+        "dur": 90,
+        "vel": 64,
+        "midi": 38,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": 54,
+        "motif_id": 0,
+        "base_pitch": "G2",
+        "base_midi": 43,
+        "origSegment": [
+          {
+            "delta": 54,
+            "pitch": "G3",
+            "dur": 90,
+            "vel": 64,
+            "midi": 55
+          },
+          {
+            "delta": 6,
+            "pitch": "D3",
+            "dur": 90,
+            "vel": 64,
+            "midi": 50
+          },
+          {
+            "delta": 6,
+            "pitch": "G2",
+            "dur": 42,
+            "vel": 64,
+            "midi": 43
+          },
+          {
+            "delta": 6,
+            "pitch": "B2",
+            "dur": 42,
+            "vel": 64,
+            "midi": 47
+          },
+          {
+            "delta": 6,
+            "pitch": "A2",
+            "dur": 42,
+            "vel": 64,
+            "midi": 45
+          },
+          {
+            "delta": 6,
+            "pitch": "C3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 48
+          },
+          {
+            "delta": 6,
+            "pitch": "B2",
+            "dur": 42,
+            "vel": 64,
+            "midi": 47
+          },
+          {
+            "delta": 6,
+            "pitch": "A2",
+            "dur": 42,
+            "vel": 64,
+            "midi": 45
+          },
+          {
+            "delta": 6,
+            "pitch": "G2",
+            "dur": 42,
+            "vel": 64,
+            "midi": 43
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "Gb3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 54,
+        "diatonic": {
+          "degree": -1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "G3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 55,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "A3",
+        "dur": 42,
+        "vel": 64,
+        "midi": 57,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "motif_id": 12,
+        "base_pitch": "D3",
+        "base_midi": 50,
+        "origSegment": [
+          {
+            "delta": 6,
+            "pitch": "D3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 50
+          },
+          {
+            "delta": 6,
+            "pitch": "Gb3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 54
+          },
+          {
+            "delta": 6,
+            "pitch": "E3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 52
+          },
+          {
+            "delta": 6,
+            "pitch": "G3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 55
+          },
+          {
+            "delta": 6,
+            "pitch": "Gb3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 54
+          },
+          {
+            "delta": 6,
+            "pitch": "E3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 52
+          },
+          {
+            "delta": 6,
+            "pitch": "D3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 50
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "A3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 57,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "D4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 62,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "C4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 60,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "D4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 62,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "G3",
+        "dur": 42,
+        "vel": 64,
+        "midi": 55,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "motif_id": 6,
+        "base_pitch": "G4",
+        "base_midi": 67,
+        "origSegment": [
+          {
+            "delta": 6,
+            "pitch": "G4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 67
+          },
+          {
+            "delta": 6,
+            "pitch": "E4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 64
+          },
+          {
+            "delta": 6,
+            "pitch": "F4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 65
+          },
+          {
+            "delta": 6,
+            "pitch": "D4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 62
+          },
+          {
+            "delta": 6,
+            "pitch": "E4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 64
+          },
+          {
+            "delta": 6,
+            "pitch": "F4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 65
+          },
+          {
+            "delta": 6,
+            "pitch": "G4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 67
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "F4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 65,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "E4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 64,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "F4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 65,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "D4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 62,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "motif_id": 1,
+        "base_pitch": "E4",
+        "base_midi": 64,
+        "origSegment": [
+          {
+            "delta": 6,
+            "pitch": "A4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 69
+          },
+          {
+            "delta": 6,
+            "pitch": "F4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 65
+          },
+          {
+            "delta": 6,
+            "pitch": "G4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 67
+          },
+          {
+            "delta": 6,
+            "pitch": "E4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 64
+          },
+          {
+            "delta": 6,
+            "pitch": "F4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 65
+          },
+          {
+            "delta": 6,
+            "pitch": "G4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 67
+          },
+          {
+            "delta": 6,
+            "pitch": "A4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 69
+          },
+          {
+            "delta": 6,
+            "pitch": "E4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 64
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "G4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 67,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "F4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 65,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "G4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 67,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "E4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 64,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "F4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 65,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "motif_id": 4,
+        "base_pitch": "Bb4",
+        "base_midi": 70,
+        "origSegment": [
+          {
+            "delta": 6,
+            "pitch": "A4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 69
+          },
+          {
+            "delta": 6,
+            "pitch": "Bb4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 70
+          },
+          {
+            "delta": 6,
+            "pitch": "G4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 67
+          },
+          {
+            "delta": 6,
+            "pitch": "A4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 69
+          },
+          {
+            "delta": 6,
+            "pitch": "F4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 65
+          },
+          {
+            "delta": 6,
+            "pitch": "G4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 67
+          },
+          {
+            "delta": 6,
+            "pitch": "A4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 69
+          },
+          {
+            "delta": 6,
+            "pitch": "Bb4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 70
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "motif_id": 6,
+        "base_pitch": "G4",
+        "base_midi": 67,
+        "origSegment": [
+          {
+            "delta": 6,
+            "pitch": "G4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 67
+          },
+          {
+            "delta": 6,
+            "pitch": "E4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 64
+          },
+          {
+            "delta": 6,
+            "pitch": "F4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 65
+          },
+          {
+            "delta": 6,
+            "pitch": "D4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 62
+          },
+          {
+            "delta": 6,
+            "pitch": "E4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 64
+          },
+          {
+            "delta": 6,
+            "pitch": "F4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 65
+          },
+          {
+            "delta": 6,
+            "pitch": "G4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 67
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "F4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 65,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "motif_id": 14,
+        "base_pitch": "E4",
+        "base_midi": 64,
+        "origSegment": [
+          {
+            "delta": 6,
+            "pitch": "B3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 59
+          },
+          {
+            "delta": 6,
+            "pitch": "C4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 60
+          },
+          {
+            "delta": 6,
+            "pitch": "D4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 62
+          },
+          {
+            "delta": 6,
+            "pitch": "E4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 64
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "D4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 62,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "C4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 60,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "motif_id": 14,
+        "base_pitch": "E4",
+        "base_midi": 64,
+        "origSegment": [
+          {
+            "delta": 6,
+            "pitch": "B3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 59
+          },
+          {
+            "delta": 6,
+            "pitch": "C4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 60
+          },
+          {
+            "delta": 6,
+            "pitch": "D4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 62
+          },
+          {
+            "delta": 6,
+            "pitch": "E4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 64
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "motif_id": 15,
+        "base_pitch": "A3",
+        "base_midi": 57,
+        "origSegment": [
+          {
+            "delta": 6,
+            "pitch": "B3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 59
+          },
+          {
+            "delta": 6,
+            "pitch": "Ab3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 56
+          },
+          {
+            "delta": 6,
+            "pitch": "A3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 57
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "A3",
+        "dur": 42,
+        "vel": 64,
+        "midi": 57,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "C4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 60,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "B3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 59,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "E3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 52,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "D4",
+        "dur": 138,
+        "vel": 64,
+        "midi": 62,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "E4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 64,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "C4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 60,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "B3",
+        "dur": 42,
+        "vel": 64,
+        "midi": 59,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "A3",
+        "dur": 42,
+        "vel": 64,
+        "midi": 57,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "G3",
+        "dur": 42,
+        "vel": 64,
+        "midi": 55,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "Gb3",
+        "dur": 42,
+        "vel": 64,
+        "midi": 54,
+        "diatonic": {
+          "degree": -1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "A3",
+        "dur": 42,
+        "vel": 64,
+        "midi": 57,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "Ab3",
+        "dur": 42,
+        "vel": 64,
+        "midi": 56,
+        "diatonic": {
+          "degree": 0,
+          "acc": 1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "motif_id": 2,
+        "base_pitch": "B3",
+        "base_midi": 59,
+        "origSegment": [
+          {
+            "delta": 6,
+            "pitch": "D4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 62
+          },
+          {
+            "delta": 6,
+            "pitch": "E4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 64
+          },
+          {
+            "delta": 6,
+            "pitch": "C4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 60
+          },
+          {
+            "delta": 6,
+            "pitch": "D4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 62
+          },
+          {
+            "delta": 6,
+            "pitch": "B3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 59
+          },
+          {
+            "delta": 6,
+            "pitch": "C4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 60
+          },
+          {
+            "delta": 6,
+            "pitch": "A3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 57
+          },
+          {
+            "delta": 6,
+            "pitch": "B3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 59
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "F4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 65,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "E4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 64,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "A3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 57,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "E4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 64,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "E3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 52,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "A3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 57,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "A2",
+        "dur": 90,
+        "vel": 64,
+        "midi": 45,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": 246,
+        "motif_id": 9,
+        "base_pitch": "E4",
+        "base_midi": 64,
+        "origSegment": [
+          {
+            "delta": 246,
+            "pitch": "E4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 64
+          },
+          {
+            "delta": 6,
+            "pitch": "Db4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 61
+          },
+          {
+            "delta": 6,
+            "pitch": "D4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 62
+          },
+          {
+            "delta": 6,
+            "pitch": "B3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 59
+          },
+          {
+            "delta": 6,
+            "pitch": "C4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 60
+          },
+          {
+            "delta": 6,
+            "pitch": "D4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 62
+          },
+          {
+            "delta": 6,
+            "pitch": "E4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 64
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "D4",
+        "dur": 426,
+        "vel": 64,
+        "midi": 62,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "motif_id": 8,
+        "base_pitch": "A3",
+        "base_midi": 57,
+        "origSegment": [
+          {
+            "delta": 6,
+            "pitch": "A3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 57
+          },
+          {
+            "delta": 6,
+            "pitch": "C4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 60
+          },
+          {
+            "delta": 6,
+            "pitch": "B3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 59
+          },
+          {
+            "delta": 6,
+            "pitch": "D4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 62
+          },
+          {
+            "delta": 6,
+            "pitch": "C4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 60
+          },
+          {
+            "delta": 6,
+            "pitch": "B3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 59
+          },
+          {
+            "delta": 6,
+            "pitch": "A3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 57
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "B3",
+        "dur": 426,
+        "vel": 64,
+        "midi": 59,
+        "diatonic": {
+          "degree": 2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "motif_id": 5,
+        "base_pitch": "D4",
+        "base_midi": 62,
+        "origSegment": [
+          {
+            "delta": 6,
+            "pitch": "D4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 62
+          },
+          {
+            "delta": 6,
+            "pitch": "B3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 59
+          },
+          {
+            "delta": 6,
+            "pitch": "C4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 60
+          },
+          {
+            "delta": 6,
+            "pitch": "A3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 57
+          },
+          {
+            "delta": 6,
+            "pitch": "B3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 59
+          },
+          {
+            "delta": 6,
+            "pitch": "C4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 60
+          },
+          {
+            "delta": 6,
+            "pitch": "D4",
+            "dur": 42,
+            "vel": 64,
+            "midi": 62
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "C4",
+        "dur": 426,
+        "vel": 64,
+        "midi": 60,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "G3",
+        "dur": 42,
+        "vel": 64,
+        "midi": 55,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "A3",
+        "dur": 42,
+        "vel": 64,
+        "midi": 57,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "Bb3",
+        "dur": 42,
+        "vel": 64,
+        "midi": 58,
+        "diatonic": {
+          "degree": 1,
+          "acc": 1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "C4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 60,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "A3",
+        "dur": 42,
+        "vel": 64,
+        "midi": 57,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "Bb3",
+        "dur": 42,
+        "vel": 64,
+        "midi": 58,
+        "diatonic": {
+          "degree": 1,
+          "acc": 1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "G3",
+        "dur": 42,
+        "vel": 64,
+        "midi": 55,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "A3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 57,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "Bb3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 58,
+        "diatonic": {
+          "degree": 1,
+          "acc": 1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "A3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 57,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "G3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 55,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "F3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 53,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "D4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 62,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "C4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 60,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "Bb3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 58,
+        "diatonic": {
+          "degree": 1,
+          "acc": 1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "A3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 57,
+        "diatonic": {
+          "degree": 1,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "F4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 65,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "E4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 64,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "D4",
+        "dur": 90,
+        "vel": 64,
+        "midi": 62,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "E4",
+        "dur": 42,
+        "vel": 64,
+        "midi": 64,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 5
+        }
+      },
+      {
+        "delta": 6,
+        "motif_id": 11,
+        "base_pitch": "D3",
+        "base_midi": 50,
+        "origSegment": [
+          {
+            "delta": 6,
+            "pitch": "D3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 50
+          },
+          {
+            "delta": 6,
+            "pitch": "F3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 53
+          },
+          {
+            "delta": 6,
+            "pitch": "E3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 52
+          },
+          {
+            "delta": 6,
+            "pitch": "G3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 55
+          },
+          {
+            "delta": 6,
+            "pitch": "F3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 53
+          },
+          {
+            "delta": 6,
+            "pitch": "E3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 52
+          },
+          {
+            "delta": 6,
+            "pitch": "D3",
+            "dur": 42,
+            "vel": 64,
+            "midi": 50
+          }
+        ]
+      },
+      {
+        "delta": 6,
+        "pitch": "E3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 52,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "C3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 48,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "D3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 50,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "E3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 52,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "F3",
+        "dur": 42,
+        "vel": 64,
+        "midi": 53,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "D3",
+        "dur": 42,
+        "vel": 64,
+        "midi": 50,
+        "diatonic": {
+          "degree": -3,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "E3",
+        "dur": 42,
+        "vel": 64,
+        "midi": 52,
+        "diatonic": {
+          "degree": -2,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "F3",
+        "dur": 42,
+        "vel": 64,
+        "midi": 53,
+        "diatonic": {
+          "degree": -1,
+          "acc": -1,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "G3",
+        "dur": 90,
+        "vel": 64,
+        "midi": 55,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 4
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "G2",
+        "dur": 90,
+        "vel": 64,
+        "midi": 43,
+        "diatonic": {
+          "degree": 0,
+          "acc": 0,
+          "oct": 3
+        }
+      },
+      {
+        "delta": 6,
+        "pitch": "C2",
+        "dur": 762,
+        "vel": 64,
+        "midi": 36,
+        "diatonic": {
+          "degree": 3,
+          "acc": 0,
+          "oct": 3
+        }
+      }
+    ]
+  ],
+  "voiceMeta": [
+    {
+      "trackIndex": 1,
+      "noteCount": 240
+    },
+    {
+      "trackIndex": 2,
+      "noteCount": 217
+    }
+  ],
+  "motifsDisabled": false,
+  "originalTrackCount": 4,
+  "trackNames": [
+    null,
+    null,
+    null,
+    null
+  ],
+  "voiceToTrack": [
+    1,
+    2
+  ],
+  "keySignature": {
+    "sf": 1,
+    "mode": "major"
+  },
+  "voiceSplitMeta": null,
+  "keyChanges": [
+    {
+      "start": 0,
+      "end": 3072,
+      "tonic": "C",
+      "mode": "major"
+    },
+    {
+      "start": 2304,
+      "end": 6912,
+      "tonic": "G",
+      "mode": "major"
+    },
+    {
+      "start": 6144,
+      "end": 7680,
+      "tonic": "C",
+      "mode": "major"
+    },
+    {
+      "start": 6912,
+      "end": 8448,
+      "tonic": "F",
+      "mode": "major"
+    },
+    {
+      "start": 7680,
+      "end": 9216,
+      "tonic": "C",
+      "mode": "major"
+    },
+    {
+      "start": 8448,
+      "end": 10752,
+      "tonic": "A",
+      "mode": "minor"
+    },
+    {
+      "start": 9984,
+      "end": 13824,
+      "tonic": "C",
+      "mode": "major"
+    },
+    {
+      "start": 13056,
+      "end": 15360,
+      "tonic": "F",
+      "mode": "major"
+    },
+    {
+      "start": 14592,
+      "end": 16890,
+      "tonic": "C",
+      "mode": "major"
+    }
+  ]
+}
