@@ -449,10 +449,10 @@ function encodeVoices(voices) {
 // (Retrograde / inversion helpers removed in baseline revert – will re-add if needed post-baseline.)
 
 // New motif mining: longest-first maximal motifs + optional contiguous sub-motif derivation
-function findMotifs(encodedVoices, key) {
+function findMotifs(encodedVoices, key, opts = {}) {
   const { tonic_pc, mode } = key;
-  const MIN_LEN = 4;
-  const MAX_LEN = 20;
+  const MIN_LEN = typeof opts.minLen === 'number' ? opts.minLen : 4;
+  const MAX_LEN = typeof opts.maxLen === 'number' ? opts.maxLen : 20;
   // Annotate each note with diatonic info (cache)
   for (const voice of encodedVoices) {
     for (const item of voice) {
@@ -558,36 +558,39 @@ function findMotifs(encodedVoices, key) {
 
   // Optional: derive contiguous sub-motifs (length >=3) for reuse of interior segments not yet covered
   // Only add if they appear at least twice in uncovered regions and not already represented.
+  const enableSub = opts.enableSub !== false;
   const subMin = 3;
   const subAddedKeys = new Set();
-  for (let v=0; v<encodedVoices.length; v++) {
-    const voice = encodedVoices[v];
-    for (let i=0;i<voice.length;i++) {
-      if (!coverage[v][i]) {
-        for (let len=subMin; len<=MAX_LEN && i+len<=voice.length; len++) {
-          const subseq = voice.slice(i,i+len);
-          const enc = encodeSubseq(subseq);
-            if (!enc) continue;
-          if (enc.deg_rels.length < subMin) continue;
-          if (motifMap.has(enc.key) || subAddedKeys.has(enc.key)) continue;
-          // Count uncovered occurrences quickly
-          let count=0;
-          for (let j=0;j<encodedVoices[v].length - len +1;j++) {
-            const cand = voice.slice(j,j+len);
-            // Quick structural compare by building key (optimization: could reuse map)
-            const enc2 = encodeSubseq(cand);
-            if (enc2 && enc2.key === enc.key) {
-              // ensure segment mostly uncovered
-              let uncovered = 0; for (let k=0;k<len;k++) if (!coverage[v][j+k]) uncovered++;
-              if (uncovered/len > 0.5) count++;
-              if (count>=2) break;
+  if (enableSub) {
+    for (let v=0; v<encodedVoices.length; v++) {
+      const voice = encodedVoices[v];
+      for (let i=0;i<voice.length;i++) {
+        if (!coverage[v][i]) {
+          for (let len=subMin; len<=MAX_LEN && i+len<=voice.length; len++) {
+            const subseq = voice.slice(i,i+len);
+            const enc = encodeSubseq(subseq);
+              if (!enc) continue;
+            if (enc.deg_rels.length < subMin) continue;
+            if (motifMap.has(enc.key) || subAddedKeys.has(enc.key)) continue;
+            // Count uncovered occurrences quickly
+            let count=0;
+            for (let j=0;j<encodedVoices[v].length - len +1;j++) {
+              const cand = voice.slice(j,j+len);
+              // Quick structural compare by building key (optimization: could reuse map)
+              const enc2 = encodeSubseq(cand);
+              if (enc2 && enc2.key === enc.key) {
+                // ensure segment mostly uncovered
+                let uncovered = 0; for (let k=0;k<len;k++) if (!coverage[v][j+k]) uncovered++;
+                if (uncovered/len > 0.5) count++;
+                if (count>=2) break;
+              }
             }
-          }
-          if (count>=2) {
-            const motif = buildMotif(enc, { voice:v, start:i });
-            const motifId = motifs.length; motifs.push(motif); motifMap.set(enc.key, motifId); subAddedKeys.add(enc.key);
-            // mark coverage for this first occurrence only (others will be used during application)
-            for (let k=0;k<len;k++) coverage[v][i+k] = true;
+            if (count>=2) {
+              const motif = buildMotif(enc, { voice:v, start:i });
+              const motifId = motifs.length; motifs.push(motif); motifMap.set(enc.key, motifId); subAddedKeys.add(enc.key);
+              // mark coverage for this first occurrence only (others will be used during application)
+              for (let k=0;k<len;k++) coverage[v][i+k] = true;
+            }
           }
         }
       }
@@ -612,6 +615,214 @@ function findMotifs(encodedVoices, key) {
     patternMap.set(keyStr, occs);
   }
   return { motifs, motifMap, patternMap };
+}
+
+// Iterative optimizer to minimize regular notes + motifs count by exploring motif mining params.
+function optimizeMotifApplication(encodedVoices, key, keyChanges, iterations) {
+  iterations = Math.max(1, Math.floor(iterations || 1));
+  const deepCopy = (x) => JSON.parse(JSON.stringify(x));
+  let best = null;
+  // Helper: count motif references in voices
+  function countMotifRefs(voices) {
+    const counts = new Map();
+    for (const v of voices) {
+      for (const ev of v) {
+        if (ev && ev.motif_id !== undefined) {
+          counts.set(ev.motif_id, (counts.get(ev.motif_id) || 0) + 1);
+        }
+      }
+    }
+    return counts;
+  }
+  // Helper: expand motif references conditionally
+  function expandMotifsByPredicate(voices, predicate) {
+    const out = [];
+    for (const v of voices) {
+      const nv = [];
+      for (const ev of v) {
+        if (ev && ev.motif_id !== undefined && predicate(ev)) {
+          if (Array.isArray(ev.origSegment) && ev.origSegment.length > 0) {
+            for (const n of ev.origSegment) {
+              nv.push({ delta: n.delta, pitch: n.pitch, dur: n.dur, vel: n.vel, midi: n.midi });
+            }
+          } else {
+            // If no origSegment, keep as-is (should be rare)
+            nv.push(ev);
+          }
+        } else {
+          nv.push(ev);
+        }
+      }
+      out.push(nv);
+    }
+    return out;
+  }
+  // Helper: drop unused motifs and remap ids in-place; returns new { motifs, voices }
+  function dropAndRemapMotifs(motifs, voices) {
+    const used = new Set();
+    for (const v of voices) for (const ev of v) if (ev.motif_id !== undefined) used.add(ev.motif_id);
+    const idList = Array.from(used).sort((a,b)=>a-b);
+    const remap = new Map(); idList.forEach((oldId, idx)=> remap.set(oldId, idx));
+    const newMotifs = idList.map(id => motifs[id]);
+    const newVoices = voices.map(v => v.map(ev => {
+      if (ev.motif_id === undefined) return ev;
+      const nid = remap.get(ev.motif_id);
+      if (nid === undefined) {
+        // Shouldn't happen; expand it defensively
+        if (Array.isArray(ev.origSegment)) {
+          return ev.origSegment.map(n => ({ delta: n.delta, pitch: n.pitch, dur: n.dur, vel: n.vel, midi: n.midi }));
+        }
+        const clone = { ...ev }; delete clone.motif_id; return clone;
+      }
+      return { ...ev, motif_id: nid };
+    }));
+    // Flatten any arrays that may have resulted from defensive expansion
+    for (let i=0;i<newVoices.length;i++) {
+      const flat = [];
+      for (const ev of newVoices[i]) {
+        if (Array.isArray(ev)) flat.push(...ev); else flat.push(ev);
+      }
+      newVoices[i] = flat;
+    }
+    return { motifs: newMotifs, voices: newVoices };
+  }
+  // Helper: try a split-friendly re-mining from motifless expansion
+  function reMineWithSplitStrategy(currVoices, baseKey) {
+    // Expand all motif refs back to literal notes
+    const expanded = expandMotifsByPredicate(currVoices, () => true);
+    // Mine with smaller maxLen and enabled sub-motifs
+    const minLen = 3;
+    const maxLen = 10; // encourage shorter reusable shapes
+    const enableSub = true;
+    const mined = findMotifs(expanded, baseKey, { minLen, maxLen, enableSub });
+    let motifs = mined.motifs;
+    let voices = applyMotifs(expanded, motifs, mined.motifMap, mined.patternMap);
+    // prune unused motifs
+    ({ motifs, voices } = dropAndRemapMotifs(motifs, voices));
+    // Backfill midi_rels from embedded segments
+    for (const v of voices) {
+      for (const ev of v) {
+        if (ev.motif_id === undefined) continue;
+        const m = motifs[ev.motif_id]; if (!m) continue;
+        if (!m.midi_rels || m.midi_rels.length !== m.deg_rels.length) {
+          if (ev.origSegment && ev.origSegment.length === m.deg_rels.length) {
+            const midis = ev.origSegment.map(n => n.midi != null ? n.midi : (n.pitch ? tonal.Note.midi(n.pitch) : null)).filter(p=>p!=null);
+            if (midis.length === m.deg_rels.length) { const base = midis[0]; m.midi_rels = midis.map(p=>p-base); m.sample_base_midi = base; }
+          }
+        }
+      }
+    }
+    // annotate + safety expand
+    try { annotateMotifReferences(voices, motifs, keyChanges, baseKey, { preferOctave: true, debug: false }); } catch(_) {}
+    const safety = expandUnsafeMotifReferences(voices, motifs);
+    const safeVoices = safety && Array.isArray(safety.voices) ? safety.voices : voices;
+    // Prune motifs that end up with <=1 references
+    const counts = countMotifRefs(safeVoices);
+    const dropIds = new Set();
+    for (let id=0; id<motifs.length; id++) { if ((counts.get(id) || 0) <= 1) dropIds.add(id); }
+    if (dropIds.size) {
+      const filtered = expandMotifsByPredicate(safeVoices, ev => dropIds.has(ev.motif_id));
+      // Remove dropped motifs and remap
+      const keep = motifs.map((_,i)=> i).filter(i => !dropIds.has(i));
+      const remap = new Map(keep.map((oldId, idx)=> [oldId, idx]));
+      const newMotifs = keep.map(i => motifs[i]);
+      const newVoices = filtered.map(v => v.map(ev => {
+        if (ev.motif_id === undefined) return ev;
+        const nid = remap.get(ev.motif_id);
+        if (nid === undefined) { const clone = { ...ev }; delete clone.motif_id; return clone; }
+        return { ...ev, motif_id: nid };
+      }));
+      return { motifs: newMotifs, voices: newVoices };
+    }
+    return { motifs, voices: safeVoices };
+  }
+  for (let it=0; it<iterations; it++) {
+    const minLen = 3 + (it % 6);           // 3..8
+    const maxLen = 16 + ((it*3) % 9);      // 16..24
+    const enableSub = (it % 2) === 0;      // toggle
+    let voices = deepCopy(encodedVoices);
+    const r = findMotifs(voices, key, { minLen, maxLen, enableSub });
+    let motifs = r.motifs;
+    voices = applyMotifs(voices, motifs, r.motifMap, r.patternMap);
+    // prune unused
+    ({ motifs, voices } = dropAndRemapMotifs(motifs, voices));
+    // backfill midi_rels from embedded segments
+    for (const v of voices) {
+      for (const ev of v) {
+        if (ev.motif_id === undefined) continue;
+        const m = motifs[ev.motif_id]; if (!m) continue;
+        if (!m.midi_rels || m.midi_rels.length !== m.deg_rels.length) {
+          if (ev.origSegment && ev.origSegment.length === m.deg_rels.length) {
+            const midis = ev.origSegment.map(n => n.midi != null ? n.midi : (n.pitch ? tonal.Note.midi(n.pitch) : null)).filter(p=>p!=null);
+            if (midis.length === m.deg_rels.length) { const base = midis[0]; m.midi_rels = midis.map(p=>p-base); m.sample_base_midi = base; }
+          }
+        }
+      }
+    }
+    // annotate + safety expand (silent)
+    try { annotateMotifReferences(voices, motifs, keyChanges, key, { preferOctave: true, debug: false }); } catch(_) {}
+    const safety = expandUnsafeMotifReferences(voices, motifs);
+    let safeVoices = safety && Array.isArray(safety.voices) ? safety.voices : voices;
+
+    // Prune motifs with 0 or 1 total references (drop and expand them)
+    const counts = countMotifRefs(safeVoices);
+    const dropIds = new Set();
+    const longLowUse = []; // track large motifs that are low-use for split strategy
+    for (let id=0; id<motifs.length; id++) {
+      const refCount = counts.get(id) || 0;
+      if (refCount <= 1) {
+        dropIds.add(id);
+        if ((motifs[id]?.deg_rels?.length || 0) >= 6) longLowUse.push(id);
+      }
+    }
+    if (dropIds.size) {
+      // Expand these motif refs back to literals
+      safeVoices = expandMotifsByPredicate(safeVoices, ev => dropIds.has(ev.motif_id));
+      // Remove dropped motifs and remap remaining ids
+      const keep = motifs.map((_,i)=> i).filter(i => !dropIds.has(i));
+      const remap = new Map(keep.map((oldId, idx)=> [oldId, idx]));
+      motifs = keep.map(i => motifs[i]);
+      safeVoices = safeVoices.map(v => v.map(ev => {
+        if (ev.motif_id === undefined) return ev;
+        const nid = remap.get(ev.motif_id);
+        if (nid === undefined) { const clone = { ...ev }; delete clone.motif_id; return clone; }
+        return { ...ev, motif_id: nid };
+      }));
+    }
+    // evaluate cost: regular notes + motif count
+    let regular = 0; for (const v of safeVoices) for (const ev of v) if (ev.motif_id === undefined) regular++;
+    let cost = regular + (motifs ? motifs.length : 0);
+
+    // If we encountered large low-use motifs, try a split-friendly re-mining and keep the better result
+    if (longLowUse.length > 0 || (it % 5) === 0) {
+      const alt = reMineWithSplitStrategy(safeVoices, key);
+      // After alternate path, also perform safety prune for <=1 refs just in case
+      const altCounts = countMotifRefs(alt.voices);
+      const altDrop = new Set();
+      for (let id=0; id<alt.motifs.length; id++) if ((altCounts.get(id) || 0) <= 1) altDrop.add(id);
+      let altVoices = alt.voices; let altMotifs = alt.motifs;
+      if (altDrop.size) {
+        altVoices = expandMotifsByPredicate(altVoices, ev => altDrop.has(ev.motif_id));
+        const keep = altMotifs.map((_,i)=> i).filter(i => !altDrop.has(i));
+        const remap = new Map(keep.map((oldId, idx)=> [oldId, idx]));
+        altMotifs = keep.map(i => altMotifs[i]);
+        altVoices = altVoices.map(v => v.map(ev => {
+          if (ev.motif_id === undefined) return ev;
+          const nid = remap.get(ev.motif_id);
+          if (nid === undefined) { const clone = { ...ev }; delete clone.motif_id; return clone; }
+          return { ...ev, motif_id: nid };
+        }));
+      }
+      let reg2 = 0; for (const v of altVoices) for (const ev of v) if (ev.motif_id === undefined) reg2++;
+      const cost2 = reg2 + (altMotifs ? altMotifs.length : 0);
+      if (cost2 < cost) {
+        safeVoices = altVoices; motifs = altMotifs; cost = cost2;
+      }
+    }
+
+    if (!best || cost < best.cost) best = { cost, voices: safeVoices, motifs };
+  }
+  return best || { cost: Infinity, voices: encodedVoices, motifs: [] };
 }
 
 function applyMotifs(encodedVoices, motifs, motifMap, patternMap) {
@@ -674,6 +885,11 @@ function compressMidiToJson(inputMidi, outputJson) {
   // KeyStrict options (no env): prefer octave errors by default; allow CLI to flip if desired for diagnostics
   const preferSemitone = argv.includes('--prefer-semitone');
   const debugKeySelection = argv.includes('--debug-key-selection');
+  // Optimization iterations (default 50)
+  let iterations = 50; {
+    const i = argv.indexOf('--iterations');
+    if (i >= 0 && argv[i+1]) { const n = parseInt(argv[i+1],10); if (!isNaN(n) && n>0) iterations = n; }
+  }
 
   const { ppq, tempo, notes, key_sig, perTrackNotes, trackNames, recoveredVoiceSplitMeta, keyOverride } = extractTempoAndPPQAndNotes(midi);
   let key = findBestKey(notes, key_sig);
@@ -766,55 +982,11 @@ function compressMidiToJson(inputMidi, outputJson) {
   const motiflessEncodedSnapshot = JSON.parse(JSON.stringify(encodedVoices));
   const disableMotifs = disableMotifsExplicit; // Honor explicit disabling only
   let motifs = [];
+  let keyChangesComputed = disableKeyChanges ? [] : detectKeyChanges(notes, ppq);
   if (!disableMotifs) {
-    const motifResults = findMotifs(encodedVoices, key);
-    motifs = motifResults.motifs;
-    // Completion pass: ensure every motif has midi_rels; if missing, synthesize from first usage after application.
-    encodedVoices = applyMotifs(encodedVoices, motifResults.motifs, motifResults.motifMap, motifResults.patternMap);
-    // Remove unused motifs
-    const used = new Set();
-    for (const voice of encodedVoices) {
-      for (const item of voice) {
-        if (item.motif_id !== undefined) used.add(item.motif_id);
-      }
-    }
-    const sortedUsed = Array.from(used).sort((a, b) => a - b);
-    const newMotifs = sortedUsed.map(oldId => motifs[oldId]);
-    const newMap = new Map();
-    sortedUsed.forEach((oldId, index) => newMap.set(oldId, index));
-    for (const voice of encodedVoices) {
-      for (const item of voice) {
-        if (item.motif_id !== undefined) item.motif_id = newMap.get(item.motif_id);
-      }
-    }
-    motifs = newMotifs;
-    // Backfill missing midi_rels now that we know which motifs are used.
-    // IMPORTANT: Use exact origSegment MIDI captured at application time to avoid any semitone drift.
-    for (let vIdx=0; vIdx<encodedVoices.length; vIdx++) {
-      const voice = encodedVoices[vIdx];
-      for (const ev of voice) {
-        if (ev.motif_id === undefined) continue;
-        const m = motifs[ev.motif_id];
-        if (!m) continue;
-        if (!m.midi_rels || m.midi_rels.length !== m.deg_rels.length) {
-          // Prefer computing from embedded origSegment for this reference (exact MIDI)
-          if (ev.origSegment && ev.origSegment.length === m.deg_rels.length) {
-            const midis = ev.origSegment.map(n => n.midi != null ? n.midi : (n.pitch ? tonal.Note.midi(n.pitch) : null)).filter(p=>p!=null);
-            if (midis.length === m.deg_rels.length) {
-              const base = midis[0];
-              m.midi_rels = midis.map(p => p - base);
-              m.sample_base_midi = base;
-              continue;
-            }
-          }
-          // As a last resort, derive relative semitone offsets directly from base_midi + decoded pitches using any existing midi_rels
-          const base_midi = ev.base_midi != null ? ev.base_midi : (ev.base_pitch ? tonal.Note.midi(ev.base_pitch) : null);
-          if (base_midi != null && m.midi_rels && m.midi_rels.length > 0) {
-            m.sample_base_midi = base_midi + m.midi_rels[0];
-          }
-        }
-      }
-    }
+    const opt = optimizeMotifApplication(encodedVoices, key, keyChangesComputed, iterations);
+    encodedVoices = opt.voices;
+    motifs = opt.motifs;
   }
   // Persist voice segmentation metadata ONLY if original track count was 1 but we produced >1 voices
   // so we can reconstruct the same segmentation on roundtrip.
@@ -841,7 +1013,7 @@ function compressMidiToJson(inputMidi, outputJson) {
     voiceToTrack,
     keySignature: finalKeySignature,
     voiceSplitMeta,
-    keyChanges: disableKeyChanges ? [] : detectKeyChanges(notes, ppq)
+    keyChanges: keyChangesComputed
   };
   if (!disableMotifs && compressed.motifs.length) {
     annotateMotifReferences(compressed.voices, compressed.motifs, compressed.keyChanges, key, { preferOctave: !preferSemitone, debug: !!debugKeySelection });
@@ -1397,7 +1569,7 @@ if (require.main === module) {
       const args = process.argv.slice(2);
       if (args.length < 1 || ['-h','--help'].includes(args[0])) {
         console.log('Usage:');
-  console.log('  node EncodeDecode.js compress <input.mid> <output.json> [--preserve-tracks] [--motifless|--no-motifs] [--no-key-changes] [--prefer-semitone] [--debug-key-selection]');
+  console.log('  node EncodeDecode.js compress <input.mid> <output.json> [--preserve-tracks] [--motifless|--no-motifs] [--no-key-changes] [--prefer-semitone] [--debug-key-selection] [--iterations N]');
         console.log('  node EncodeDecode.js decompress <input.json> <output.mid>');
         process.exit(0);
       }
